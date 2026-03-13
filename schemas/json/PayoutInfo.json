@@ -1,0 +1,49 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/PayoutInfo",
+    "definitions": {
+        "PayoutInfo": {
+            "properties": {
+                "payout_per_contract": {
+                    "type": "string",
+                    "description": "Amount paid per winning contract"
+                },
+                "currency": {
+                    "type": "string",
+                    "description": "Payout currency"
+                },
+                "payout_status": {
+                    "enum": [
+                        "PAYOUT_STATUS_UNSPECIFIED",
+                        0,
+                        "PAYOUT_STATUS_PENDING",
+                        1,
+                        "PAYOUT_STATUS_PROCESSING",
+                        2,
+                        "PAYOUT_STATUS_COMPLETED",
+                        3,
+                        "PAYOUT_STATUS_FAILED",
+                        4
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "integer"
+                        }
+                    ],
+                    "title": "Payout Status"
+                },
+                "settlement_handler": {
+                    "type": "string",
+                    "description": "How payout is processed"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "─── Payouts ─────────────────────────────────────────────────",
+            "description": "─── Payouts ─────────────────────────────────────────────────  Payout information after market resolution."
+        }
+    }
+}

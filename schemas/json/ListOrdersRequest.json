@@ -1,0 +1,126 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/ListOrdersRequest",
+    "definitions": {
+        "ListOrdersRequest": {
+            "properties": {
+                "provider": {
+                    "type": "string",
+                    "description": "Optional: filter by provider"
+                },
+                "market_id": {
+                    "type": "string",
+                    "description": "Optional: filter by market"
+                },
+                "status": {
+                    "enum": [
+                        "ORDER_STATUS_UNSPECIFIED",
+                        0,
+                        "ORDER_STATUS_PENDING",
+                        1,
+                        "ORDER_STATUS_OPEN",
+                        2,
+                        "ORDER_STATUS_PARTIALLY_FILLED",
+                        3,
+                        "ORDER_STATUS_FILLED",
+                        4,
+                        "ORDER_STATUS_CANCELLED",
+                        5,
+                        "ORDER_STATUS_REJECTED",
+                        6,
+                        "ORDER_STATUS_EXPIRED",
+                        7
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "integer"
+                        }
+                    ],
+                    "title": "Order Status"
+                },
+                "side": {
+                    "enum": [
+                        "SIDE_UNSPECIFIED",
+                        0,
+                        "SIDE_BUY",
+                        1,
+                        "SIDE_SELL",
+                        2
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "integer"
+                        }
+                    ],
+                    "title": "Side"
+                },
+                "time_range": {
+                    "$ref": "#/definitions/upp.v1.TimeRange",
+                    "additionalProperties": true,
+                    "description": "Optional: filter by creation time"
+                },
+                "pagination": {
+                    "$ref": "#/definitions/upp.v1.PaginationRequest",
+                    "additionalProperties": true
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "List Orders Request"
+        },
+        "upp.v1.PaginationRequest": {
+            "properties": {
+                "limit": {
+                    "type": "integer",
+                    "description": "Max items per page [1, 1000], default 50"
+                },
+                "cursor": {
+                    "type": "string",
+                    "description": "Opaque cursor from previous response"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "─── Pagination ──────────────────────────────────────────────",
+            "description": "─── Pagination ──────────────────────────────────────────────  Cursor-based pagination request. Cursor-based (not offset-based) for consistency under real-time inserts."
+        },
+        "upp.v1.TimeRange": {
+            "properties": {
+                "start": {
+                    "$ref": "#/definitions/upp.v1.Timestamp",
+                    "additionalProperties": true
+                },
+                "end": {
+                    "$ref": "#/definitions/upp.v1.Timestamp",
+                    "additionalProperties": true
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Time Range",
+            "description": "Time range for queries and filters."
+        },
+        "upp.v1.Timestamp": {
+            "properties": {
+                "seconds": {
+                    "type": "string",
+                    "description": "Unix epoch seconds"
+                },
+                "nanos": {
+                    "type": "integer",
+                    "description": "Sub-second nanoseconds [0, 999999999]"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "─── Temporal ────────────────────────────────────────────────",
+            "description": "─── Temporal ────────────────────────────────────────────────  High-precision timestamp for trading events. Always UTC. Nanosecond precision for orderbook/trade events."
+        }
+    }
+}

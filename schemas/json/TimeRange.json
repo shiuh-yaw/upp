@@ -1,0 +1,38 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/TimeRange",
+    "definitions": {
+        "TimeRange": {
+            "properties": {
+                "start": {
+                    "$ref": "#/definitions/upp.v1.Timestamp",
+                    "additionalProperties": true
+                },
+                "end": {
+                    "$ref": "#/definitions/upp.v1.Timestamp",
+                    "additionalProperties": true
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Time Range",
+            "description": "Time range for queries and filters."
+        },
+        "upp.v1.Timestamp": {
+            "properties": {
+                "seconds": {
+                    "type": "string",
+                    "description": "Unix epoch seconds"
+                },
+                "nanos": {
+                    "type": "integer",
+                    "description": "Sub-second nanoseconds [0, 999999999]"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "─── Temporal ────────────────────────────────────────────────",
+            "description": "─── Temporal ────────────────────────────────────────────────  High-precision timestamp for trading events. Always UTC. Nanosecond precision for orderbook/trade events."
+        }
+    }
+}

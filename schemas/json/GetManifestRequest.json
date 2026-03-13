@@ -1,0 +1,18 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/GetManifestRequest",
+    "definitions": {
+        "GetManifestRequest": {
+            "properties": {
+                "provider": {
+                    "type": "string",
+                    "description": "Provider domain"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "─── Request/Response Messages ───────────────────────────────",
+            "description": "─── Request/Response Messages ───────────────────────────────"
+        }
+    }
+}

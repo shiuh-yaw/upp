@@ -1,0 +1,49 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/Event",
+    "definitions": {
+        "Event": {
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "description": "Provider's event identifier"
+                },
+                "title": {
+                    "type": "string",
+                    "description": "Human-readable title, e.g. \"Will Bitcoin reach $100K?\""
+                },
+                "description": {
+                    "type": "string",
+                    "description": "Detailed resolution criteria"
+                },
+                "category": {
+                    "type": "string",
+                    "description": "Primary category (crypto, politics, sports, etc.)"
+                },
+                "tags": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array",
+                    "description": "Searchable tags"
+                },
+                "image_url": {
+                    "type": "string",
+                    "description": "Event image/icon URL"
+                },
+                "series_id": {
+                    "type": "string",
+                    "description": "For grouped events (e.g. Kalshi \"series\")  Parent series/group identifier"
+                },
+                "series_title": {
+                    "type": "string",
+                    "description": "Series name"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Event",
+            "description": "The event being predicted on."
+        }
+    }
+}

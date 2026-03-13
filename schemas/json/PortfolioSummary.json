@@ -1,0 +1,70 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/PortfolioSummary",
+    "definitions": {
+        "PortfolioSummary": {
+            "properties": {
+                "total_invested": {
+                    "type": "string",
+                    "description": "Sum of all cost bases"
+                },
+                "total_current_value": {
+                    "type": "string",
+                    "description": "Sum of all current values"
+                },
+                "total_unrealized_pnl": {
+                    "type": "string",
+                    "description": "Sum of all unrealized P\u0026L"
+                },
+                "total_realized_pnl": {
+                    "type": "string",
+                    "description": "Sum of all realized P\u0026L"
+                },
+                "open_position_count": {
+                    "type": "integer",
+                    "description": "Number of open positions"
+                },
+                "market_count": {
+                    "type": "integer",
+                    "description": "Unique markets with positions"
+                },
+                "provider_summaries": {
+                    "items": {
+                        "$ref": "#/definitions/upp.v1.ProviderSummary"
+                    },
+                    "type": "array",
+                    "description": "Per-provider breakdown"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "─── Portfolio Summary ───────────────────────────────────────",
+            "description": "─── Portfolio Summary ───────────────────────────────────────  Aggregated portfolio metrics across positions."
+        },
+        "upp.v1.ProviderSummary": {
+            "properties": {
+                "provider": {
+                    "type": "string"
+                },
+                "invested": {
+                    "type": "string"
+                },
+                "current_value": {
+                    "type": "string"
+                },
+                "unrealized_pnl": {
+                    "type": "string"
+                },
+                "realized_pnl": {
+                    "type": "string"
+                },
+                "position_count": {
+                    "type": "integer"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Provider Summary"
+        }
+    }
+}

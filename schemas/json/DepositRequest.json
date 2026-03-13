@@ -1,0 +1,26 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/DepositRequest",
+    "definitions": {
+        "DepositRequest": {
+            "properties": {
+                "provider": {
+                    "type": "string"
+                },
+                "instrument_id": {
+                    "type": "string",
+                    "description": "Which funding instrument to use"
+                },
+                "amount": {
+                    "type": "string"
+                },
+                "currency": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Deposit Request"
+        }
+    }
+}

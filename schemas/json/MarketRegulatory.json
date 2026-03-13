@@ -1,0 +1,71 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/MarketRegulatory",
+    "definitions": {
+        "MarketRegulatory": {
+            "properties": {
+                "jurisdiction": {
+                    "type": "string",
+                    "description": "Primary jurisdiction (ISO 3166-1 alpha-2)"
+                },
+                "compliant": {
+                    "type": "boolean",
+                    "description": "Provider self-attestation of compliance"
+                },
+                "eligible_regions": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array",
+                    "description": "Regions allowed to trade"
+                },
+                "restricted_regions": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array",
+                    "description": "Regions explicitly blocked"
+                },
+                "regulator": {
+                    "type": "string",
+                    "description": "Regulatory body (e.g. \"CFTC\", \"none\")"
+                },
+                "license_type": {
+                    "type": "string",
+                    "description": "License type (e.g. \"DCM\", \"none\")"
+                },
+                "contract_type": {
+                    "type": "string",
+                    "description": "Legal classification (event_contract, binary_option, swap)"
+                },
+                "required_kyc": {
+                    "enum": [
+                        "KYC_LEVEL_UNSPECIFIED",
+                        0,
+                        "KYC_LEVEL_NONE",
+                        1,
+                        "KYC_LEVEL_BASIC",
+                        2,
+                        "KYC_LEVEL_ENHANCED",
+                        3,
+                        "KYC_LEVEL_INSTITUTIONAL",
+                        4
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "integer"
+                        }
+                    ],
+                    "title": "Kyc Level"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "─── Regulatory ──────────────────────────────────────────────",
+            "description": "─── Regulatory ──────────────────────────────────────────────  Compliance and regulatory metadata. Critical for multi-jurisdiction prediction market access."
+        }
+    }
+}

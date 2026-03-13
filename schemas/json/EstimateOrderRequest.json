@@ -1,0 +1,67 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/EstimateOrderRequest",
+    "definitions": {
+        "EstimateOrderRequest": {
+            "properties": {
+                "provider": {
+                    "type": "string"
+                },
+                "universal_id": {
+                    "type": "string"
+                },
+                "outcome_id": {
+                    "type": "string"
+                },
+                "side": {
+                    "enum": [
+                        "SIDE_UNSPECIFIED",
+                        0,
+                        "SIDE_BUY",
+                        1,
+                        "SIDE_SELL",
+                        2
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "integer"
+                        }
+                    ],
+                    "title": "Side"
+                },
+                "order_type": {
+                    "enum": [
+                        "ORDER_TYPE_UNSPECIFIED",
+                        0,
+                        "ORDER_TYPE_LIMIT",
+                        1,
+                        "ORDER_TYPE_MARKET",
+                        2
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "integer"
+                        }
+                    ],
+                    "title": "Order Type",
+                    "description": "Order types supported by the market."
+                },
+                "price": {
+                    "type": "string"
+                },
+                "quantity": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Estimate Order Request"
+        }
+    }
+}

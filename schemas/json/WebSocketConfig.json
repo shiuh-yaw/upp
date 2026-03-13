@@ -1,0 +1,27 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/WebSocketConfig",
+    "definitions": {
+        "WebSocketConfig": {
+            "properties": {
+                "url": {
+                    "type": "string",
+                    "description": "e.g. \"wss://api.kalshi.com/upp/ws/v1\""
+                },
+                "channels": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array",
+                    "description": "Available subscription channels"
+                },
+                "heartbeat_interval_seconds": {
+                    "type": "integer"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Web Socket Config"
+        }
+    }
+}

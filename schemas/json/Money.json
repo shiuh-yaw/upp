@@ -1,0 +1,22 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/Money",
+    "definitions": {
+        "Money": {
+            "properties": {
+                "amount": {
+                    "type": "string",
+                    "description": "Decimal string, e.g. \"63.50\""
+                },
+                "currency": {
+                    "type": "string",
+                    "description": "ISO 4217 code (\"USD\") or crypto symbol (\"USDC\")"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "─── Financial ───────────────────────────────────────────────",
+            "description": "─── Financial ───────────────────────────────────────────────  Monetary amount with explicit currency. Uses string to avoid floating-point precision issues in financial calculations."
+        }
+    }
+}

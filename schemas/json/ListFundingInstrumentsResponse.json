@@ -1,0 +1,101 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/ListFundingInstrumentsResponse",
+    "definitions": {
+        "ListFundingInstrumentsResponse": {
+            "properties": {
+                "instruments": {
+                    "items": {
+                        "$ref": "#/definitions/upp.v1.FundingInstrument"
+                    },
+                    "type": "array"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "List Funding Instruments Response"
+        },
+        "upp.v1.FundingInstrument": {
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "type": {
+                    "enum": [
+                        "FUNDING_INSTRUMENT_TYPE_UNSPECIFIED",
+                        0,
+                        "FUNDING_INSTRUMENT_TYPE_USD_BALANCE",
+                        1,
+                        "FUNDING_INSTRUMENT_TYPE_USDC",
+                        2,
+                        "FUNDING_INSTRUMENT_TYPE_USDT",
+                        3,
+                        "FUNDING_INSTRUMENT_TYPE_CRYPTO_WALLET",
+                        4,
+                        "FUNDING_INSTRUMENT_TYPE_ACH",
+                        5,
+                        "FUNDING_INSTRUMENT_TYPE_WIRE",
+                        6,
+                        "FUNDING_INSTRUMENT_TYPE_CARD",
+                        7
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "integer"
+                        }
+                    ],
+                    "title": "Funding Instrument Type"
+                },
+                "label": {
+                    "type": "string",
+                    "description": "Human-readable, e.g. \"USD Balance\""
+                },
+                "currency": {
+                    "type": "string",
+                    "description": "Currency code"
+                },
+                "available_balance": {
+                    "type": "string",
+                    "description": "Currently available"
+                },
+                "is_default": {
+                    "type": "boolean",
+                    "description": "User's default instrument"
+                },
+                "min_deposit": {
+                    "type": "string",
+                    "description": "Limits"
+                },
+                "max_deposit": {
+                    "type": "string"
+                },
+                "min_withdrawal": {
+                    "type": "string"
+                },
+                "max_withdrawal": {
+                    "type": "string"
+                },
+                "deposit_processing_time": {
+                    "type": "string",
+                    "description": "Processing  \"instant\", \"1-3 business days\""
+                },
+                "withdrawal_processing_time": {
+                    "type": "string"
+                },
+                "metadata": {
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "type": "object"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "─── Funding Instruments ─────────────────────────────────────",
+            "description": "─── Funding Instruments ─────────────────────────────────────  What users use to fund their trading accounts. Equivalent to UCP's \"Payment Instrument\"."
+        }
+    }
+}

@@ -1,0 +1,130 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/CreateOrderRequest",
+    "definitions": {
+        "CreateOrderRequest": {
+            "properties": {
+                "provider": {
+                    "type": "string",
+                    "description": "Target provider"
+                },
+                "market_native_id": {
+                    "type": "string",
+                    "description": "Provider's native market ID (or use universal_id)"
+                },
+                "universal_id": {
+                    "type": "string",
+                    "description": "UPP universal market ID"
+                },
+                "outcome_id": {
+                    "type": "string",
+                    "description": "Which outcome to trade"
+                },
+                "side": {
+                    "enum": [
+                        "SIDE_UNSPECIFIED",
+                        0,
+                        "SIDE_BUY",
+                        1,
+                        "SIDE_SELL",
+                        2
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "integer"
+                        }
+                    ],
+                    "title": "Side"
+                },
+                "order_type": {
+                    "enum": [
+                        "ORDER_TYPE_UNSPECIFIED",
+                        0,
+                        "ORDER_TYPE_LIMIT",
+                        1,
+                        "ORDER_TYPE_MARKET",
+                        2
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "integer"
+                        }
+                    ],
+                    "title": "Order Type",
+                    "description": "Order types supported by the market."
+                },
+                "tif": {
+                    "enum": [
+                        "TIME_IN_FORCE_UNSPECIFIED",
+                        0,
+                        "TIME_IN_FORCE_GTC",
+                        1,
+                        "TIME_IN_FORCE_GTD",
+                        2,
+                        "TIME_IN_FORCE_FOK",
+                        3,
+                        "TIME_IN_FORCE_IOC",
+                        4
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "integer"
+                        }
+                    ],
+                    "title": "Time In Force",
+                    "description": "Time-in-force policies."
+                },
+                "price": {
+                    "type": "string",
+                    "description": "Limit price (required for limit orders)"
+                },
+                "quantity": {
+                    "type": "string",
+                    "description": "Number of contracts"
+                },
+                "client_order_id": {
+                    "type": "string",
+                    "description": "Client-assigned ID for idempotency"
+                },
+                "expires_at": {
+                    "$ref": "#/definitions/upp.v1.Timestamp",
+                    "additionalProperties": true,
+                    "description": "Expiry for GTD orders"
+                },
+                "idempotency_key": {
+                    "type": "string",
+                    "description": "Idempotency key (UPP gateway level)"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "─── Request/Response Messages ───────────────────────────────",
+            "description": "─── Request/Response Messages ───────────────────────────────"
+        },
+        "upp.v1.Timestamp": {
+            "properties": {
+                "seconds": {
+                    "type": "string",
+                    "description": "Unix epoch seconds"
+                },
+                "nanos": {
+                    "type": "integer",
+                    "description": "Sub-second nanoseconds [0, 999999999]"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "─── Temporal ────────────────────────────────────────────────",
+            "description": "─── Temporal ────────────────────────────────────────────────  High-precision timestamp for trading events. Always UTC. Nanosecond precision for orderbook/trade events."
+        }
+    }
+}

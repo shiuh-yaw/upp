@@ -1,0 +1,31 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/ProviderSummary",
+    "definitions": {
+        "ProviderSummary": {
+            "properties": {
+                "provider": {
+                    "type": "string"
+                },
+                "invested": {
+                    "type": "string"
+                },
+                "current_value": {
+                    "type": "string"
+                },
+                "unrealized_pnl": {
+                    "type": "string"
+                },
+                "realized_pnl": {
+                    "type": "string"
+                },
+                "position_count": {
+                    "type": "integer"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Provider Summary"
+        }
+    }
+}

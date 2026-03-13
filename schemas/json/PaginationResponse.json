@@ -1,0 +1,26 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/PaginationResponse",
+    "definitions": {
+        "PaginationResponse": {
+            "properties": {
+                "cursor": {
+                    "type": "string",
+                    "description": "Cursor for next page (empty if no more)"
+                },
+                "has_more": {
+                    "type": "boolean",
+                    "description": "Whether more results exist"
+                },
+                "total": {
+                    "type": "integer",
+                    "description": "Total count (if available, -1 if unknown)"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Pagination Response",
+            "description": "Cursor-based pagination response."
+        }
+    }
+}

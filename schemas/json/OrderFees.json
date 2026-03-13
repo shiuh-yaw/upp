@@ -1,0 +1,25 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/OrderFees",
+    "definitions": {
+        "OrderFees": {
+            "properties": {
+                "maker_fee": {
+                    "type": "string",
+                    "description": "Fee paid for adding liquidity"
+                },
+                "taker_fee": {
+                    "type": "string",
+                    "description": "Fee paid for removing liquidity"
+                },
+                "total_fee": {
+                    "type": "string",
+                    "description": "Total fees for this order"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Order Fees"
+        }
+    }
+}

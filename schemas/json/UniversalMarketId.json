@@ -1,0 +1,26 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/UniversalMarketId",
+    "definitions": {
+        "UniversalMarketId": {
+            "properties": {
+                "provider": {
+                    "type": "string",
+                    "description": "Provider domain, e.g. \"kalshi.com\""
+                },
+                "native_id": {
+                    "type": "string",
+                    "description": "Provider's native market ID"
+                },
+                "full_id": {
+                    "type": "string",
+                    "description": "Computed: \"upp:{provider}:{native_id}\""
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "─── Identity ────────────────────────────────────────────────",
+            "description": "─── Identity ────────────────────────────────────────────────  Universal Market Identifier. Format: \"upp:{provider}:{native_id}\" Enables cross-provider market matching and portfolio aggregation."
+        }
+    }
+}

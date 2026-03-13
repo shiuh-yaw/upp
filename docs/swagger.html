@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UPP API Documentation - Swagger UI</title>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@4/swagger-ui.css" >
+    <link rel="icon" type="image/png" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@4/favicon-32x32.png" sizes="32x32" />
+    <link rel="icon" type="image/png" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@4/favicon-16x16.png" sizes="16x16" />
+    <style>
+        html {
+            box-sizing: border-box;
+            overflow: -moz-scrollbars-vertical;
+            overflow-y: scroll;
+        }
+        *, *:before, *:after {
+            box-sizing: inherit;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            background: #0a0a0f;
+            color: #e0e0e0;
+        }
+        .swagger-ui {
+            filter: invert(0.89) hue-rotate(180deg);
+        }
+        .swagger-ui .topbar {
+            background-color: #1a1a2e;
+            border-bottom: 2px solid #00d4ff;
+        }
+        .swagger-ui .model-container {
+            background-color: #16213e;
+            border: 1px solid #00d4ff;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div id="swagger-ui"></div>
+    <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@4/swagger-ui-bundle.js" charset="UTF-8"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@4/swagger-ui-standalone-preset.js" charset="UTF-8"></script>
+    <script>
+        const openApiSpec = {
+            "openapi": "3.1.0",
+            "info": {
+                "title": "Universal Prediction Protocol (UPP)",
+                "description": "Unified access to prediction markets across multiple providers via a single API",
+                "version": "0.1.0",
+                "contact": {
+                    "name": "UPP Team",
+                    "url": "https://github.com/upp-labs"
+                },
+                "license": {
+                    "name": "MIT",
+                    "url": "https://opensource.org/licenses/MIT"
+                }
+            },
+            "servers": [
+                {
+                    "url": "http://localhost:8080",
+                    "description": "Local development server"
+                },
+                {
+                    "url": "https://api.upp.dev",
+                    "description": "Production server"
+                }
+            ],
+            "paths": {
+                "/health": {
+                    "get": {
+                        "summary": "Health check",
+                        "description": "Returns 200 if the service is running and healthy",
+                        "operationId": "getHealth",
+                        "tags": ["Health"],
+                        "responses": {
+                            "200": {
+                                "description": "Service is healthy",
+                                "content": {
+                                    "application/json": {
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "status": {
+                                                    "type": "string",
+                                                    "example": "healthy"
+                                                },
+                                                "timestamp": {
+                                                    "type": "string",
+                                                    "format": "date-time"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "/ready": {
+                    "get": {
+                        "summary": "Readiness check",
+                        "description": "Returns 200 if the service is ready to handle requests",
+                        "operationId": "getReady",
+                        "tags": ["Health"],
+                        "responses": {
+                            "200": {
+                                "description": "Service is ready",
+                                "content": {
+                                    "application/json": {
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "ready": {
+                                                    "type": "boolean"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "/metrics": {
+                    "get": {
+                        "summary": "Prometheus metrics",
+                        "description": "Returns metrics in Prometheus format",
+                        "operationId": "getMetrics",
+                        "tags": ["Health"],
+                        "responses": {
+                            "200": {
+                                "description": "Metrics",
+                                "content": {
+                                    "text/plain": {
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "/.well-known/upp": {
+                    "get": {
+                        "summary": "UPP service discovery",
+                        "description": "Returns service metadata for UPP discovery",
+                        "operationId": "getWellKnownUpp",
+                        "tags": ["Discovery"],
+                        "responses": {
+                            "200": {
+                                "description": "Service metadata",
+                                "content": {
+                                    "application/json": {
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "version": {
+                                                    "type": "string"
+                                                },
+                                                "apiVersion": {
+                                                    "type": "string"
+                                                },
+                                                "providers": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "/.well-known/agent.json": {
+                    "get": {
+                        "summary": "Agent service manifest",
+                        "description": "Returns MCP manifest for AI agent integration",
+                        "operationId": "getAgentManifest",
+                        "tags": ["Discovery"],
+                        "responses": {
+                            "200": {
+                                "description": "Agent manifest",
+                                "content": {
+                                    "application/json": {
+                                        "schema": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "/upp/v1/discovery/providers": {
+                    "get": {
+                        "summary": "List available providers",
+                        "operationId": "listProviders",
+                        "tags": ["Discovery"],
+                        "responses": {
+                            "200": {
+                                "description": "List of providers",
+                                "content": {
+                                    "application/json": {
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Provider"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "/upp/v1/markets": {
+                    "get": {
+                        "summary": "List markets",
+                        "description": "Returns paginated list of prediction markets",
+                        "operationId": "listMarkets",
+                        "tags": ["Markets"],
+                        "parameters": [
+                            {
+                                "name": "skip",
+                                "in": "query",
+                                "schema": {
+                                    "type": "integer",
+                                    "default": 0
+                                }
+                            },
+                            {
+                                "name": "limit",
+                                "in": "query",
+                                "schema": {
+                                    "type": "integer",
+                                    "default": 20,
+                                    "maximum": 100
+                                }
+                            },
+                            {
+                                "name": "status",
+                                "in": "query",
+                                "schema": {
+                                    "type": "string",
+                                    "enum": ["open", "closed", "resolved"]
+                                }
+                            }
+                        ],
+                        "responses": {
+                            "200": {
+                                "description": "List of markets",
+                                "content": {
+                                    "application/json": {
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "markets": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "$ref": "#/components/schemas/Market"
+                                                    }
+                                                },
+                                                "total": {
+                                                    "type": "integer"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "/upp/v1/markets/search": {
+                    "get": {
+                        "summary": "Search markets",
+                        "operationId": "searchMarkets",
+                        "tags": ["Markets"],
+                        "parameters": [
+                            {
+                                "name": "q",
+                                "in": "query",
+                                "required": true,
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        ],
+                        "responses": {
+                            "200": {
+                                "description": "Search results",
+                                "content": {
+                                    "application/json": {
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "results": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "$ref": "#/components/schemas/Market"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "/upp/v1/markets/{marketId}": {
+                    "get": {
+                        "summary": "Get market details",
+                        "operationId": "getMarket",
+                        "tags": ["Markets"],
+                        "parameters": [
+                            {
+                                "name": "marketId",
+                                "in": "path",
+                                "required": true,
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        ],
+                        "responses": {
+                            "200": {
+                                "description": "Market details",
+                                "content": {
+                                    "application/json": {
+                                        "schema": {
+                                            "$ref": "#/components/schemas/Market"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "/upp/v1/markets/{marketId}/orderbook": {
+                    "get": {
+                        "summary": "Get market orderbook",
+                        "operationId": "getOrderbook",
+                        "tags": ["Markets"],
+                        "parameters": [
+                            {
+                                "name": "marketId",
+                                "in": "path",
+                                "required": true,
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        ],
+                        "responses": {
+                            "200": {
+                                "description": "Orderbook",
+                                "content": {
+                                    "application/json": {
+                                        "schema": {
+                                            "$ref": "#/components/schemas/Orderbook"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "/upp/v1/orders": {
+                    "post": {
+                        "summary": "Create order",
+                        "operationId": "createOrder",
+                        "tags": ["Trading"],
+                        "requestBody": {
+                            "required": true,
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "$ref": "#/components/schemas/CreateOrderRequest"
+                                    }
+                                }
+                            }
+                        },
+                        "responses": {
+                            "201": {
+                                "description": "Order created",
+                                "content": {
+                                    "application/json": {
+                                        "schema": {
+                                            "$ref": "#/components/schemas/Order"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "get": {
+                        "summary": "List orders",
+                        "operationId": "listOrders",
+                        "tags": ["Trading"],
+                        "parameters": [
+                            {
+                                "name": "status",
+                                "in": "query",
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        ],
+                        "responses": {
+                            "200": {
+                                "description": "List of orders",
+                                "content": {
+                                    "application/json": {
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "orders": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "$ref": "#/components/schemas/Order"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "/upp/v1/orders/{orderId}": {
+                    "get": {
+                        "summary": "Get order",
+                        "operationId": "getOrder",
+                        "tags": ["Trading"],
+                        "parameters": [
+                            {
+                                "name": "orderId",
+                                "in": "path",
+                                "required": true,
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        ],
+                        "responses": {
+                            "200": {
+                                "description": "Order details",
+                                "content": {
+                                    "application/json": {
+                                        "schema": {
+                                            "$ref": "#/components/schemas/Order"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "delete": {
+                        "summary": "Cancel order",
+                        "operationId": "cancelOrder",
+                        "tags": ["Trading"],
+                        "parameters": [
+                            {
+                                "name": "orderId",
+                                "in": "path",
+                                "required": true,
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        ],
+                        "responses": {
+                            "200": {
+                                "description": "Order cancelled"
+                            }
+                        }
+                    }
+                },
+                "/upp/v1/portfolio/positions": {
+                    "get": {
+                        "summary": "Get portfolio positions",
+                        "operationId": "getPositions",
+                        "tags": ["Portfolio"],
+                        "responses": {
+                            "200": {
+                                "description": "Portfolio positions",
+                                "content": {
+                                    "application/json": {
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "positions": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "$ref": "#/components/schemas/Position"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "/upp/v1/portfolio/summary": {
+                    "get": {
+                        "summary": "Get portfolio summary",
+                        "operationId": "getPortfolioSummary",
+                        "tags": ["Portfolio"],
+                        "responses": {
+                            "200": {
+                                "description": "Portfolio summary",
+                                "content": {
+                                    "application/json": {
+                                        "schema": {
+                                            "$ref": "#/components/schemas/PortfolioSummary"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "/upp/v1/portfolio/balances": {
+                    "get": {
+                        "summary": "Get portfolio balances",
+                        "operationId": "getBalances",
+                        "tags": ["Portfolio"],
+                        "responses": {
+                            "200": {
+                                "description": "Portfolio balances",
+                                "content": {
+                                    "application/json": {
+                                        "schema": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "/upp/v1/mcp/tools": {
+                    "get": {
+                        "summary": "List MCP tools",
+                        "operationId": "listMcpTools",
+                        "tags": ["MCP"],
+                        "responses": {
+                            "200": {
+                                "description": "Available tools",
+                                "content": {
+                                    "application/json": {
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "tools": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "$ref": "#/components/schemas/McpTool"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "/upp/v1/mcp/execute": {
+                    "post": {
+                        "summary": "Execute MCP tool",
+                        "operationId": "executeMcpTool",
+                        "tags": ["MCP"],
+                        "requestBody": {
+                            "required": true,
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "type": "object",
+                                        "properties": {
+                                            "toolName": {
+                                                "type": "string"
+                                            },
+                                            "arguments": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "responses": {
+                            "200": {
+                                "description": "Tool result",
+                                "content": {
+                                    "application/json": {
+                                        "schema": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "components": {
+                "schemas": {
+                    "Provider": {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "type": "string"
+                            },
+                            "name": {
+                                "type": "string"
+                            },
+                            "status": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "Market": {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "type": "string"
+                            },
+                            "title": {
+                                "type": "string"
+                            },
+                            "provider": {
+                                "type": "string"
+                            },
+                            "status": {
+                                "type": "string"
+                            },
+                            "outcomes": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "Orderbook": {
+                        "type": "object",
+                        "properties": {
+                            "marketId": {
+                                "type": "string"
+                            },
+                            "bids": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object"
+                                }
+                            },
+                            "asks": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "CreateOrderRequest": {
+                        "type": "object",
+                        "properties": {
+                            "marketId": {
+                                "type": "string"
+                            },
+                            "side": {
+                                "type": "string"
+                            },
+                            "size": {
+                                "type": "number"
+                            },
+                            "price": {
+                                "type": "number"
+                            }
+                        }
+                    },
+                    "Order": {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "type": "string"
+                            },
+                            "marketId": {
+                                "type": "string"
+                            },
+                            "side": {
+                                "type": "string"
+                            },
+                            "status": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "Position": {
+                        "type": "object",
+                        "properties": {
+                            "marketId": {
+                                "type": "string"
+                            },
+                            "size": {
+                                "type": "number"
+                            },
+                            "unrealizedPnL": {
+                                "type": "number"
+                            }
+                        }
+                    },
+                    "PortfolioSummary": {
+                        "type": "object",
+                        "properties": {
+                            "totalValue": {
+                                "type": "number"
+                            },
+                            "unrealizedPnL": {
+                                "type": "number"
+                            }
+                        }
+                    },
+                    "McpTool": {
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "type": "string"
+                            },
+                            "description": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        };
+
+        window.onload = function() {
+            window.ui = SwaggerUIBundle({
+                spec: openApiSpec,
+                dom_id: '#swagger-ui',
+                deepLinking: true,
+                presets: [
+                    SwaggerUIBundle.presets.apis,
+                    SwaggerUIStandalonePreset
+                ],
+                plugins: [
+                    SwaggerUIBundle.plugins.DownloadUrl
+                ],
+                layout: "StandaloneLayout",
+                defaultModelsExpandDepth: 1,
+                defaultModelExpandDepth: 1,
+                showCommonExtensions: true
+            })
+        }
+    </script>
+</body>
+</html>

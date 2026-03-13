@@ -1,0 +1,43 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/PnLDataPoint",
+    "definitions": {
+        "PnLDataPoint": {
+            "properties": {
+                "timestamp": {
+                    "$ref": "#/definitions/upp.v1.Timestamp",
+                    "additionalProperties": true
+                },
+                "portfolio_value": {
+                    "type": "string"
+                },
+                "cumulative_pnl": {
+                    "type": "string"
+                },
+                "period_pnl": {
+                    "type": "string",
+                    "description": "P\u0026L for this specific period"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Pn L Data Point"
+        },
+        "upp.v1.Timestamp": {
+            "properties": {
+                "seconds": {
+                    "type": "string",
+                    "description": "Unix epoch seconds"
+                },
+                "nanos": {
+                    "type": "integer",
+                    "description": "Sub-second nanoseconds [0, 999999999]"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "─── Temporal ────────────────────────────────────────────────",
+            "description": "─── Temporal ────────────────────────────────────────────────  High-precision timestamp for trading events. Always UTC. Nanosecond precision for orderbook/trade events."
+        }
+    }
+}

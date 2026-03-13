@@ -1,0 +1,2311 @@
+
+         /\      Grafana   /‾‾/  
+    /\  /  \     |\  __   /  /   
+   /  \/    \    | |/ /  /   ‾‾\ 
+  /          \   |   (  |  (‾)  |
+ / __________ \  |_|\_\  \_____/ 
+
+
+     execution: local
+        script: /Users/psy/Library/Application Support/Claude/local-agent-mode-sessions/bc657a38-8f2b-46e0-8622-bad1698c1918/8e994f75-4bc7-4c0b-b888-6318f73415b1/local_e9adb497-ed26-4b9b-b231-58b83ba6b8b7/outputs/upp/tools/loadtest/k6-rest.js
+        output: -
+
+     scenarios: (100.00%) 4 scenarios, 329 max VUs, 6m30s max duration (incl. graceful stop):
+              * load: Up to 50 looping VUs for 6m0s over 3 stages (gracefulRampDown: 30s, gracefulStop: 30s)
+              * smoke: 1 looping VUs for 30s (gracefulStop: 30s)
+              * spike: Up to 200 looping VUs for 50s over 3 stages (gracefulRampDown: 30s, gracefulStop: 30s)
+              * stress: 100 looping VUs for 2m0s (gracefulStop: 30s)
+
+
+running (0m01.0s), 122/329 VUs, 103 complete and 0 interrupted iterations
+load     [   0% ] 01/50 VUs    0m01.0s/6m00.0s
+smoke    [   3% ] 1 VUs        01.0s/30s
+spike    [   2% ] 020/200 VUs  01.0s/50.0s
+stress   [   1% ] 100 VUs      0m01.0s/2m0s
+
+running (0m02.0s), 142/329 VUs, 231 complete and 0 interrupted iterations
+load     [   1% ] 01/50 VUs    0m02.0s/6m00.0s
+smoke    [   7% ] 1 VUs        02.0s/30s
+spike    [   4% ] 040/200 VUs  02.0s/50.0s
+stress   [   2% ] 100 VUs      0m02.0s/2m0s
+
+running (0m03.0s), 163/329 VUs, 386 complete and 0 interrupted iterations
+load     [   1% ] 02/50 VUs    0m03.0s/6m00.0s
+smoke    [  10% ] 1 VUs        03.0s/30s
+spike    [   6% ] 060/200 VUs  03.0s/50.0s
+stress   [   2% ] 100 VUs      0m03.0s/2m0s
+
+running (0m04.0s), 183/329 VUs, 563 complete and 0 interrupted iterations
+load     [   1% ] 02/50 VUs    0m04.0s/6m00.0s
+smoke    [  13% ] 1 VUs        04.0s/30s
+spike    [   8% ] 080/200 VUs  04.0s/50.0s
+stress   [   3% ] 100 VUs      0m04.0s/2m0s
+
+running (0m05.0s), 204/329 VUs, 865 complete and 0 interrupted iterations
+load     [   1% ] 03/50 VUs    0m05.0s/6m00.0s
+smoke    [  17% ] 1 VUs        05.0s/30s
+spike    [  10% ] 100/200 VUs  05.0s/50.0s
+stress   [   4% ] 100 VUs      0m05.0s/2m0s
+
+running (0m06.0s), 224/329 VUs, 1092 complete and 0 interrupted iterations
+load     [   2% ] 03/50 VUs    0m06.0s/6m00.0s
+smoke    [  20% ] 1 VUs        06.0s/30s
+spike    [  12% ] 120/200 VUs  06.0s/50.0s
+stress   [   5% ] 100 VUs      0m06.0s/2m0s
+
+running (0m07.0s), 243/329 VUs, 1350 complete and 0 interrupted iterations
+load     [   2% ] 03/50 VUs    0m07.0s/6m00.0s
+smoke    [  23% ] 1 VUs        07.0s/30s
+spike    [  14% ] 139/200 VUs  07.0s/50.0s
+stress   [   6% ] 100 VUs      0m07.0s/2m0s
+
+running (0m08.0s), 264/329 VUs, 1629 complete and 0 interrupted iterations
+load     [   2% ] 04/50 VUs    0m08.0s/6m00.0s
+smoke    [  27% ] 1 VUs        08.0s/30s
+spike    [  16% ] 159/200 VUs  08.0s/50.0s
+stress   [   7% ] 100 VUs      0m08.0s/2m0s
+
+running (0m09.0s), 284/329 VUs, 2029 complete and 0 interrupted iterations
+load     [   2% ] 04/50 VUs    0m09.0s/6m00.0s
+smoke    [  30% ] 1 VUs        09.0s/30s
+spike    [  18% ] 179/200 VUs  09.0s/50.0s
+stress   [   7% ] 100 VUs      0m09.0s/2m0s
+
+running (0m10.0s), 305/329 VUs, 2364 complete and 0 interrupted iterations
+load     [   3% ] 05/50 VUs    0m10.0s/6m00.0s
+smoke    [  33% ] 1 VUs        10.0s/30s
+spike    [  20% ] 199/200 VUs  10.0s/50.0s
+stress   [   8% ] 100 VUs      0m10.0s/2m0s
+
+running (0m11.0s), 306/329 VUs, 2722 complete and 0 interrupted iterations
+load     [   3% ] 05/50 VUs    0m11.0s/6m00.0s
+smoke    [  37% ] 1 VUs        11.0s/30s
+spike    [  22% ] 200/200 VUs  11.0s/50.0s
+stress   [   9% ] 100 VUs      0m11.0s/2m0s
+
+running (0m12.0s), 306/329 VUs, 3069 complete and 0 interrupted iterations
+load     [   3% ] 05/50 VUs    0m12.0s/6m00.0s
+smoke    [  40% ] 1 VUs        12.0s/30s
+spike    [  24% ] 200/200 VUs  12.0s/50.0s
+stress   [  10% ] 100 VUs      0m12.0s/2m0s
+
+running (0m13.0s), 307/329 VUs, 3483 complete and 0 interrupted iterations
+load     [   4% ] 06/50 VUs    0m13.0s/6m00.0s
+smoke    [  43% ] 1 VUs        13.0s/30s
+spike    [  26% ] 200/200 VUs  13.0s/50.0s
+stress   [  11% ] 100 VUs      0m13.0s/2m0s
+
+running (0m14.0s), 307/329 VUs, 3873 complete and 0 interrupted iterations
+load     [   4% ] 06/50 VUs    0m14.0s/6m00.0s
+smoke    [  47% ] 1 VUs        14.0s/30s
+spike    [  28% ] 200/200 VUs  14.0s/50.0s
+stress   [  12% ] 100 VUs      0m14.0s/2m0s
+
+running (0m15.0s), 308/329 VUs, 4233 complete and 0 interrupted iterations
+load     [   4% ] 07/50 VUs    0m15.0s/6m00.0s
+smoke    [  50% ] 1 VUs        15.0s/30s
+spike    [  30% ] 200/200 VUs  15.0s/50.0s
+stress   [  12% ] 100 VUs      0m15.0s/2m0s
+
+running (0m16.0s), 308/329 VUs, 4593 complete and 0 interrupted iterations
+load     [   4% ] 07/50 VUs    0m16.0s/6m00.0s
+smoke    [  53% ] 1 VUs        16.0s/30s
+spike    [  32% ] 200/200 VUs  16.0s/50.0s
+stress   [  13% ] 100 VUs      0m16.0s/2m0s
+
+running (0m17.0s), 308/329 VUs, 4944 complete and 0 interrupted iterations
+load     [   5% ] 07/50 VUs    0m17.0s/6m00.0s
+smoke    [  57% ] 1 VUs        17.0s/30s
+spike    [  34% ] 200/200 VUs  17.0s/50.0s
+stress   [  14% ] 100 VUs      0m17.0s/2m0s
+
+running (0m18.0s), 309/329 VUs, 5388 complete and 0 interrupted iterations
+load     [   5% ] 08/50 VUs    0m18.0s/6m00.0s
+smoke    [  60% ] 1 VUs        18.0s/30s
+spike    [  36% ] 200/200 VUs  18.0s/50.0s
+stress   [  15% ] 100 VUs      0m18.0s/2m0s
+
+running (0m19.0s), 309/329 VUs, 5759 complete and 0 interrupted iterations
+load     [   5% ] 08/50 VUs    0m19.0s/6m00.0s
+smoke    [  63% ] 1 VUs        19.0s/30s
+spike    [  38% ] 200/200 VUs  19.0s/50.0s
+stress   [  16% ] 100 VUs      0m19.0s/2m0s
+
+running (0m20.0s), 310/329 VUs, 6110 complete and 0 interrupted iterations
+load     [   6% ] 09/50 VUs    0m20.0s/6m00.0s
+smoke    [  67% ] 1 VUs        20.0s/30s
+spike    [  40% ] 200/200 VUs  20.0s/50.0s
+stress   [  17% ] 100 VUs      0m20.0s/2m0s
+
+running (0m21.0s), 310/329 VUs, 6470 complete and 0 interrupted iterations
+load     [   6% ] 09/50 VUs    0m21.0s/6m00.0s
+smoke    [  70% ] 1 VUs        21.0s/30s
+spike    [  42% ] 200/200 VUs  21.0s/50.0s
+stress   [  17% ] 100 VUs      0m21.0s/2m0s
+
+running (0m22.0s), 310/329 VUs, 6914 complete and 0 interrupted iterations
+load     [   6% ] 09/50 VUs    0m22.0s/6m00.0s
+smoke    [  73% ] 1 VUs        22.0s/30s
+spike    [  44% ] 200/200 VUs  22.0s/50.0s
+stress   [  18% ] 100 VUs      0m22.0s/2m0s
+
+running (0m23.0s), 311/329 VUs, 7291 complete and 0 interrupted iterations
+load     [   6% ] 10/50 VUs    0m23.0s/6m00.0s
+smoke    [  77% ] 1 VUs        23.0s/30s
+spike    [  46% ] 200/200 VUs  23.0s/50.0s
+stress   [  19% ] 100 VUs      0m23.0s/2m0s
+
+running (0m24.0s), 311/329 VUs, 7646 complete and 0 interrupted iterations
+load     [   7% ] 10/50 VUs    0m24.0s/6m00.0s
+smoke    [  80% ] 1 VUs        24.0s/30s
+spike    [  48% ] 200/200 VUs  24.0s/50.0s
+stress   [  20% ] 100 VUs      0m24.0s/2m0s
+
+running (0m25.0s), 312/329 VUs, 8010 complete and 0 interrupted iterations
+load     [   7% ] 11/50 VUs    0m25.0s/6m00.0s
+smoke    [  83% ] 1 VUs        25.0s/30s
+spike    [  50% ] 200/200 VUs  25.0s/50.0s
+stress   [  21% ] 100 VUs      0m25.0s/2m0s
+
+running (0m26.0s), 312/329 VUs, 8449 complete and 0 interrupted iterations
+load     [   7% ] 11/50 VUs    0m26.0s/6m00.0s
+smoke    [  87% ] 1 VUs        26.0s/30s
+spike    [  52% ] 200/200 VUs  26.0s/50.0s
+stress   [  22% ] 100 VUs      0m26.0s/2m0s
+
+running (0m27.0s), 313/329 VUs, 8830 complete and 0 interrupted iterations
+load     [   7% ] 12/50 VUs    0m27.0s/6m00.0s
+smoke    [  90% ] 1 VUs        27.0s/30s
+spike    [  54% ] 200/200 VUs  27.0s/50.0s
+stress   [  22% ] 100 VUs      0m27.0s/2m0s
+
+running (0m28.0s), 313/329 VUs, 9186 complete and 0 interrupted iterations
+load     [   8% ] 12/50 VUs    0m28.0s/6m00.0s
+smoke    [  93% ] 1 VUs        28.0s/30s
+spike    [  56% ] 200/200 VUs  28.0s/50.0s
+stress   [  23% ] 100 VUs      0m28.0s/2m0s
+
+running (0m29.0s), 313/329 VUs, 9549 complete and 0 interrupted iterations
+load     [   8% ] 12/50 VUs    0m29.0s/6m00.0s
+smoke    [  97% ] 1 VUs        29.0s/30s
+spike    [  58% ] 200/200 VUs  29.0s/50.0s
+stress   [  24% ] 100 VUs      0m29.0s/2m0s
+
+running (0m30.0s), 314/329 VUs, 9947 complete and 0 interrupted iterations
+load     [   8% ] 13/50 VUs    0m30.0s/6m00.0s
+smoke    [ 100% ] 1 VUs        30.0s/30s
+spike    [  60% ] 200/200 VUs  30.0s/50.0s
+stress   [  25% ] 100 VUs      0m30.0s/2m0s
+
+running (0m31.0s), 313/329 VUs, 10351 complete and 0 interrupted iterations
+load     [   9% ] 13/50 VUs    0m31.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike    [  62% ] 200/200 VUs  31.0s/50.0s
+stress   [  26% ] 100 VUs      0m31.0s/2m0s
+
+running (0m32.0s), 314/329 VUs, 10738 complete and 0 interrupted iterations
+load     [   9% ] 14/50 VUs    0m32.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike    [  64% ] 200/200 VUs  32.0s/50.0s
+stress   [  27% ] 100 VUs      0m32.0s/2m0s
+
+running (0m33.0s), 314/329 VUs, 11104 complete and 0 interrupted iterations
+load     [   9% ] 14/50 VUs    0m33.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike    [  66% ] 200/200 VUs  33.0s/50.0s
+stress   [  27% ] 100 VUs      0m33.0s/2m0s
+
+running (0m34.0s), 314/329 VUs, 11474 complete and 0 interrupted iterations
+load     [   9% ] 14/50 VUs    0m34.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike    [  68% ] 200/200 VUs  34.0s/50.0s
+stress   [  28% ] 100 VUs      0m34.0s/2m0s
+
+running (0m35.0s), 315/329 VUs, 11902 complete and 0 interrupted iterations
+load     [  10% ] 15/50 VUs    0m35.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike    [  70% ] 200/200 VUs  35.0s/50.0s
+stress   [  29% ] 100 VUs      0m35.0s/2m0s
+
+running (0m36.0s), 315/329 VUs, 12290 complete and 0 interrupted iterations
+load     [  10% ] 15/50 VUs    0m36.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike    [  72% ] 200/200 VUs  36.0s/50.0s
+stress   [  30% ] 100 VUs      0m36.0s/2m0s
+
+running (0m37.0s), 316/329 VUs, 12657 complete and 0 interrupted iterations
+load     [  10% ] 16/50 VUs    0m37.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike    [  74% ] 200/200 VUs  37.0s/50.0s
+stress   [  31% ] 100 VUs      0m37.0s/2m0s
+
+running (0m38.0s), 316/329 VUs, 13027 complete and 0 interrupted iterations
+load     [  11% ] 16/50 VUs    0m38.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike    [  76% ] 200/200 VUs  38.0s/50.0s
+stress   [  32% ] 100 VUs      0m38.0s/2m0s
+
+running (0m39.0s), 316/329 VUs, 13451 complete and 0 interrupted iterations
+load     [  11% ] 16/50 VUs    0m39.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike    [  78% ] 200/200 VUs  39.0s/50.0s
+stress   [  32% ] 100 VUs      0m39.0s/2m0s
+
+running (0m40.0s), 317/329 VUs, 13852 complete and 0 interrupted iterations
+load     [  11% ] 17/50 VUs    0m40.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike    [  80% ] 200/200 VUs  40.0s/50.0s
+stress   [  33% ] 100 VUs      0m40.0s/2m0s
+
+running (0m41.0s), 308/329 VUs, 14226 complete and 0 interrupted iterations
+load     [  11% ] 17/50 VUs    0m41.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike    [  82% ] 191/200 VUs  41.0s/50.0s
+stress   [  34% ] 100 VUs      0m41.0s/2m0s
+
+running (0m42.0s), 287/329 VUs, 14577 complete and 0 interrupted iterations
+load     [  12% ] 18/50 VUs    0m42.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike    [  84% ] 169/200 VUs  42.0s/50.0s
+stress   [  35% ] 100 VUs      0m42.0s/2m0s
+
+running (0m43.0s), 268/329 VUs, 14958 complete and 0 interrupted iterations
+load     [  12% ] 18/50 VUs    0m43.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike    [  86% ] 150/200 VUs  43.0s/50.0s
+stress   [  36% ] 100 VUs      0m43.0s/2m0s
+
+running (0m44.0s), 246/329 VUs, 15285 complete and 0 interrupted iterations
+load     [  12% ] 18/50 VUs    0m44.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike    [  88% ] 128/200 VUs  44.0s/50.0s
+stress   [  37% ] 100 VUs      0m44.0s/2m0s
+
+running (0m45.0s), 230/329 VUs, 15585 complete and 0 interrupted iterations
+load     [  12% ] 19/50 VUs    0m45.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike    [  90% ] 111/200 VUs  45.0s/50.0s
+stress   [  37% ] 100 VUs      0m45.0s/2m0s
+
+running (0m46.0s), 206/329 VUs, 15838 complete and 0 interrupted iterations
+load     [  13% ] 19/50 VUs    0m46.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike    [  92% ] 087/200 VUs  46.0s/50.0s
+stress   [  38% ] 100 VUs      0m46.0s/2m0s
+
+running (0m47.0s), 191/329 VUs, 16088 complete and 0 interrupted iterations
+load     [  13% ] 20/50 VUs    0m47.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike    [  94% ] 071/200 VUs  47.0s/50.0s
+stress   [  39% ] 100 VUs      0m47.0s/2m0s
+
+running (0m48.0s), 167/329 VUs, 16338 complete and 0 interrupted iterations
+load     [  13% ] 20/50 VUs    0m48.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike    [  96% ] 047/200 VUs  48.0s/50.0s
+stress   [  40% ] 100 VUs      0m48.0s/2m0s
+
+running (0m49.0s), 147/329 VUs, 16559 complete and 0 interrupted iterations
+load     [  14% ] 21/50 VUs    0m49.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike    [  98% ] 026/200 VUs  49.0s/50.0s
+stress   [  41% ] 100 VUs      0m49.0s/2m0s
+
+running (0m50.0s), 131/329 VUs, 16716 complete and 0 interrupted iterations
+load     [  14% ] 21/50 VUs    0m50.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike    [ 100% ] 010/200 VUs  50.0s/50.0s
+stress   [  42% ] 100 VUs      0m50.0s/2m0s
+
+running (0m51.0s), 121/329 VUs, 16854 complete and 0 interrupted iterations
+load     [  14% ] 21/50 VUs    0m51.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress   [  42% ] 100 VUs      0m51.0s/2m0s
+
+running (0m52.0s), 122/329 VUs, 17027 complete and 0 interrupted iterations
+load     [  14% ] 22/50 VUs    0m52.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress   [  43% ] 100 VUs      0m52.0s/2m0s
+
+running (0m53.0s), 122/329 VUs, 17184 complete and 0 interrupted iterations
+load     [  15% ] 22/50 VUs    0m53.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress   [  44% ] 100 VUs      0m53.0s/2m0s
+
+running (0m54.0s), 123/329 VUs, 17328 complete and 0 interrupted iterations
+load     [  15% ] 23/50 VUs    0m54.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress   [  45% ] 100 VUs      0m54.0s/2m0s
+
+running (0m55.0s), 123/329 VUs, 17459 complete and 0 interrupted iterations
+load     [  15% ] 23/50 VUs    0m55.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress   [  46% ] 100 VUs      0m55.0s/2m0s
+
+running (0m56.0s), 123/329 VUs, 17588 complete and 0 interrupted iterations
+load     [  16% ] 23/50 VUs    0m56.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress   [  47% ] 100 VUs      0m56.0s/2m0s
+
+running (0m57.0s), 124/329 VUs, 17766 complete and 0 interrupted iterations
+load     [  16% ] 24/50 VUs    0m57.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress   [  47% ] 100 VUs      0m57.0s/2m0s
+
+running (0m58.0s), 124/329 VUs, 17930 complete and 0 interrupted iterations
+load     [  16% ] 24/50 VUs    0m58.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress   [  48% ] 100 VUs      0m58.0s/2m0s
+
+running (0m59.0s), 125/329 VUs, 18071 complete and 0 interrupted iterations
+load     [  16% ] 25/50 VUs    0m59.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress   [  49% ] 100 VUs      0m59.0s/2m0s
+
+running (1m00.0s), 125/329 VUs, 18201 complete and 0 interrupted iterations
+load     [  17% ] 25/50 VUs    1m00.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress   [  50% ] 100 VUs      1m00.0s/2m0s
+
+running (1m01.0s), 125/329 VUs, 18374 complete and 0 interrupted iterations
+load     [  17% ] 25/50 VUs    1m01.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress   [  51% ] 100 VUs      1m01.0s/2m0s
+
+running (1m02.0s), 126/329 VUs, 18535 complete and 0 interrupted iterations
+load     [  17% ] 26/50 VUs    1m02.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress   [  52% ] 100 VUs      1m02.0s/2m0s
+
+running (1m03.0s), 126/329 VUs, 18687 complete and 0 interrupted iterations
+load     [  17% ] 26/50 VUs    1m03.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress   [  52% ] 100 VUs      1m03.0s/2m0s
+
+running (1m04.0s), 127/329 VUs, 18819 complete and 0 interrupted iterations
+load     [  18% ] 27/50 VUs    1m04.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress   [  53% ] 100 VUs      1m04.0s/2m0s
+
+running (1m05.0s), 127/329 VUs, 18955 complete and 0 interrupted iterations
+load     [  18% ] 27/50 VUs    1m05.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress   [  54% ] 100 VUs      1m05.0s/2m0s
+
+running (1m06.0s), 127/329 VUs, 19132 complete and 0 interrupted iterations
+load     [  18% ] 27/50 VUs    1m06.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress   [  55% ] 100 VUs      1m06.0s/2m0s
+
+running (1m07.0s), 128/329 VUs, 19302 complete and 0 interrupted iterations
+load     [  19% ] 28/50 VUs    1m07.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress   [  56% ] 100 VUs      1m07.0s/2m0s
+
+running (1m08.0s), 128/329 VUs, 19452 complete and 0 interrupted iterations
+load     [  19% ] 28/50 VUs    1m08.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress   [  57% ] 100 VUs      1m08.0s/2m0s
+
+running (1m09.0s), 129/329 VUs, 19588 complete and 0 interrupted iterations
+load     [  19% ] 29/50 VUs    1m09.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress   [  57% ] 100 VUs      1m09.0s/2m0s
+
+running (1m10.0s), 129/329 VUs, 19758 complete and 0 interrupted iterations
+load     [  19% ] 29/50 VUs    1m10.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress   [  58% ] 100 VUs      1m10.0s/2m0s
+
+running (1m11.0s), 129/329 VUs, 19922 complete and 0 interrupted iterations
+load     [  20% ] 29/50 VUs    1m11.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress   [  59% ] 100 VUs      1m11.0s/2m0s
+
+running (1m12.0s), 130/329 VUs, 20087 complete and 0 interrupted iterations
+load     [  20% ] 30/50 VUs    1m12.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress   [  60% ] 100 VUs      1m12.0s/2m0s
+
+running (1m13.0s), 130/329 VUs, 20229 complete and 0 interrupted iterations
+load     [  20% ] 30/50 VUs    1m13.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress   [  61% ] 100 VUs      1m13.0s/2m0s
+
+running (1m14.0s), 131/329 VUs, 20362 complete and 0 interrupted iterations
+load     [  21% ] 31/50 VUs    1m14.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress   [  62% ] 100 VUs      1m14.0s/2m0s
+
+running (1m15.0s), 131/329 VUs, 20541 complete and 0 interrupted iterations
+load     [  21% ] 31/50 VUs    1m15.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress   [  62% ] 100 VUs      1m15.0s/2m0s
+
+running (1m16.0s), 132/329 VUs, 20716 complete and 0 interrupted iterations
+load     [  21% ] 32/50 VUs    1m16.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress   [  63% ] 100 VUs      1m16.0s/2m0s
+
+running (1m17.0s), 132/329 VUs, 20874 complete and 0 interrupted iterations
+load     [  21% ] 32/50 VUs    1m17.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress   [  64% ] 100 VUs      1m17.0s/2m0s
+
+running (1m18.0s), 132/329 VUs, 21013 complete and 0 interrupted iterations
+load     [  22% ] 32/50 VUs    1m18.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress   [  65% ] 100 VUs      1m18.0s/2m0s
+
+running (1m19.0s), 133/329 VUs, 21190 complete and 0 interrupted iterations
+load     [  22% ] 33/50 VUs    1m19.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress   [  66% ] 100 VUs      1m19.0s/2m0s
+
+running (1m20.0s), 133/329 VUs, 21353 complete and 0 interrupted iterations
+load     [  22% ] 33/50 VUs    1m20.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress   [  67% ] 100 VUs      1m20.0s/2m0s
+
+running (1m21.0s), 134/329 VUs, 21523 complete and 0 interrupted iterations
+load     [  22% ] 34/50 VUs    1m21.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress   [  67% ] 100 VUs      1m21.0s/2m0s
+
+running (1m22.0s), 134/329 VUs, 21672 complete and 0 interrupted iterations
+load     [  23% ] 34/50 VUs    1m22.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress   [  68% ] 100 VUs      1m22.0s/2m0s
+
+running (1m23.0s), 134/329 VUs, 21814 complete and 0 interrupted iterations
+load     [  23% ] 34/50 VUs    1m23.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress   [  69% ] 100 VUs      1m23.0s/2m0s
+
+running (1m24.0s), 135/329 VUs, 21991 complete and 0 interrupted iterations
+load     [  23% ] 35/50 VUs    1m24.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress   [  70% ] 100 VUs      1m24.0s/2m0s
+
+running (1m25.0s), 135/329 VUs, 22172 complete and 0 interrupted iterations
+load     [  24% ] 35/50 VUs    1m25.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress   [  71% ] 100 VUs      1m25.0s/2m0s
+
+running (1m26.0s), 136/329 VUs, 22334 complete and 0 interrupted iterations
+load     [  24% ] 36/50 VUs    1m26.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress   [  72% ] 100 VUs      1m26.0s/2m0s
+
+running (1m27.0s), 136/329 VUs, 22476 complete and 0 interrupted iterations
+load     [  24% ] 36/50 VUs    1m27.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress   [  72% ] 100 VUs      1m27.0s/2m0s
+
+running (1m28.0s), 136/329 VUs, 22651 complete and 0 interrupted iterations
+load     [  24% ] 36/50 VUs    1m28.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress   [  73% ] 100 VUs      1m28.0s/2m0s
+
+running (1m29.0s), 137/329 VUs, 22825 complete and 0 interrupted iterations
+load     [  25% ] 37/50 VUs    1m29.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress   [  74% ] 100 VUs      1m29.0s/2m0s
+
+running (1m30.0s), 137/329 VUs, 23004 complete and 0 interrupted iterations
+load     [  25% ] 37/50 VUs    1m30.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress   [  75% ] 100 VUs      1m30.0s/2m0s
+
+running (1m31.0s), 138/329 VUs, 23149 complete and 0 interrupted iterations
+load     [  25% ] 38/50 VUs    1m31.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress   [  76% ] 100 VUs      1m31.0s/2m0s
+
+running (1m32.0s), 138/329 VUs, 23302 complete and 0 interrupted iterations
+load     [  26% ] 38/50 VUs    1m32.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress   [  77% ] 100 VUs      1m32.0s/2m0s
+
+running (1m33.0s), 138/329 VUs, 23484 complete and 0 interrupted iterations
+load     [  26% ] 38/50 VUs    1m33.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress   [  77% ] 100 VUs      1m33.0s/2m0s
+
+running (1m34.0s), 139/329 VUs, 23672 complete and 0 interrupted iterations
+load     [  26% ] 39/50 VUs    1m34.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress   [  78% ] 100 VUs      1m34.0s/2m0s
+
+running (1m35.0s), 139/329 VUs, 23831 complete and 0 interrupted iterations
+load     [  26% ] 39/50 VUs    1m35.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress   [  79% ] 100 VUs      1m35.0s/2m0s
+
+running (1m36.0s), 140/329 VUs, 23986 complete and 0 interrupted iterations
+load     [  27% ] 40/50 VUs    1m36.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress   [  80% ] 100 VUs      1m36.0s/2m0s
+
+running (1m37.0s), 140/329 VUs, 24158 complete and 0 interrupted iterations
+load     [  27% ] 40/50 VUs    1m37.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress   [  81% ] 100 VUs      1m37.0s/2m0s
+
+running (1m38.0s), 141/329 VUs, 24341 complete and 0 interrupted iterations
+load     [  27% ] 41/50 VUs    1m38.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress   [  82% ] 100 VUs      1m38.0s/2m0s
+
+running (1m39.0s), 141/329 VUs, 24512 complete and 0 interrupted iterations
+load     [  27% ] 41/50 VUs    1m39.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress   [  82% ] 100 VUs      1m39.0s/2m0s
+
+running (1m40.0s), 141/329 VUs, 24674 complete and 0 interrupted iterations
+load     [  28% ] 41/50 VUs    1m40.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress   [  83% ] 100 VUs      1m40.0s/2m0s
+
+running (1m41.0s), 142/329 VUs, 24829 complete and 0 interrupted iterations
+load     [  28% ] 42/50 VUs    1m41.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress   [  84% ] 100 VUs      1m41.0s/2m0s
+
+running (1m42.0s), 142/329 VUs, 25016 complete and 0 interrupted iterations
+load     [  28% ] 42/50 VUs    1m42.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress   [  85% ] 100 VUs      1m42.0s/2m0s
+
+running (1m43.0s), 143/329 VUs, 25209 complete and 0 interrupted iterations
+load     [  29% ] 43/50 VUs    1m43.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress   [  86% ] 100 VUs      1m43.0s/2m0s
+
+running (1m44.0s), 143/329 VUs, 25377 complete and 0 interrupted iterations
+load     [  29% ] 43/50 VUs    1m44.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress   [  87% ] 100 VUs      1m44.0s/2m0s
+
+running (1m45.0s), 143/329 VUs, 25532 complete and 0 interrupted iterations
+load     [  29% ] 43/50 VUs    1m45.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress   [  87% ] 100 VUs      1m45.0s/2m0s
+
+running (1m46.0s), 144/329 VUs, 25713 complete and 0 interrupted iterations
+load     [  29% ] 44/50 VUs    1m46.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress   [  88% ] 100 VUs      1m46.0s/2m0s
+
+running (1m47.0s), 144/329 VUs, 25897 complete and 0 interrupted iterations
+load     [  30% ] 44/50 VUs    1m47.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress   [  89% ] 100 VUs      1m47.0s/2m0s
+
+running (1m48.0s), 145/329 VUs, 26083 complete and 0 interrupted iterations
+load     [  30% ] 45/50 VUs    1m48.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress   [  90% ] 100 VUs      1m48.0s/2m0s
+
+running (1m49.0s), 145/329 VUs, 26238 complete and 0 interrupted iterations
+load     [  30% ] 45/50 VUs    1m49.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress   [  91% ] 100 VUs      1m49.0s/2m0s
+
+running (1m50.0s), 145/329 VUs, 26401 complete and 0 interrupted iterations
+load     [  31% ] 45/50 VUs    1m50.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress   [  92% ] 100 VUs      1m50.0s/2m0s
+
+running (1m51.0s), 146/329 VUs, 26587 complete and 0 interrupted iterations
+load     [  31% ] 46/50 VUs    1m51.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress   [  92% ] 100 VUs      1m51.0s/2m0s
+
+running (1m52.0s), 146/329 VUs, 26783 complete and 0 interrupted iterations
+load     [  31% ] 46/50 VUs    1m52.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress   [  93% ] 100 VUs      1m52.0s/2m0s
+
+running (1m53.0s), 147/329 VUs, 26949 complete and 0 interrupted iterations
+load     [  31% ] 47/50 VUs    1m53.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress   [  94% ] 100 VUs      1m53.0s/2m0s
+
+running (1m54.0s), 147/329 VUs, 27121 complete and 0 interrupted iterations
+load     [  32% ] 47/50 VUs    1m54.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress   [  95% ] 100 VUs      1m54.0s/2m0s
+
+running (1m55.0s), 147/329 VUs, 27303 complete and 0 interrupted iterations
+load     [  32% ] 47/50 VUs    1m55.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress   [  96% ] 100 VUs      1m55.0s/2m0s
+
+running (1m56.0s), 148/329 VUs, 27489 complete and 0 interrupted iterations
+load     [  32% ] 48/50 VUs    1m56.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress   [  97% ] 100 VUs      1m56.0s/2m0s
+
+running (1m57.0s), 148/329 VUs, 27681 complete and 0 interrupted iterations
+load     [  32% ] 48/50 VUs    1m57.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress   [  97% ] 100 VUs      1m57.0s/2m0s
+
+running (1m58.0s), 149/329 VUs, 27844 complete and 0 interrupted iterations
+load     [  33% ] 49/50 VUs    1m58.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress   [  98% ] 100 VUs      1m58.0s/2m0s
+
+running (1m59.0s), 149/329 VUs, 28014 complete and 0 interrupted iterations
+load     [  33% ] 49/50 VUs    1m59.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress   [  99% ] 100 VUs      1m59.0s/2m0s
+
+running (2m00.0s), 149/329 VUs, 28202 complete and 0 interrupted iterations
+load     [  33% ] 49/50 VUs    2m00.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress   [ 100% ] 100 VUs      2m00.0s/2m0s
+
+running (2m01.0s), 050/329 VUs, 28370 complete and 0 interrupted iterations
+load     [  34% ] 50/50 VUs    2m01.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (2m02.0s), 050/329 VUs, 28434 complete and 0 interrupted iterations
+load     [  34% ] 50/50 VUs    2m02.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (2m03.0s), 050/329 VUs, 28489 complete and 0 interrupted iterations
+load     [  34% ] 50/50 VUs    2m03.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (2m04.0s), 050/329 VUs, 28545 complete and 0 interrupted iterations
+load     [  34% ] 50/50 VUs    2m04.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (2m05.0s), 050/329 VUs, 28607 complete and 0 interrupted iterations
+load     [  35% ] 50/50 VUs    2m05.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (2m06.0s), 050/329 VUs, 28670 complete and 0 interrupted iterations
+load     [  35% ] 50/50 VUs    2m06.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (2m07.0s), 050/329 VUs, 28727 complete and 0 interrupted iterations
+load     [  35% ] 50/50 VUs    2m07.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (2m08.0s), 050/329 VUs, 28788 complete and 0 interrupted iterations
+load     [  36% ] 50/50 VUs    2m08.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (2m09.0s), 050/329 VUs, 28843 complete and 0 interrupted iterations
+load     [  36% ] 50/50 VUs    2m09.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (2m10.0s), 050/329 VUs, 28902 complete and 0 interrupted iterations
+load     [  36% ] 50/50 VUs    2m10.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (2m11.0s), 050/329 VUs, 28967 complete and 0 interrupted iterations
+load     [  36% ] 50/50 VUs    2m11.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (2m12.0s), 050/329 VUs, 29022 complete and 0 interrupted iterations
+load     [  37% ] 50/50 VUs    2m12.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (2m13.0s), 050/329 VUs, 29081 complete and 0 interrupted iterations
+load     [  37% ] 50/50 VUs    2m13.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (2m14.0s), 050/329 VUs, 29143 complete and 0 interrupted iterations
+load     [  37% ] 50/50 VUs    2m14.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (2m15.0s), 050/329 VUs, 29207 complete and 0 interrupted iterations
+load     [  37% ] 50/50 VUs    2m15.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (2m16.0s), 050/329 VUs, 29262 complete and 0 interrupted iterations
+load     [  38% ] 50/50 VUs    2m16.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (2m17.0s), 050/329 VUs, 29324 complete and 0 interrupted iterations
+load     [  38% ] 50/50 VUs    2m17.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (2m18.0s), 050/329 VUs, 29384 complete and 0 interrupted iterations
+load     [  38% ] 50/50 VUs    2m18.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (2m19.0s), 050/329 VUs, 29446 complete and 0 interrupted iterations
+load     [  39% ] 50/50 VUs    2m19.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (2m20.0s), 050/329 VUs, 29506 complete and 0 interrupted iterations
+load     [  39% ] 50/50 VUs    2m20.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (2m21.0s), 050/329 VUs, 29564 complete and 0 interrupted iterations
+load     [  39% ] 50/50 VUs    2m21.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (2m22.0s), 050/329 VUs, 29624 complete and 0 interrupted iterations
+load     [  39% ] 50/50 VUs    2m22.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (2m23.0s), 050/329 VUs, 29685 complete and 0 interrupted iterations
+load     [  40% ] 50/50 VUs    2m23.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (2m24.0s), 050/329 VUs, 29742 complete and 0 interrupted iterations
+load     [  40% ] 50/50 VUs    2m24.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (2m25.0s), 050/329 VUs, 29806 complete and 0 interrupted iterations
+load     [  40% ] 50/50 VUs    2m25.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (2m26.0s), 050/329 VUs, 29866 complete and 0 interrupted iterations
+load     [  41% ] 50/50 VUs    2m26.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (2m27.0s), 050/329 VUs, 29920 complete and 0 interrupted iterations
+load     [  41% ] 50/50 VUs    2m27.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (2m28.0s), 050/329 VUs, 29982 complete and 0 interrupted iterations
+load     [  41% ] 50/50 VUs    2m28.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (2m29.0s), 050/329 VUs, 30045 complete and 0 interrupted iterations
+load     [  41% ] 50/50 VUs    2m29.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (2m30.0s), 050/329 VUs, 30101 complete and 0 interrupted iterations
+load     [  42% ] 50/50 VUs    2m30.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (2m31.0s), 050/329 VUs, 30162 complete and 0 interrupted iterations
+load     [  42% ] 50/50 VUs    2m31.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (2m32.0s), 050/329 VUs, 30219 complete and 0 interrupted iterations
+load     [  42% ] 50/50 VUs    2m32.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (2m33.0s), 050/329 VUs, 30277 complete and 0 interrupted iterations
+load     [  42% ] 50/50 VUs    2m33.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (2m34.0s), 050/329 VUs, 30339 complete and 0 interrupted iterations
+load     [  43% ] 50/50 VUs    2m34.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (2m35.0s), 050/329 VUs, 30402 complete and 0 interrupted iterations
+load     [  43% ] 50/50 VUs    2m35.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (2m36.0s), 050/329 VUs, 30460 complete and 0 interrupted iterations
+load     [  43% ] 50/50 VUs    2m36.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (2m37.0s), 050/329 VUs, 30517 complete and 0 interrupted iterations
+load     [  44% ] 50/50 VUs    2m37.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (2m38.0s), 050/329 VUs, 30575 complete and 0 interrupted iterations
+load     [  44% ] 50/50 VUs    2m38.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (2m39.0s), 050/329 VUs, 30639 complete and 0 interrupted iterations
+load     [  44% ] 50/50 VUs    2m39.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (2m40.0s), 050/329 VUs, 30702 complete and 0 interrupted iterations
+load     [  44% ] 50/50 VUs    2m40.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (2m41.0s), 050/329 VUs, 30755 complete and 0 interrupted iterations
+load     [  45% ] 50/50 VUs    2m41.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (2m42.0s), 050/329 VUs, 30813 complete and 0 interrupted iterations
+load     [  45% ] 50/50 VUs    2m42.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (2m43.0s), 050/329 VUs, 30878 complete and 0 interrupted iterations
+load     [  45% ] 50/50 VUs    2m43.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (2m44.0s), 050/329 VUs, 30933 complete and 0 interrupted iterations
+load     [  46% ] 50/50 VUs    2m44.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (2m45.0s), 050/329 VUs, 30998 complete and 0 interrupted iterations
+load     [  46% ] 50/50 VUs    2m45.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (2m46.0s), 050/329 VUs, 31055 complete and 0 interrupted iterations
+load     [  46% ] 50/50 VUs    2m46.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (2m47.0s), 050/329 VUs, 31110 complete and 0 interrupted iterations
+load     [  46% ] 50/50 VUs    2m47.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (2m48.0s), 050/329 VUs, 31171 complete and 0 interrupted iterations
+load     [  47% ] 50/50 VUs    2m48.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (2m49.0s), 050/329 VUs, 31232 complete and 0 interrupted iterations
+load     [  47% ] 50/50 VUs    2m49.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (2m50.0s), 050/329 VUs, 31296 complete and 0 interrupted iterations
+load     [  47% ] 50/50 VUs    2m50.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (2m51.0s), 050/329 VUs, 31350 complete and 0 interrupted iterations
+load     [  47% ] 50/50 VUs    2m51.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (2m52.0s), 050/329 VUs, 31410 complete and 0 interrupted iterations
+load     [  48% ] 50/50 VUs    2m52.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (2m53.0s), 050/329 VUs, 31472 complete and 0 interrupted iterations
+load     [  48% ] 50/50 VUs    2m53.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (2m54.0s), 050/329 VUs, 31536 complete and 0 interrupted iterations
+load     [  48% ] 50/50 VUs    2m54.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (2m55.0s), 050/329 VUs, 31591 complete and 0 interrupted iterations
+load     [  49% ] 50/50 VUs    2m55.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (2m56.0s), 050/329 VUs, 31652 complete and 0 interrupted iterations
+load     [  49% ] 50/50 VUs    2m56.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (2m57.0s), 050/329 VUs, 31711 complete and 0 interrupted iterations
+load     [  49% ] 50/50 VUs    2m57.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (2m58.0s), 050/329 VUs, 31773 complete and 0 interrupted iterations
+load     [  49% ] 50/50 VUs    2m58.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (2m59.0s), 050/329 VUs, 31831 complete and 0 interrupted iterations
+load     [  50% ] 50/50 VUs    2m59.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (3m00.0s), 050/329 VUs, 31891 complete and 0 interrupted iterations
+load     [  50% ] 50/50 VUs    3m00.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (3m01.0s), 050/329 VUs, 31950 complete and 0 interrupted iterations
+load     [  50% ] 50/50 VUs    3m01.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (3m02.0s), 050/329 VUs, 32011 complete and 0 interrupted iterations
+load     [  51% ] 50/50 VUs    3m02.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (3m03.0s), 050/329 VUs, 32068 complete and 0 interrupted iterations
+load     [  51% ] 50/50 VUs    3m03.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (3m04.0s), 050/329 VUs, 32132 complete and 0 interrupted iterations
+load     [  51% ] 50/50 VUs    3m04.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (3m05.0s), 050/329 VUs, 32188 complete and 0 interrupted iterations
+load     [  51% ] 50/50 VUs    3m05.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (3m06.0s), 050/329 VUs, 32247 complete and 0 interrupted iterations
+load     [  52% ] 50/50 VUs    3m06.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (3m07.0s), 050/329 VUs, 32306 complete and 0 interrupted iterations
+load     [  52% ] 50/50 VUs    3m07.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (3m08.0s), 050/329 VUs, 32372 complete and 0 interrupted iterations
+load     [  52% ] 50/50 VUs    3m08.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (3m09.0s), 050/329 VUs, 32428 complete and 0 interrupted iterations
+load     [  52% ] 50/50 VUs    3m09.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (3m10.0s), 050/329 VUs, 32487 complete and 0 interrupted iterations
+load     [  53% ] 50/50 VUs    3m10.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (3m11.0s), 050/329 VUs, 32545 complete and 0 interrupted iterations
+load     [  53% ] 50/50 VUs    3m11.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (3m12.0s), 050/329 VUs, 32602 complete and 0 interrupted iterations
+load     [  53% ] 50/50 VUs    3m12.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (3m13.0s), 050/329 VUs, 32668 complete and 0 interrupted iterations
+load     [  54% ] 50/50 VUs    3m13.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (3m14.0s), 050/329 VUs, 32730 complete and 0 interrupted iterations
+load     [  54% ] 50/50 VUs    3m14.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (3m15.0s), 050/329 VUs, 32785 complete and 0 interrupted iterations
+load     [  54% ] 50/50 VUs    3m15.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (3m16.0s), 050/329 VUs, 32842 complete and 0 interrupted iterations
+load     [  54% ] 50/50 VUs    3m16.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (3m17.0s), 050/329 VUs, 32907 complete and 0 interrupted iterations
+load     [  55% ] 50/50 VUs    3m17.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (3m18.0s), 050/329 VUs, 32969 complete and 0 interrupted iterations
+load     [  55% ] 50/50 VUs    3m18.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (3m19.0s), 050/329 VUs, 33024 complete and 0 interrupted iterations
+load     [  55% ] 50/50 VUs    3m19.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (3m20.0s), 050/329 VUs, 33083 complete and 0 interrupted iterations
+load     [  56% ] 50/50 VUs    3m20.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (3m21.0s), 050/329 VUs, 33143 complete and 0 interrupted iterations
+load     [  56% ] 50/50 VUs    3m21.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (3m22.0s), 050/329 VUs, 33198 complete and 0 interrupted iterations
+load     [  56% ] 50/50 VUs    3m22.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (3m23.0s), 050/329 VUs, 33260 complete and 0 interrupted iterations
+load     [  56% ] 50/50 VUs    3m23.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (3m24.0s), 050/329 VUs, 33323 complete and 0 interrupted iterations
+load     [  57% ] 50/50 VUs    3m24.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (3m25.0s), 050/329 VUs, 33378 complete and 0 interrupted iterations
+load     [  57% ] 50/50 VUs    3m25.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (3m26.0s), 050/329 VUs, 33439 complete and 0 interrupted iterations
+load     [  57% ] 50/50 VUs    3m26.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (3m27.0s), 050/329 VUs, 33497 complete and 0 interrupted iterations
+load     [  57% ] 50/50 VUs    3m27.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (3m28.0s), 050/329 VUs, 33554 complete and 0 interrupted iterations
+load     [  58% ] 50/50 VUs    3m28.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (3m29.0s), 050/329 VUs, 33618 complete and 0 interrupted iterations
+load     [  58% ] 50/50 VUs    3m29.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (3m30.0s), 050/329 VUs, 33677 complete and 0 interrupted iterations
+load     [  58% ] 50/50 VUs    3m30.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (3m31.0s), 050/329 VUs, 33734 complete and 0 interrupted iterations
+load     [  59% ] 50/50 VUs    3m31.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (3m32.0s), 050/329 VUs, 33793 complete and 0 interrupted iterations
+load     [  59% ] 50/50 VUs    3m32.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (3m33.0s), 050/329 VUs, 33859 complete and 0 interrupted iterations
+load     [  59% ] 50/50 VUs    3m33.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (3m34.0s), 050/329 VUs, 33919 complete and 0 interrupted iterations
+load     [  59% ] 50/50 VUs    3m34.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (3m35.0s), 050/329 VUs, 33975 complete and 0 interrupted iterations
+load     [  60% ] 50/50 VUs    3m35.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (3m36.0s), 050/329 VUs, 34035 complete and 0 interrupted iterations
+load     [  60% ] 50/50 VUs    3m36.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (3m37.0s), 050/329 VUs, 34094 complete and 0 interrupted iterations
+load     [  60% ] 50/50 VUs    3m37.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (3m38.0s), 050/329 VUs, 34155 complete and 0 interrupted iterations
+load     [  61% ] 50/50 VUs    3m38.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (3m39.0s), 050/329 VUs, 34214 complete and 0 interrupted iterations
+load     [  61% ] 50/50 VUs    3m39.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (3m40.0s), 050/329 VUs, 34272 complete and 0 interrupted iterations
+load     [  61% ] 50/50 VUs    3m40.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (3m41.0s), 050/329 VUs, 34336 complete and 0 interrupted iterations
+load     [  61% ] 50/50 VUs    3m41.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (3m42.0s), 050/329 VUs, 34397 complete and 0 interrupted iterations
+load     [  62% ] 50/50 VUs    3m42.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (3m43.0s), 050/329 VUs, 34454 complete and 0 interrupted iterations
+load     [  62% ] 50/50 VUs    3m43.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (3m44.0s), 050/329 VUs, 34513 complete and 0 interrupted iterations
+load     [  62% ] 50/50 VUs    3m44.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (3m45.0s), 050/329 VUs, 34576 complete and 0 interrupted iterations
+load     [  62% ] 50/50 VUs    3m45.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (3m46.0s), 050/329 VUs, 34634 complete and 0 interrupted iterations
+load     [  63% ] 50/50 VUs    3m46.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (3m47.0s), 050/329 VUs, 34696 complete and 0 interrupted iterations
+load     [  63% ] 50/50 VUs    3m47.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (3m48.0s), 050/329 VUs, 34755 complete and 0 interrupted iterations
+load     [  63% ] 50/50 VUs    3m48.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (3m49.0s), 050/329 VUs, 34807 complete and 0 interrupted iterations
+load     [  64% ] 50/50 VUs    3m49.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (3m50.0s), 050/329 VUs, 34870 complete and 0 interrupted iterations
+load     [  64% ] 50/50 VUs    3m50.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (3m51.0s), 050/329 VUs, 34931 complete and 0 interrupted iterations
+load     [  64% ] 50/50 VUs    3m51.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (3m52.0s), 050/329 VUs, 34996 complete and 0 interrupted iterations
+load     [  64% ] 50/50 VUs    3m52.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (3m53.0s), 050/329 VUs, 35052 complete and 0 interrupted iterations
+load     [  65% ] 50/50 VUs    3m53.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (3m54.0s), 050/329 VUs, 35109 complete and 0 interrupted iterations
+load     [  65% ] 50/50 VUs    3m54.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (3m55.0s), 050/329 VUs, 35173 complete and 0 interrupted iterations
+load     [  65% ] 50/50 VUs    3m55.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (3m56.0s), 050/329 VUs, 35226 complete and 0 interrupted iterations
+load     [  66% ] 50/50 VUs    3m56.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (3m57.0s), 050/329 VUs, 35291 complete and 0 interrupted iterations
+load     [  66% ] 50/50 VUs    3m57.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (3m58.0s), 050/329 VUs, 35350 complete and 0 interrupted iterations
+load     [  66% ] 50/50 VUs    3m58.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (3m59.0s), 050/329 VUs, 35405 complete and 0 interrupted iterations
+load     [  66% ] 50/50 VUs    3m59.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (4m00.0s), 050/329 VUs, 35470 complete and 0 interrupted iterations
+load     [  67% ] 50/50 VUs    4m00.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (4m01.0s), 050/329 VUs, 35531 complete and 0 interrupted iterations
+load     [  67% ] 50/50 VUs    4m01.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (4m02.0s), 050/329 VUs, 35584 complete and 0 interrupted iterations
+load     [  67% ] 50/50 VUs    4m02.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (4m03.0s), 050/329 VUs, 35644 complete and 0 interrupted iterations
+load     [  67% ] 50/50 VUs    4m03.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (4m04.0s), 050/329 VUs, 35707 complete and 0 interrupted iterations
+load     [  68% ] 50/50 VUs    4m04.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (4m05.0s), 050/329 VUs, 35767 complete and 0 interrupted iterations
+load     [  68% ] 50/50 VUs    4m05.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (4m06.0s), 050/329 VUs, 35828 complete and 0 interrupted iterations
+load     [  68% ] 50/50 VUs    4m06.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (4m07.0s), 050/329 VUs, 35887 complete and 0 interrupted iterations
+load     [  69% ] 50/50 VUs    4m07.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (4m08.0s), 050/329 VUs, 35944 complete and 0 interrupted iterations
+load     [  69% ] 50/50 VUs    4m08.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (4m09.0s), 050/329 VUs, 36008 complete and 0 interrupted iterations
+load     [  69% ] 50/50 VUs    4m09.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (4m10.0s), 050/329 VUs, 36063 complete and 0 interrupted iterations
+load     [  69% ] 50/50 VUs    4m10.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (4m11.0s), 050/329 VUs, 36127 complete and 0 interrupted iterations
+load     [  70% ] 50/50 VUs    4m11.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (4m12.0s), 050/329 VUs, 36188 complete and 0 interrupted iterations
+load     [  70% ] 50/50 VUs    4m12.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (4m13.0s), 050/329 VUs, 36240 complete and 0 interrupted iterations
+load     [  70% ] 50/50 VUs    4m13.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (4m14.0s), 050/329 VUs, 36306 complete and 0 interrupted iterations
+load     [  71% ] 50/50 VUs    4m14.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (4m15.0s), 050/329 VUs, 36369 complete and 0 interrupted iterations
+load     [  71% ] 50/50 VUs    4m15.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (4m16.0s), 050/329 VUs, 36428 complete and 0 interrupted iterations
+load     [  71% ] 50/50 VUs    4m16.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (4m17.0s), 050/329 VUs, 36483 complete and 0 interrupted iterations
+load     [  71% ] 50/50 VUs    4m17.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (4m18.0s), 050/329 VUs, 36547 complete and 0 interrupted iterations
+load     [  72% ] 50/50 VUs    4m18.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (4m19.0s), 050/329 VUs, 36601 complete and 0 interrupted iterations
+load     [  72% ] 50/50 VUs    4m19.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (4m20.0s), 050/329 VUs, 36663 complete and 0 interrupted iterations
+load     [  72% ] 50/50 VUs    4m20.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (4m21.0s), 050/329 VUs, 36724 complete and 0 interrupted iterations
+load     [  72% ] 50/50 VUs    4m21.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (4m22.0s), 050/329 VUs, 36780 complete and 0 interrupted iterations
+load     [  73% ] 50/50 VUs    4m22.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (4m23.0s), 050/329 VUs, 36840 complete and 0 interrupted iterations
+load     [  73% ] 50/50 VUs    4m23.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (4m24.0s), 050/329 VUs, 36901 complete and 0 interrupted iterations
+load     [  73% ] 50/50 VUs    4m24.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (4m25.0s), 050/329 VUs, 36960 complete and 0 interrupted iterations
+load     [  74% ] 50/50 VUs    4m25.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (4m26.0s), 050/329 VUs, 37020 complete and 0 interrupted iterations
+load     [  74% ] 50/50 VUs    4m26.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (4m27.0s), 050/329 VUs, 37075 complete and 0 interrupted iterations
+load     [  74% ] 50/50 VUs    4m27.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (4m28.0s), 050/329 VUs, 37138 complete and 0 interrupted iterations
+load     [  74% ] 50/50 VUs    4m28.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (4m29.0s), 050/329 VUs, 37193 complete and 0 interrupted iterations
+load     [  75% ] 50/50 VUs    4m29.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (4m30.0s), 050/329 VUs, 37255 complete and 0 interrupted iterations
+load     [  75% ] 50/50 VUs    4m30.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (4m31.0s), 050/329 VUs, 37318 complete and 0 interrupted iterations
+load     [  75% ] 50/50 VUs    4m31.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (4m32.0s), 050/329 VUs, 37378 complete and 0 interrupted iterations
+load     [  76% ] 50/50 VUs    4m32.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (4m33.0s), 050/329 VUs, 37430 complete and 0 interrupted iterations
+load     [  76% ] 50/50 VUs    4m33.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (4m34.0s), 050/329 VUs, 37494 complete and 0 interrupted iterations
+load     [  76% ] 50/50 VUs    4m34.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (4m35.0s), 050/329 VUs, 37555 complete and 0 interrupted iterations
+load     [  76% ] 50/50 VUs    4m35.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (4m36.0s), 050/329 VUs, 37613 complete and 0 interrupted iterations
+load     [  77% ] 50/50 VUs    4m36.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (4m37.0s), 050/329 VUs, 37674 complete and 0 interrupted iterations
+load     [  77% ] 50/50 VUs    4m37.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (4m38.0s), 050/329 VUs, 37735 complete and 0 interrupted iterations
+load     [  77% ] 50/50 VUs    4m38.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (4m39.0s), 050/329 VUs, 37789 complete and 0 interrupted iterations
+load     [  77% ] 50/50 VUs    4m39.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (4m40.0s), 050/329 VUs, 37851 complete and 0 interrupted iterations
+load     [  78% ] 50/50 VUs    4m40.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (4m41.0s), 050/329 VUs, 37911 complete and 0 interrupted iterations
+load     [  78% ] 50/50 VUs    4m41.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (4m42.0s), 050/329 VUs, 37964 complete and 0 interrupted iterations
+load     [  78% ] 50/50 VUs    4m42.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (4m43.0s), 050/329 VUs, 38026 complete and 0 interrupted iterations
+load     [  79% ] 50/50 VUs    4m43.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (4m44.0s), 050/329 VUs, 38089 complete and 0 interrupted iterations
+load     [  79% ] 50/50 VUs    4m44.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (4m45.0s), 050/329 VUs, 38152 complete and 0 interrupted iterations
+load     [  79% ] 50/50 VUs    4m45.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (4m46.0s), 050/329 VUs, 38205 complete and 0 interrupted iterations
+load     [  79% ] 50/50 VUs    4m46.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (4m47.0s), 050/329 VUs, 38263 complete and 0 interrupted iterations
+load     [  80% ] 50/50 VUs    4m47.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (4m48.0s), 050/329 VUs, 38329 complete and 0 interrupted iterations
+load     [  80% ] 50/50 VUs    4m48.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (4m49.0s), 050/329 VUs, 38386 complete and 0 interrupted iterations
+load     [  80% ] 50/50 VUs    4m49.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (4m50.0s), 050/329 VUs, 38447 complete and 0 interrupted iterations
+load     [  81% ] 50/50 VUs    4m50.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (4m51.0s), 050/329 VUs, 38503 complete and 0 interrupted iterations
+load     [  81% ] 50/50 VUs    4m51.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (4m52.0s), 050/329 VUs, 38570 complete and 0 interrupted iterations
+load     [  81% ] 50/50 VUs    4m52.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (4m53.0s), 050/329 VUs, 38626 complete and 0 interrupted iterations
+load     [  81% ] 50/50 VUs    4m53.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (4m54.0s), 050/329 VUs, 38686 complete and 0 interrupted iterations
+load     [  82% ] 50/50 VUs    4m54.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (4m55.0s), 050/329 VUs, 38741 complete and 0 interrupted iterations
+load     [  82% ] 50/50 VUs    4m55.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (4m56.0s), 050/329 VUs, 38797 complete and 0 interrupted iterations
+load     [  82% ] 50/50 VUs    4m56.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (4m57.0s), 050/329 VUs, 38863 complete and 0 interrupted iterations
+load     [  82% ] 50/50 VUs    4m57.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (4m58.0s), 050/329 VUs, 38919 complete and 0 interrupted iterations
+load     [  83% ] 50/50 VUs    4m58.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (4m59.0s), 050/329 VUs, 38980 complete and 0 interrupted iterations
+load     [  83% ] 50/50 VUs    4m59.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (5m00.0s), 050/329 VUs, 39044 complete and 0 interrupted iterations
+load     [  83% ] 50/50 VUs    5m00.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (5m01.0s), 050/329 VUs, 39100 complete and 0 interrupted iterations
+load     [  84% ] 50/50 VUs    5m01.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (5m02.0s), 049/329 VUs, 39161 complete and 0 interrupted iterations
+load     [  84% ] 49/50 VUs    5m02.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (5m03.0s), 048/329 VUs, 39218 complete and 0 interrupted iterations
+load     [  84% ] 48/50 VUs    5m03.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (5m04.0s), 047/329 VUs, 39282 complete and 0 interrupted iterations
+load     [  84% ] 47/50 VUs    5m04.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (5m05.0s), 047/329 VUs, 39335 complete and 0 interrupted iterations
+load     [  85% ] 47/50 VUs    5m05.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (5m06.0s), 046/329 VUs, 39386 complete and 0 interrupted iterations
+load     [  85% ] 46/50 VUs    5m06.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (5m07.0s), 045/329 VUs, 39443 complete and 0 interrupted iterations
+load     [  85% ] 45/50 VUs    5m07.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (5m08.0s), 044/329 VUs, 39500 complete and 0 interrupted iterations
+load     [  86% ] 44/50 VUs    5m08.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (5m09.0s), 044/329 VUs, 39553 complete and 0 interrupted iterations
+load     [  86% ] 44/50 VUs    5m09.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (5m10.0s), 043/329 VUs, 39604 complete and 0 interrupted iterations
+load     [  86% ] 43/50 VUs    5m10.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (5m11.0s), 042/329 VUs, 39655 complete and 0 interrupted iterations
+load     [  86% ] 42/50 VUs    5m11.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (5m12.0s), 041/329 VUs, 39700 complete and 0 interrupted iterations
+load     [  87% ] 41/50 VUs    5m12.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (5m13.0s), 040/329 VUs, 39752 complete and 0 interrupted iterations
+load     [  87% ] 40/50 VUs    5m13.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (5m14.0s), 039/329 VUs, 39802 complete and 0 interrupted iterations
+load     [  87% ] 39/50 VUs    5m14.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (5m15.0s), 038/329 VUs, 39848 complete and 0 interrupted iterations
+load     [  87% ] 38/50 VUs    5m15.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (5m16.0s), 038/329 VUs, 39892 complete and 0 interrupted iterations
+load     [  88% ] 38/50 VUs    5m16.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (5m17.0s), 037/329 VUs, 39935 complete and 0 interrupted iterations
+load     [  88% ] 37/50 VUs    5m17.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (5m18.0s), 036/329 VUs, 39977 complete and 0 interrupted iterations
+load     [  88% ] 36/50 VUs    5m18.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (5m19.0s), 035/329 VUs, 40021 complete and 0 interrupted iterations
+load     [  89% ] 35/50 VUs    5m19.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (5m20.0s), 034/329 VUs, 40063 complete and 0 interrupted iterations
+load     [  89% ] 34/50 VUs    5m20.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (5m21.0s), 033/329 VUs, 40102 complete and 0 interrupted iterations
+load     [  89% ] 33/50 VUs    5m21.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (5m22.0s), 033/329 VUs, 40140 complete and 0 interrupted iterations
+load     [  89% ] 33/50 VUs    5m22.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (5m23.0s), 032/329 VUs, 40182 complete and 0 interrupted iterations
+load     [  90% ] 32/50 VUs    5m23.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (5m24.0s), 031/329 VUs, 40216 complete and 0 interrupted iterations
+load     [  90% ] 31/50 VUs    5m24.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (5m25.0s), 030/329 VUs, 40252 complete and 0 interrupted iterations
+load     [  90% ] 30/50 VUs    5m25.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (5m26.0s), 029/329 VUs, 40289 complete and 0 interrupted iterations
+load     [  91% ] 29/50 VUs    5m26.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (5m27.0s), 028/329 VUs, 40326 complete and 0 interrupted iterations
+load     [  91% ] 28/50 VUs    5m27.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (5m28.0s), 028/329 VUs, 40356 complete and 0 interrupted iterations
+load     [  91% ] 28/50 VUs    5m28.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (5m29.0s), 027/329 VUs, 40390 complete and 0 interrupted iterations
+load     [  91% ] 27/50 VUs    5m29.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (5m30.0s), 026/329 VUs, 40422 complete and 0 interrupted iterations
+load     [  92% ] 26/50 VUs    5m30.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (5m31.0s), 025/329 VUs, 40449 complete and 0 interrupted iterations
+load     [  92% ] 25/50 VUs    5m31.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (5m32.0s), 024/329 VUs, 40480 complete and 0 interrupted iterations
+load     [  92% ] 24/50 VUs    5m32.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (5m33.0s), 024/329 VUs, 40509 complete and 0 interrupted iterations
+load     [  92% ] 24/50 VUs    5m33.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (5m34.0s), 023/329 VUs, 40532 complete and 0 interrupted iterations
+load     [  93% ] 23/50 VUs    5m34.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (5m35.0s), 021/329 VUs, 40560 complete and 0 interrupted iterations
+load     [  93% ] 21/50 VUs    5m35.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (5m36.0s), 021/329 VUs, 40587 complete and 0 interrupted iterations
+load     [  93% ] 21/50 VUs    5m36.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (5m37.0s), 020/329 VUs, 40612 complete and 0 interrupted iterations
+load     [  94% ] 20/50 VUs    5m37.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (5m38.0s), 019/329 VUs, 40633 complete and 0 interrupted iterations
+load     [  94% ] 19/50 VUs    5m38.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (5m39.0s), 018/329 VUs, 40655 complete and 0 interrupted iterations
+load     [  94% ] 18/50 VUs    5m39.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (5m40.0s), 017/329 VUs, 40676 complete and 0 interrupted iterations
+load     [  94% ] 17/50 VUs    5m40.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (5m41.0s), 017/329 VUs, 40696 complete and 0 interrupted iterations
+load     [  95% ] 17/50 VUs    5m41.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (5m42.0s), 017/329 VUs, 40713 complete and 0 interrupted iterations
+load     [  95% ] 17/50 VUs    5m42.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (5m43.0s), 015/329 VUs, 40733 complete and 0 interrupted iterations
+load     [  95% ] 15/50 VUs    5m43.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (5m44.0s), 014/329 VUs, 40748 complete and 0 interrupted iterations
+load     [  96% ] 14/50 VUs    5m44.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (5m45.0s), 014/329 VUs, 40766 complete and 0 interrupted iterations
+load     [  96% ] 14/50 VUs    5m45.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (5m46.0s), 012/329 VUs, 40782 complete and 0 interrupted iterations
+load     [  96% ] 12/50 VUs    5m46.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (5m47.0s), 012/329 VUs, 40796 complete and 0 interrupted iterations
+load     [  96% ] 12/50 VUs    5m47.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (5m48.0s), 011/329 VUs, 40808 complete and 0 interrupted iterations
+load     [  97% ] 11/50 VUs    5m48.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (5m49.0s), 010/329 VUs, 40821 complete and 0 interrupted iterations
+load     [  97% ] 10/50 VUs    5m49.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (5m50.0s), 010/329 VUs, 40833 complete and 0 interrupted iterations
+load     [  97% ] 10/50 VUs    5m50.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (5m51.0s), 008/329 VUs, 40842 complete and 0 interrupted iterations
+load     [  97% ] 08/50 VUs    5m51.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (5m52.0s), 008/329 VUs, 40851 complete and 0 interrupted iterations
+load     [  98% ] 08/50 VUs    5m52.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (5m53.0s), 007/329 VUs, 40859 complete and 0 interrupted iterations
+load     [  98% ] 07/50 VUs    5m53.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (5m54.0s), 006/329 VUs, 40867 complete and 0 interrupted iterations
+load     [  98% ] 06/50 VUs    5m54.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (5m55.0s), 005/329 VUs, 40873 complete and 0 interrupted iterations
+load     [  99% ] 05/50 VUs    5m55.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (5m56.0s), 004/329 VUs, 40878 complete and 0 interrupted iterations
+load     [  99% ] 04/50 VUs    5m56.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (5m57.0s), 003/329 VUs, 40882 complete and 0 interrupted iterations
+load     [  99% ] 03/50 VUs    5m57.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (5m58.0s), 003/329 VUs, 40884 complete and 0 interrupted iterations
+load     [  99% ] 03/50 VUs    5m58.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (5m59.0s), 002/329 VUs, 40887 complete and 0 interrupted iterations
+load     [ 100% ] 02/50 VUs    5m59.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (6m00.0s), 001/329 VUs, 40889 complete and 0 interrupted iterations
+load     [ 100% ] 01/50 VUs    6m00.0s/6m00.0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+running (6m01.0s), 001/329 VUs, 40889 complete and 0 interrupted iterations
+load   ↓ [ 100% ] 01/50 VUs    6m0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+
+
+  █ THRESHOLDS 
+
+    categories_latency
+    ✓ 'p(95)<500' p(95)=6ms
+    ✓ 'p(99)<1000' p(99)=10ms
+
+    error_rate
+    ✗ 'rate<0.05' rate=98.98%
+
+    estimate_latency
+    ✓ 'p(95)<500' p(95)=6ms
+    ✓ 'p(99)<1000' p(99)=10ms
+
+    execute_latency
+    ✓ 'p(95)<2500' p(95)=7ms
+    ✓ 'p(99)<4000' p(99)=162ms
+
+    health_latency
+    ✓ 'p(95)<100' p(95)=6ms
+    ✓ 'p(99)<200' p(99)=10ms
+
+    http_req_failed
+    ✗ 'rate<0.05' rate=98.98%
+
+    market_latency
+    ✓ 'p(95)<2000' p(95)=7ms
+    ✓ 'p(99)<3000' p(99)=182ms
+
+    search_latency
+    ✓ 'p(95)<2000' p(95)=7ms
+    ✓ 'p(99)<3000' p(99)=17ms
+
+    static_latency
+    ✓ 'p(95)<100' p(95)=6ms
+    ✓ 'p(99)<200' p(99)=10ms
+
+
+  █ TOTAL RESULTS 
+
+    checks_total.......: 1022250 2831.496712/s
+    checks_succeeded...: 48.46%  495456 out of 1022250
+    checks_failed......: 51.53%  526794 out of 1022250
+
+    ✗ health status is 200
+      ↳  1% — ✓ 580 / ✗ 40310
+    ✓ health response has content
+    ✓ health responds quickly
+    ✗ markets list status is 200
+      ↳  1% — ✓ 533 / ✗ 40357
+    ✗ markets list returns array
+      ↳  1% — ✓ 533 / ✗ 40357
+    ✓ markets list has market IDs
+    ✓ markets list within latency SLA
+    ✗ search status is 200
+      ↳  0% — ✓ 395 / ✗ 40495
+    ✗ search returns results
+      ↳  0% — ✓ 0 / ✗ 40890
+    ✓ search within latency SLA
+    ✗ categories status is 200
+      ↳  0% — ✓ 408 / ✗ 40482
+    ✗ categories returns array
+      ↳  0% — ✓ 408 / ✗ 40482
+    ✓ categories fast response
+    ✗ execute status is 200 or 201
+      ↳  1% — ✓ 439 / ✗ 40451
+    ✓ execute returns result
+    ✓ execute within latency SLA
+    ✗ estimate status is 200
+      ↳  0% — ✓ 0 / ✗ 40890
+    ✗ estimate returns cost
+      ↳  0% — ✓ 0 / ✗ 40890
+    ✓ estimate fast response
+    ✗ agent config status is 200
+      ↳  1% — ✓ 464 / ✗ 40426
+    ✓ agent config is valid JSON
+    ✓ agent config fast
+    ✗ tools list status is 200
+      ↳  1% — ✓ 508 / ✗ 40382
+    ✗ tools list is array
+      ↳  1% — ✓ 508 / ✗ 40382
+    ✓ tools list fast
+
+    CUSTOM
+    cache_hit_rate.................: 0.00%  0 out of 204450
+    categories_latency.............: avg=1.72ms  min=0s       med=1ms      max=42ms    p(90)=4ms      p(95)=6ms     
+    category_requests..............: 40890  113.259868/s
+    error_rate.....................: 98.98% 323793 out of 327120
+    estimate_latency...............: avg=1.76ms  min=0s       med=1ms      max=42ms    p(90)=4ms      p(95)=6ms     
+    estimate_requests..............: 40890  113.259868/s
+    execute_latency................: avg=4.19ms  min=0s       med=1ms      max=773ms   p(90)=5ms      p(95)=7ms     
+    execute_requests...............: 40890  113.259868/s
+    health_checks..................: 40890  113.259868/s
+    health_latency.................: avg=1.75ms  min=0s       med=1ms      max=40ms    p(90)=4ms      p(95)=6ms     
+    market_latency.................: avg=4.94ms  min=0s       med=1ms      max=802ms   p(90)=5ms      p(95)=7ms     
+    market_requests................: 40890  113.259868/s
+    search_latency.................: avg=3.97ms  min=0s       med=1ms      max=946ms   p(90)=5ms      p(95)=7ms     
+    search_requests................: 40890  113.259868/s
+    static_latency.................: avg=1.72ms  min=0s       med=1ms      max=46ms    p(90)=4ms      p(95)=6ms     
+    static_requests................: 81780  226.519737/s
+
+    HTTP
+    http_req_duration..............: avg=2.68ms  min=165µs    med=1ms      max=946.1ms p(90)=4.31ms   p(95)=6.35ms  
+      { expected_response:true }...: avg=98.26ms min=165µs    med=2.51ms   max=946.1ms p(90)=260.33ms p(95)=318.16ms
+    http_req_failed................: 98.98% 323793 out of 327120
+    http_reqs......................: 327120 906.078948/s
+
+    EXECUTION
+    iteration_duration.............: avg=824.3ms min=802.65ms med=814.41ms max=1.97s   p(90)=830.32ms p(95)=835.82ms
+    iterations.....................: 40890  113.259868/s
+    vus............................: 1      min=1                max=317
+    vus_max........................: 329    min=329              max=329
+
+    NETWORK
+    data_received..................: 164 MB 455 kB/s
+    data_sent......................: 40 MB  110 kB/s
+
+
+
+
+running (6m01.0s), 000/329 VUs, 40890 complete and 0 interrupted iterations
+load   ✓ [ 100% ] 00/50 VUs    6m0s
+smoke  ✓ [ 100% ] 1 VUs        30s
+spike  ✓ [ 100% ] 000/200 VUs  50s
+stress ✓ [ 100% ] 100 VUs      2m0s
+time="2026-03-13T21:54:49+08:00" level=error msg="thresholds on metrics 'error_rate, http_req_failed' have been crossed"

@@ -1,0 +1,21 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/ListProvidersRequest",
+    "definitions": {
+        "ListProvidersRequest": {
+            "properties": {
+                "jurisdiction": {
+                    "type": "string",
+                    "description": "Optional: filter by jurisdiction"
+                },
+                "capability": {
+                    "type": "string",
+                    "description": "Optional: filter by capability name"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "List Providers Request"
+        }
+    }
+}

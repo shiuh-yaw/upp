@@ -1,0 +1,15 @@
+# Prometheus config for UPP Gateway
+#
+# Scrapes the gateway's /metrics endpoint for Prometheus-format counters.
+# Start with: docker compose --profile monitoring up
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: "upp-gateway"
+    static_configs:
+      - targets: ["gateway:8080"]
+    metrics_path: /metrics
+    scrape_interval: 5s

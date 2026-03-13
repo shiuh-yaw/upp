@@ -1,0 +1,139 @@
+{
+  "timestamp": "2026-03-13 21:36:15",
+  "gateway": "http://localhost:8080",
+  "iterations": 100,
+  "results": [
+    {
+      "endpoint": "GET /health",
+      "latencies": {
+        "min_ms": 0.7538795471191406,
+        "p50_ms": 1.4330148696899414,
+        "p90_ms": 3.3278465270996094,
+        "p95_ms": 3.9398670196533203,
+        "p99_ms": 4.58526611328125,
+        "max_ms": 4.58526611328125,
+        "mean_ms": 1.8415220322147492,
+        "stddev_ms": 0.9351000553557202
+      },
+      "sla": {
+        "threshold_ms": 10.0,
+        "pass": true
+      },
+      "requests": {
+        "successful": 62,
+        "errors": 38,
+        "total": 100
+      }
+    },
+    {
+      "endpoint": "GET /upp/v1/markets?limit=5",
+      "latencies": {
+        "min_ms": 170.67718505859375,
+        "p50_ms": 178.36308479309082,
+        "p90_ms": 298.443078994751,
+        "p95_ms": 310.8651638031006,
+        "p99_ms": 894.2060470581055,
+        "max_ms": 894.2060470581055,
+        "mean_ms": 210.6428917008217,
+        "stddev_ms": 83.39123189630104
+      },
+      "sla": {
+        "threshold_ms": 3000.0,
+        "pass": true
+      },
+      "requests": {
+        "successful": 99,
+        "errors": 1,
+        "total": 100
+      }
+    },
+    {
+      "endpoint": "GET /upp/v1/markets/search?q=bitcoin",
+      "latencies": {
+        "min_ms": 213.46116065979004,
+        "p50_ms": 276.5939235687256,
+        "p90_ms": 341.6900634765625,
+        "p95_ms": 393.41020584106445,
+        "p99_ms": 518.8522338867188,
+        "max_ms": 518.8522338867188,
+        "mean_ms": 276.17351770401,
+        "stddev_ms": 57.784405498180384
+      },
+      "sla": {
+        "threshold_ms": 3000.0,
+        "pass": true
+      },
+      "requests": {
+        "successful": 100,
+        "errors": 0,
+        "total": 100
+      }
+    },
+    {
+      "endpoint": "GET /upp/v1/mcp/tools",
+      "latencies": {
+        "min_ms": 1.2798309326171875,
+        "p50_ms": 2.4014711380004883,
+        "p90_ms": 4.313945770263672,
+        "p95_ms": 4.747152328491211,
+        "p99_ms": 9.795904159545898,
+        "max_ms": 9.795904159545898,
+        "mean_ms": 2.7390047907829285,
+        "stddev_ms": 1.4460164557188948
+      },
+      "sla": {
+        "threshold_ms": 50.0,
+        "pass": true
+      },
+      "requests": {
+        "successful": 64,
+        "errors": 36,
+        "total": 100
+      }
+    },
+    {
+      "endpoint": "POST /upp/v1/mcp/execute",
+      "latencies": {
+        "min_ms": 164.63923454284668,
+        "p50_ms": 174.24607276916504,
+        "p90_ms": 297.1680164337158,
+        "p95_ms": 316.58411026000977,
+        "p99_ms": 336.8072509765625,
+        "max_ms": 336.8072509765625,
+        "mean_ms": 201.10585043827692,
+        "stddev_ms": 49.48810350379483
+      },
+      "sla": {
+        "threshold_ms": 1000.0,
+        "pass": true
+      },
+      "requests": {
+        "successful": 96,
+        "errors": 4,
+        "total": 100
+      }
+    },
+    {
+      "endpoint": "GET /.well-known/agent.json",
+      "latencies": {
+        "min_ms": 1.1200904846191406,
+        "p50_ms": 2.0154714584350586,
+        "p90_ms": 3.7508010864257812,
+        "p95_ms": 4.225015640258789,
+        "p99_ms": 6.162166595458984,
+        "max_ms": 6.162166595458984,
+        "mean_ms": 2.2062845528125763,
+        "stddev_ms": 1.0309089972874357
+      },
+      "sla": {
+        "threshold_ms": 50.0,
+        "pass": true
+      },
+      "requests": {
+        "successful": 64,
+        "errors": 36,
+        "total": 100
+      }
+    }
+  ]
+}

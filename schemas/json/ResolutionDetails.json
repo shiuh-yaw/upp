@@ -1,0 +1,157 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/ResolutionDetails",
+    "definitions": {
+        "ResolutionDetails": {
+            "properties": {
+                "oracle_type": {
+                    "enum": [
+                        "ORACLE_TYPE_UNSPECIFIED",
+                        0,
+                        "ORACLE_TYPE_OFFICIAL_DATA",
+                        1,
+                        "ORACLE_TYPE_FINANCIAL_DATA",
+                        2,
+                        "ORACLE_TYPE_HUMAN_COMMITTEE",
+                        3,
+                        "ORACLE_TYPE_AI_ORACLE",
+                        4,
+                        "ORACLE_TYPE_SMART_CONTRACT",
+                        5,
+                        "ORACLE_TYPE_DECENTRALIZED",
+                        6,
+                        "ORACLE_TYPE_PROVIDER_INTERNAL",
+                        7
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "integer"
+                        }
+                    ],
+                    "title": "Oracle Type",
+                    "description": "Type of resolution oracle."
+                },
+                "source_description": {
+                    "type": "string",
+                    "description": "Evidence  Human-readable source description"
+                },
+                "source_url": {
+                    "type": "string",
+                    "description": "URL to evidence (if applicable)"
+                },
+                "observed_value": {
+                    "type": "string",
+                    "description": "For numeric markets  The actual observed value"
+                },
+                "threshold": {
+                    "type": "string",
+                    "description": "The threshold for YES resolution"
+                },
+                "confidence": {
+                    "type": "number",
+                    "description": "Confidence  Oracle confidence [0.0, 1.0]"
+                },
+                "attestations": {
+                    "items": {
+                        "$ref": "#/definitions/upp.v1.OracleAttestation"
+                    },
+                    "type": "array",
+                    "description": "Chain of evidence (for multi-source resolution)"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "─── Resolution Details ──────────────────────────────────────",
+            "description": "─── Resolution Details ──────────────────────────────────────  How the outcome was determined."
+        },
+        "upp.v1.OracleAttestation": {
+            "properties": {
+                "oracle_id": {
+                    "type": "string",
+                    "description": "Identifier for this oracle source"
+                },
+                "oracle_name": {
+                    "type": "string",
+                    "description": "Human-readable name"
+                },
+                "type": {
+                    "enum": [
+                        "ORACLE_TYPE_UNSPECIFIED",
+                        0,
+                        "ORACLE_TYPE_OFFICIAL_DATA",
+                        1,
+                        "ORACLE_TYPE_FINANCIAL_DATA",
+                        2,
+                        "ORACLE_TYPE_HUMAN_COMMITTEE",
+                        3,
+                        "ORACLE_TYPE_AI_ORACLE",
+                        4,
+                        "ORACLE_TYPE_SMART_CONTRACT",
+                        5,
+                        "ORACLE_TYPE_DECENTRALIZED",
+                        6,
+                        "ORACLE_TYPE_PROVIDER_INTERNAL",
+                        7
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "integer"
+                        }
+                    ],
+                    "title": "Oracle Type",
+                    "description": "Type of resolution oracle."
+                },
+                "attested_outcome": {
+                    "type": "string",
+                    "description": "What this oracle says the outcome is"
+                },
+                "confidence": {
+                    "type": "number",
+                    "description": "This oracle's confidence"
+                },
+                "evidence_url": {
+                    "type": "string",
+                    "description": "Supporting evidence"
+                },
+                "attested_at": {
+                    "$ref": "#/definitions/upp.v1.Timestamp",
+                    "additionalProperties": true
+                },
+                "signature": {
+                    "type": "string",
+                    "description": "Cryptographic proof (if available)  Digital signature of attestation"
+                },
+                "public_key": {
+                    "type": "string",
+                    "description": "Verifying public key"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Oracle Attestation",
+            "description": "Individual oracle attestation (for multi-source verification)."
+        },
+        "upp.v1.Timestamp": {
+            "properties": {
+                "seconds": {
+                    "type": "string",
+                    "description": "Unix epoch seconds"
+                },
+                "nanos": {
+                    "type": "integer",
+                    "description": "Sub-second nanoseconds [0, 999999999]"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "─── Temporal ────────────────────────────────────────────────",
+            "description": "─── Temporal ────────────────────────────────────────────────  High-precision timestamp for trading events. Always UTC. Nanosecond precision for orderbook/trade events."
+        }
+    }
+}

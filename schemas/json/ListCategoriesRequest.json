@@ -1,0 +1,17 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/ListCategoriesRequest",
+    "definitions": {
+        "ListCategoriesRequest": {
+            "properties": {
+                "provider": {
+                    "type": "string",
+                    "description": "Optional: filter by provider"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "List Categories Request"
+        }
+    }
+}

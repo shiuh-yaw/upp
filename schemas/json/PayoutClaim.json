@@ -1,0 +1,106 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/PayoutClaim",
+    "definitions": {
+        "PayoutClaim": {
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "market_id": {
+                    "$ref": "#/definitions/upp.v1.UniversalMarketId",
+                    "additionalProperties": true
+                },
+                "outcome_id": {
+                    "type": "string"
+                },
+                "contracts": {
+                    "type": "string",
+                    "description": "Number of winning contracts"
+                },
+                "payout_amount": {
+                    "type": "string",
+                    "description": "Total payout"
+                },
+                "currency": {
+                    "type": "string"
+                },
+                "status": {
+                    "enum": [
+                        "PAYOUT_STATUS_UNSPECIFIED",
+                        0,
+                        "PAYOUT_STATUS_PENDING",
+                        1,
+                        "PAYOUT_STATUS_PROCESSING",
+                        2,
+                        "PAYOUT_STATUS_COMPLETED",
+                        3,
+                        "PAYOUT_STATUS_FAILED",
+                        4
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "integer"
+                        }
+                    ],
+                    "title": "Payout Status"
+                },
+                "claimed_at": {
+                    "$ref": "#/definitions/upp.v1.Timestamp",
+                    "additionalProperties": true
+                },
+                "completed_at": {
+                    "$ref": "#/definitions/upp.v1.Timestamp",
+                    "additionalProperties": true
+                },
+                "transaction_id": {
+                    "type": "string",
+                    "description": "Settlement transaction ID"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Payout Claim",
+            "description": "A user's payout claim for a resolved market."
+        },
+        "upp.v1.Timestamp": {
+            "properties": {
+                "seconds": {
+                    "type": "string",
+                    "description": "Unix epoch seconds"
+                },
+                "nanos": {
+                    "type": "integer",
+                    "description": "Sub-second nanoseconds [0, 999999999]"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "─── Temporal ────────────────────────────────────────────────",
+            "description": "─── Temporal ────────────────────────────────────────────────  High-precision timestamp for trading events. Always UTC. Nanosecond precision for orderbook/trade events."
+        },
+        "upp.v1.UniversalMarketId": {
+            "properties": {
+                "provider": {
+                    "type": "string",
+                    "description": "Provider domain, e.g. \"kalshi.com\""
+                },
+                "native_id": {
+                    "type": "string",
+                    "description": "Provider's native market ID"
+                },
+                "full_id": {
+                    "type": "string",
+                    "description": "Computed: \"upp:{provider}:{native_id}\""
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "─── Identity ────────────────────────────────────────────────",
+            "description": "─── Identity ────────────────────────────────────────────────  Universal Market Identifier. Format: \"upp:{provider}:{native_id}\" Enables cross-provider market matching and portfolio aggregation."
+        }
+    }
+}

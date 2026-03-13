@@ -1,0 +1,22 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/Price",
+    "definitions": {
+        "Price": {
+            "properties": {
+                "value": {
+                    "type": "string",
+                    "description": "Decimal string, e.g. \"0.63\""
+                },
+                "currency": {
+                    "type": "string",
+                    "description": "Settlement currency"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Price",
+            "description": "Price in the provider's native format, normalized to UPP. Prediction market prices always represent probabilities."
+        }
+    }
+}

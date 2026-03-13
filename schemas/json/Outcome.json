@@ -1,0 +1,26 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/Outcome",
+    "definitions": {
+        "Outcome": {
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "description": "Outcome identifier (e.g. \"yes\", \"no\", \"candidate_a\")"
+                },
+                "label": {
+                    "type": "string",
+                    "description": "Human-readable label"
+                },
+                "token_id": {
+                    "type": "string",
+                    "description": "On-chain token ID (if applicable, e.g. Polymarket CTF)"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Outcome",
+            "description": "A possible outcome of the market."
+        }
+    }
+}

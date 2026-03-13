@@ -1,0 +1,23 @@
+# buf.yaml — Buf configuration for UPP protocol schemas.
+# Buf provides linting, breaking change detection, and code generation.
+# See: https://buf.build/docs/configuration/v2/buf-yaml
+version: v2
+
+modules:
+  - path: .
+    name: buf.build/universal-prediction-protocol/upp
+
+lint:
+  use:
+    - STANDARD
+    - COMMENTS
+  except:
+    # Allow short enum value prefixes (e.g. SIDE_BUY instead of upp.v1.Side.SIDE_BUY)
+    - ENUM_VALUE_PREFIX
+  disallow_comment_ignores: true
+
+breaking:
+  use:
+    - FILE
+  # Strict breaking change detection — no backward-incompatible changes
+  # without an explicit version bump.

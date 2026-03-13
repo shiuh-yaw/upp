@@ -1,0 +1,22 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/PaginationRequest",
+    "definitions": {
+        "PaginationRequest": {
+            "properties": {
+                "limit": {
+                    "type": "integer",
+                    "description": "Max items per page [1, 1000], default 50"
+                },
+                "cursor": {
+                    "type": "string",
+                    "description": "Opaque cursor from previous response"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "─── Pagination ──────────────────────────────────────────────",
+            "description": "─── Pagination ──────────────────────────────────────────────  Cursor-based pagination request. Cursor-based (not offset-based) for consistency under real-time inserts."
+        }
+    }
+}

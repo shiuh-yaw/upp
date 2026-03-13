@@ -1,0 +1,83 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/ListSettlementHandlersResponse",
+    "definitions": {
+        "ListSettlementHandlersResponse": {
+            "properties": {
+                "handlers": {
+                    "items": {
+                        "$ref": "#/definitions/upp.v1.SettlementHandler"
+                    },
+                    "type": "array"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "List Settlement Handlers Response"
+        },
+        "upp.v1.SettlementHandler": {
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "type": {
+                    "enum": [
+                        "SETTLEMENT_HANDLER_TYPE_UNSPECIFIED",
+                        0,
+                        "SETTLEMENT_HANDLER_TYPE_CUSTODIAL_USD",
+                        1,
+                        "SETTLEMENT_HANDLER_TYPE_ONCHAIN_CTF",
+                        2,
+                        "SETTLEMENT_HANDLER_TYPE_ONCHAIN_BNB",
+                        3,
+                        "SETTLEMENT_HANDLER_TYPE_HYBRID",
+                        4,
+                        "SETTLEMENT_HANDLER_TYPE_ESCROW",
+                        5
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "integer"
+                        }
+                    ],
+                    "title": "Settlement Handler Type"
+                },
+                "label": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "currencies": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array",
+                    "description": "Supported currencies"
+                },
+                "settlement_time": {
+                    "type": "string",
+                    "description": "Processing  \"instant\", \"T+1\", etc."
+                },
+                "fee_rate": {
+                    "type": "string",
+                    "description": "Settlement fee as decimal"
+                },
+                "jurisdiction": {
+                    "type": "string",
+                    "description": "Compliance"
+                },
+                "regulator": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "─── Settlement Handlers ─────────────────────────────────────",
+            "description": "─── Settlement Handlers ─────────────────────────────────────  How positions are settled after market resolution. Equivalent to UCP's \"Payment Handler\"."
+        }
+    }
+}

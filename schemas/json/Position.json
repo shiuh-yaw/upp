@@ -1,0 +1,158 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/Position",
+    "definitions": {
+        "Position": {
+            "properties": {
+                "market_id": {
+                    "$ref": "#/definitions/upp.v1.UniversalMarketId",
+                    "additionalProperties": true
+                },
+                "outcome_id": {
+                    "type": "string",
+                    "description": "Which outcome (e.g. \"yes\")"
+                },
+                "quantity": {
+                    "type": "string",
+                    "description": "Number of contracts held"
+                },
+                "average_entry_price": {
+                    "type": "string",
+                    "description": "Weighted average entry price"
+                },
+                "current_price": {
+                    "type": "string",
+                    "description": "Current market price for this outcome"
+                },
+                "cost_basis": {
+                    "type": "string",
+                    "description": "P\u0026L  Total cost paid"
+                },
+                "current_value": {
+                    "type": "string",
+                    "description": "quantity * current_price"
+                },
+                "unrealized_pnl": {
+                    "type": "string",
+                    "description": "current_value - cost_basis"
+                },
+                "realized_pnl": {
+                    "type": "string",
+                    "description": "Profit from closed portions"
+                },
+                "status": {
+                    "enum": [
+                        "POSITION_STATUS_UNSPECIFIED",
+                        0,
+                        "POSITION_STATUS_OPEN",
+                        1,
+                        "POSITION_STATUS_CLOSED",
+                        2,
+                        "POSITION_STATUS_SETTLED",
+                        3,
+                        "POSITION_STATUS_EXPIRED",
+                        4
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "integer"
+                        }
+                    ],
+                    "title": "Position Status"
+                },
+                "opened_at": {
+                    "$ref": "#/definitions/upp.v1.Timestamp",
+                    "additionalProperties": true,
+                    "description": "When first contract was acquired"
+                },
+                "updated_at": {
+                    "$ref": "#/definitions/upp.v1.Timestamp",
+                    "additionalProperties": true,
+                    "description": "Last change"
+                },
+                "market_title": {
+                    "type": "string",
+                    "description": "Market context (denormalized for convenience)"
+                },
+                "market_status": {
+                    "enum": [
+                        "MARKET_STATUS_UNSPECIFIED",
+                        0,
+                        "MARKET_STATUS_PENDING",
+                        1,
+                        "MARKET_STATUS_OPEN",
+                        2,
+                        "MARKET_STATUS_HALTED",
+                        3,
+                        "MARKET_STATUS_CLOSED",
+                        4,
+                        "MARKET_STATUS_RESOLVED",
+                        5,
+                        "MARKET_STATUS_DISPUTED",
+                        6,
+                        "MARKET_STATUS_VOIDED",
+                        7
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "integer"
+                        }
+                    ],
+                    "title": "Market Status"
+                },
+                "provider_metadata": {
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "type": "object"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "─── Position ────────────────────────────────────────────────",
+            "description": "─── Position ────────────────────────────────────────────────  A user's holding in a specific market outcome."
+        },
+        "upp.v1.Timestamp": {
+            "properties": {
+                "seconds": {
+                    "type": "string",
+                    "description": "Unix epoch seconds"
+                },
+                "nanos": {
+                    "type": "integer",
+                    "description": "Sub-second nanoseconds [0, 999999999]"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "─── Temporal ────────────────────────────────────────────────",
+            "description": "─── Temporal ────────────────────────────────────────────────  High-precision timestamp for trading events. Always UTC. Nanosecond precision for orderbook/trade events."
+        },
+        "upp.v1.UniversalMarketId": {
+            "properties": {
+                "provider": {
+                    "type": "string",
+                    "description": "Provider domain, e.g. \"kalshi.com\""
+                },
+                "native_id": {
+                    "type": "string",
+                    "description": "Provider's native market ID"
+                },
+                "full_id": {
+                    "type": "string",
+                    "description": "Computed: \"upp:{provider}:{native_id}\""
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "─── Identity ────────────────────────────────────────────────",
+            "description": "─── Identity ────────────────────────────────────────────────  Universal Market Identifier. Format: \"upp:{provider}:{native_id}\" Enables cross-provider market matching and portfolio aggregation."
+        }
+    }
+}

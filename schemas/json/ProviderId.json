@@ -1,0 +1,22 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/ProviderId",
+    "definitions": {
+        "ProviderId": {
+            "properties": {
+                "domain": {
+                    "type": "string",
+                    "description": "e.g. \"kalshi.com\", \"polymarket.com\""
+                },
+                "name": {
+                    "type": "string",
+                    "description": "Human-readable name"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Provider Id",
+            "description": "Provider identifier with metadata."
+        }
+    }
+}

@@ -1,0 +1,26 @@
+{
+  "name": "@upp/conformance",
+  "version": "0.1.0",
+  "description": "UPP Protocol Conformance Test Suite",
+  "license": "Apache-2.0",
+  "type": "module",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:schema": "vitest run --reporter=verbose tests/schema/",
+    "test:behavior": "vitest run --reporter=verbose tests/behavior/",
+    "test:performance": "vitest run --reporter=verbose tests/performance/",
+    "validate:fixtures": "tsx scripts/validate-fixtures.ts",
+    "generate:fixtures": "tsx scripts/capture-fixtures.ts"
+  },
+  "dependencies": {
+    "ajv": "^8.17.0",
+    "ajv-formats": "^3.0.0"
+  },
+  "devDependencies": {
+    "vitest": "^2.1.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0",
+    "@types/node": "^22.0.0"
+  }
+}

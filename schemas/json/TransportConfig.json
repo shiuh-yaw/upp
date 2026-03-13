@@ -1,0 +1,144 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/TransportConfig",
+    "definitions": {
+        "TransportConfig": {
+            "properties": {
+                "rest": {
+                    "$ref": "#/definitions/upp.v1.RestConfig",
+                    "additionalProperties": true
+                },
+                "websocket": {
+                    "$ref": "#/definitions/upp.v1.WebSocketConfig",
+                    "additionalProperties": true
+                },
+                "grpc": {
+                    "$ref": "#/definitions/upp.v1.GrpcConfig",
+                    "additionalProperties": true
+                },
+                "mcp": {
+                    "$ref": "#/definitions/upp.v1.McpConfig",
+                    "additionalProperties": true
+                },
+                "a2a": {
+                    "$ref": "#/definitions/upp.v1.A2aConfig",
+                    "additionalProperties": true
+                },
+                "fix": {
+                    "$ref": "#/definitions/upp.v1.FixConfig",
+                    "additionalProperties": true
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "─── Transport ───────────────────────────────────────────────",
+            "description": "OracleType is imported from resolution.proto  ─── Transport ───────────────────────────────────────────────  Transport configuration for a provider."
+        },
+        "upp.v1.A2aConfig": {
+            "properties": {
+                "supported": {
+                    "type": "boolean"
+                },
+                "agent_card_url": {
+                    "type": "string",
+                    "description": "URL to A2A agent card"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "A 2 A Config"
+        },
+        "upp.v1.FixConfig": {
+            "properties": {
+                "supported": {
+                    "type": "boolean"
+                },
+                "version": {
+                    "type": "string",
+                    "description": "e.g. \"4.4\""
+                },
+                "endpoint": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Fix Config"
+        },
+        "upp.v1.GrpcConfig": {
+            "properties": {
+                "endpoint": {
+                    "type": "string",
+                    "description": "e.g. \"api.kalshi.com:443\""
+                },
+                "tls_required": {
+                    "type": "boolean"
+                },
+                "proto_url": {
+                    "type": "string",
+                    "description": "URL to .proto files"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Grpc Config"
+        },
+        "upp.v1.McpConfig": {
+            "properties": {
+                "supported": {
+                    "type": "boolean"
+                },
+                "manifest_url": {
+                    "type": "string",
+                    "description": "URL to MCP manifest"
+                },
+                "tools": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array",
+                    "description": "Available MCP tool names"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Mcp Config"
+        },
+        "upp.v1.RestConfig": {
+            "properties": {
+                "base_url": {
+                    "type": "string",
+                    "description": "e.g. \"https://api.kalshi.com/upp/v1\""
+                },
+                "openapi_spec_url": {
+                    "type": "string",
+                    "description": "URL to OpenAPI 3.1 spec"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Rest Config"
+        },
+        "upp.v1.WebSocketConfig": {
+            "properties": {
+                "url": {
+                    "type": "string",
+                    "description": "e.g. \"wss://api.kalshi.com/upp/ws/v1\""
+                },
+                "channels": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array",
+                    "description": "Available subscription channels"
+                },
+                "heartbeat_interval_seconds": {
+                    "type": "integer"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Web Socket Config"
+        }
+    }
+}

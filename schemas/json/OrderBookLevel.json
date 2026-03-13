@@ -1,0 +1,22 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/OrderBookLevel",
+    "definitions": {
+        "OrderBookLevel": {
+            "properties": {
+                "price": {
+                    "type": "string",
+                    "description": "Price at this level (decimal string)"
+                },
+                "quantity": {
+                    "type": "string",
+                    "description": "Number of contracts at this level"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Order Book Level",
+            "description": "A single price level in the orderbook."
+        }
+    }
+}

@@ -1,0 +1,126 @@
+// Copyright 2026 Universal Prediction Protocol Authors
+// SPDX-License-Identifier: Apache-2.0
+//
+// common.proto — Shared types used across all UPP services.
+// These are the foundational building blocks that every other
+// proto file imports.
+
+syntax = "proto3";
+
+package upp.v1;
+
+option java_package = "dev.upp.v1";
+option go_package = "github.com/universal-prediction-protocol/upp/gen/go/upp/v1";
+
+// ─── Temporal ────────────────────────────────────────────────
+
+// High-precision timestamp for trading events.
+// Always UTC. Nanosecond precision for orderbook/trade events.
+message Timestamp {
+  int64  seconds = 1;  // Unix epoch seconds
+  int32  nanos   = 2;  // Sub-second nanoseconds [0, 999999999]
+}
+
+// Time range for queries and filters.
+message TimeRange {
+  Timestamp start = 1;
+  Timestamp end   = 2;
+}
+
+// ─── Financial ───────────────────────────────────────────────
+
+// Monetary amount with explicit currency.
+// Uses string to avoid floating-point precision issues in financial calculations.
+message Money {
+  string amount   = 1;  // Decimal string, e.g. "63.50"
+  string currency = 2;  // ISO 4217 code ("USD") or crypto symbol ("USDC")
+}
+
+// Probability value [0.0, 1.0] representing market-implied likelihood.
+// Stored as basis points internally (0-10000) for precision.
+message Probability {
+  uint32 basis_points = 1;  // 6300 = 63.00% = 0.6300
+}
+
+// Price in the provider's native format, normalized to UPP.
+// Prediction market prices always represent probabilities.
+message Price {
+  string value    = 1;  // Decimal string, e.g. "0.63"
+  string currency = 2;  // Settlement currency
+}
+
+// ─── Pagination ──────────────────────────────────────────────
+
+// Cursor-based pagination request.
+// Cursor-based (not offset-based) for consistency under real-time inserts.
+message PaginationRequest {
+  int32  limit  = 1;  // Max items per page [1, 1000], default 50
+  string cursor = 2;  // Opaque cursor from previous response
+}
+
+// Cursor-based pagination response.
+message PaginationResponse {
+  string cursor   = 1;  // Cursor for next page (empty if no more)
+  bool   has_more = 2;  // Whether more results exist
+  int32  total    = 3;  // Total count (if available, -1 if unknown)
+}
+
+// ─── Errors ──────────────────────────────────────────────────
+
+// Standardized error response across all UPP services.
+message Error {
+  ErrorCode code       = 1;  // Machine-readable error code
+  string    message    = 2;  // Human-readable description
+  string    provider   = 3;  // Which provider originated the error
+  string    request_id = 4;  // Correlation ID for debugging
+  map<string, string> details = 5;  // Additional error context
+}
+
+// Standardized error codes across all providers.
+enum ErrorCode {
+  ERROR_CODE_UNSPECIFIED       = 0;
+
+  // Client errors (4xx equivalent)
+  ERROR_CODE_INVALID_ARGUMENT  = 1;   // Bad request parameters
+  ERROR_CODE_NOT_FOUND         = 2;   // Market/order/resource not found
+  ERROR_CODE_ALREADY_EXISTS    = 3;   // Duplicate order (idempotency)
+  ERROR_CODE_PERMISSION_DENIED = 4;   // Insufficient permissions
+  ERROR_CODE_UNAUTHENTICATED   = 5;   // Missing or invalid credentials
+  ERROR_CODE_RATE_LIMITED      = 6;   // Too many requests
+  ERROR_CODE_INSUFFICIENT_FUNDS = 7;  // Not enough balance
+  ERROR_CODE_MARKET_CLOSED     = 8;   // Market not accepting orders
+  ERROR_CODE_ORDER_REJECTED    = 9;   // Order violates exchange rules
+  ERROR_CODE_REGION_RESTRICTED = 10;  // User's region not eligible
+
+  // Server errors (5xx equivalent)
+  ERROR_CODE_INTERNAL          = 50;  // Provider internal error
+  ERROR_CODE_UNAVAILABLE       = 51;  // Provider temporarily down
+  ERROR_CODE_TIMEOUT           = 52;  // Request timed out
+  ERROR_CODE_PROVIDER_ERROR    = 53;  // Upstream provider error
+}
+
+// ─── Identity ────────────────────────────────────────────────
+
+// Universal Market Identifier.
+// Format: "upp:{provider}:{native_id}"
+// Enables cross-provider market matching and portfolio aggregation.
+message UniversalMarketId {
+  string provider  = 1;  // Provider domain, e.g. "kalshi.com"
+  string native_id = 2;  // Provider's native market ID
+  string full_id   = 3;  // Computed: "upp:{provider}:{native_id}"
+}
+
+// Provider identifier with metadata.
+message ProviderId {
+  string domain = 1;  // e.g. "kalshi.com", "polymarket.com"
+  string name   = 2;  // Human-readable name
+}
+
+// ─── Enums ───────────────────────────────────────────────────
+
+// Sort direction for list queries.
+enum SortDirection {
+  SORT_DIRECTION_UNSPECIFIED = 0;
+  SORT_DIRECTION_ASC         = 1;
+  SORT_DIRECTION_DESC        = 2;
+}

@@ -1,0 +1,19 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/GetResolutionSourcesRequest",
+    "definitions": {
+        "GetResolutionSourcesRequest": {
+            "properties": {
+                "universal_id": {
+                    "type": "string"
+                },
+                "provider": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Get Resolution Sources Request"
+        }
+    }
+}

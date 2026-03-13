@@ -1,0 +1,248 @@
+// Copyright 2026 Universal Prediction Protocol Authors
+// SPDX-License-Identifier: Apache-2.0
+//
+// trading.proto — Order management and execution.
+// Maps to UCP's Checkout capability.
+//
+// Normalizes order models across:
+//   - Kalshi: cents-based pricing, RSA-signed, limit + market orders
+//   - Polymarket: EIP-712 signed orders, CLOB (GTC, GTD, FOK, FAK)
+//   - Opinion: CLOB SDK on BNB Chain
+
+syntax = "proto3";
+
+package upp.v1;
+
+import "upp/v1/common.proto";
+import "upp/v1/market.proto";
+
+option java_package = "dev.upp.v1";
+option go_package = "github.com/universal-prediction-protocol/upp/gen/go/upp/v1";
+
+// ─── Order ───────────────────────────────────────────────────
+
+// A trading order — instruction to buy or sell outcome contracts.
+// Equivalent to UCP's "Line Item + Cart" concept.
+message Order {
+  string id              = 1;   // UPP-assigned order ID
+  string provider_order_id = 2; // Provider's native order ID
+  string client_order_id = 3;   // Client-assigned ID (idempotency)
+
+  UniversalMarketId market_id = 4;
+  string    outcome_id  = 5;    // Which outcome (e.g. "yes", "no")
+  Side      side        = 6;    // Buy or sell
+  OrderType order_type  = 7;    // Limit or market
+  TimeInForce tif       = 8;    // Time-in-force policy
+
+  // Pricing
+  string price          = 9;    // Limit price (decimal string, 0.01-0.99)
+  int64  quantity       = 10;   // Number of contracts
+  int64  filled_quantity = 11;  // Contracts filled so far
+  string average_fill_price = 12; // Weighted average fill price
+  int64  remaining_quantity = 13; // quantity - filled_quantity
+
+  // Status
+  OrderStatus status    = 14;
+
+  // Financial
+  OrderFees fees        = 15;
+  string    cost_basis  = 16;   // Total cost of filled contracts
+
+  // Timestamps
+  Timestamp created_at  = 17;
+  Timestamp updated_at  = 18;
+  Timestamp expires_at  = 19;   // For GTD orders
+  Timestamp filled_at   = 20;   // When fully filled (if applicable)
+  Timestamp cancelled_at = 21;  // When cancelled (if applicable)
+
+  // Execution details
+  string cancel_reason  = 22;   // Reason for cancellation/rejection
+
+  map<string, string> provider_metadata = 30;
+}
+
+enum Side {
+  SIDE_UNSPECIFIED = 0;
+  SIDE_BUY         = 1;
+  SIDE_SELL        = 2;
+}
+
+enum OrderStatus {
+  ORDER_STATUS_UNSPECIFIED    = 0;
+  ORDER_STATUS_PENDING        = 1;  // Submitted, not yet acknowledged
+  ORDER_STATUS_OPEN           = 2;  // Active on the order book
+  ORDER_STATUS_PARTIALLY_FILLED = 3; // Some contracts filled
+  ORDER_STATUS_FILLED         = 4;  // Fully filled
+  ORDER_STATUS_CANCELLED      = 5;  // Cancelled by user
+  ORDER_STATUS_REJECTED       = 6;  // Rejected by exchange
+  ORDER_STATUS_EXPIRED        = 7;  // GTD expired
+}
+
+message OrderFees {
+  string maker_fee = 1;  // Fee paid for adding liquidity
+  string taker_fee = 2;  // Fee paid for removing liquidity
+  string total_fee = 3;  // Total fees for this order
+}
+
+// ─── Trade ───────────────────────────────────────────────────
+
+// An executed trade — a matched order fill.
+// Equivalent to UCP's "Transaction".
+message Trade {
+  string id                  = 1;  // Trade ID
+  string order_id            = 2;  // Parent order ID
+  UniversalMarketId market_id = 3;
+  string outcome_id          = 4;
+
+  Side   side       = 5;
+  string price      = 6;  // Execution price
+  int64  quantity   = 7;  // Contracts filled in this trade
+  string notional   = 8;  // price * quantity in settlement currency
+
+  TradeRole role    = 9;   // Maker or taker
+
+  OrderFees fees    = 10;
+
+  Timestamp executed_at = 11;
+
+  map<string, string> provider_metadata = 20;
+}
+
+enum TradeRole {
+  TRADE_ROLE_UNSPECIFIED = 0;
+  TRADE_ROLE_MAKER       = 1;  // Provided liquidity (order was resting)
+  TRADE_ROLE_TAKER       = 2;  // Removed liquidity (order matched immediately)
+}
+
+// ─── Trading Service ─────────────────────────────────────────
+
+// TradingService — Order management and execution.
+// Equivalent to UCP's Checkout capability.
+service TradingService {
+  // Place a new order on a prediction market.
+  rpc CreateOrder(CreateOrderRequest) returns (CreateOrderResponse);
+
+  // Cancel an existing open order.
+  rpc CancelOrder(CancelOrderRequest) returns (CancelOrderResponse);
+
+  // Cancel all open orders, optionally filtered by market.
+  rpc CancelAllOrders(CancelAllOrdersRequest) returns (CancelAllOrdersResponse);
+
+  // Get details of a specific order.
+  rpc GetOrder(GetOrderRequest) returns (Order);
+
+  // List orders with filtering.
+  rpc ListOrders(ListOrdersRequest) returns (ListOrdersResponse);
+
+  // List executed trades with filtering.
+  rpc ListTrades(ListTradesRequest) returns (ListTradesResponse);
+
+  // Estimate order cost and fees before placement.
+  rpc EstimateOrder(EstimateOrderRequest) returns (EstimateOrderResponse);
+}
+
+// ─── Request/Response Messages ───────────────────────────────
+
+message CreateOrderRequest {
+  string provider       = 1;   // Target provider
+  string market_native_id = 2; // Provider's native market ID (or use universal_id)
+  string universal_id   = 3;   // UPP universal market ID
+
+  string outcome_id     = 4;   // Which outcome to trade
+  Side   side           = 5;   // Buy or sell
+  OrderType order_type  = 6;   // Limit or market
+  TimeInForce tif       = 7;   // Time-in-force (default GTC)
+
+  string price          = 8;   // Limit price (required for limit orders)
+  int64  quantity       = 9;   // Number of contracts
+
+  string client_order_id = 10; // Client-assigned ID for idempotency
+  Timestamp expires_at   = 11; // Expiry for GTD orders
+
+  // Idempotency key (UPP gateway level)
+  string idempotency_key = 15;
+}
+
+message CreateOrderResponse {
+  Order order              = 1;
+  OrderEstimate estimate   = 2;  // Cost estimate at time of placement
+}
+
+message CancelOrderRequest {
+  string order_id          = 1;  // UPP order ID
+  string provider_order_id = 2;  // Or provider's native order ID
+  string provider          = 3;  // Provider domain
+}
+
+message CancelOrderResponse {
+  Order order = 1;  // Updated order with CANCELLED status
+}
+
+message CancelAllOrdersRequest {
+  string provider     = 1;  // Required: which provider
+  string market_id    = 2;  // Optional: only cancel orders in this market
+}
+
+message CancelAllOrdersResponse {
+  int32 cancelled_count = 1;
+  repeated string cancelled_order_ids = 2;
+}
+
+message GetOrderRequest {
+  string order_id          = 1;
+  string provider_order_id = 2;
+  string provider          = 3;
+}
+
+message ListOrdersRequest {
+  string provider       = 1;  // Optional: filter by provider
+  string market_id      = 2;  // Optional: filter by market
+  OrderStatus status    = 3;  // Optional: filter by status
+  Side side             = 4;  // Optional: filter by side
+  TimeRange time_range  = 5;  // Optional: filter by creation time
+
+  PaginationRequest pagination = 10;
+}
+
+message ListOrdersResponse {
+  repeated Order orders         = 1;
+  PaginationResponse pagination = 2;
+}
+
+message ListTradesRequest {
+  string provider       = 1;
+  string market_id      = 2;
+  string order_id       = 3;  // Optional: trades for a specific order
+  TimeRange time_range  = 4;
+
+  PaginationRequest pagination = 10;
+}
+
+message ListTradesResponse {
+  repeated Trade trades         = 1;
+  PaginationResponse pagination = 2;
+}
+
+message EstimateOrderRequest {
+  string provider       = 1;
+  string universal_id   = 2;
+  string outcome_id     = 3;
+  Side   side           = 4;
+  OrderType order_type  = 5;
+  string price          = 6;
+  int64  quantity       = 7;
+}
+
+message EstimateOrderResponse {
+  OrderEstimate estimate = 1;
+}
+
+// Cost estimate for an order.
+message OrderEstimate {
+  string max_cost          = 1;  // Maximum cost in settlement currency
+  string estimated_fees    = 2;  // Estimated fees
+  string total_with_fees   = 3;  // max_cost + estimated_fees
+  string funding_instrument = 4; // Which funding source would be used
+  string available_balance = 5;  // Current balance in that instrument
+  bool   sufficient_funds  = 6;  // Whether balance covers the order
+}

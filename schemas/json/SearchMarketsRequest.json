@@ -1,0 +1,74 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/SearchMarketsRequest",
+    "definitions": {
+        "SearchMarketsRequest": {
+            "properties": {
+                "query": {
+                    "type": "string",
+                    "description": "Search query string"
+                },
+                "provider": {
+                    "type": "string",
+                    "description": "Optional provider filter"
+                },
+                "category": {
+                    "type": "string",
+                    "description": "Optional category filter"
+                },
+                "status": {
+                    "enum": [
+                        "MARKET_STATUS_UNSPECIFIED",
+                        0,
+                        "MARKET_STATUS_PENDING",
+                        1,
+                        "MARKET_STATUS_OPEN",
+                        2,
+                        "MARKET_STATUS_HALTED",
+                        3,
+                        "MARKET_STATUS_CLOSED",
+                        4,
+                        "MARKET_STATUS_RESOLVED",
+                        5,
+                        "MARKET_STATUS_DISPUTED",
+                        6,
+                        "MARKET_STATUS_VOIDED",
+                        7
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "integer"
+                        }
+                    ],
+                    "title": "Market Status"
+                },
+                "pagination": {
+                    "$ref": "#/definitions/upp.v1.PaginationRequest",
+                    "additionalProperties": true
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Search Markets Request"
+        },
+        "upp.v1.PaginationRequest": {
+            "properties": {
+                "limit": {
+                    "type": "integer",
+                    "description": "Max items per page [1, 1000], default 50"
+                },
+                "cursor": {
+                    "type": "string",
+                    "description": "Opaque cursor from previous response"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "─── Pagination ──────────────────────────────────────────────",
+            "description": "─── Pagination ──────────────────────────────────────────────  Cursor-based pagination request. Cursor-based (not offset-based) for consistency under real-time inserts."
+        }
+    }
+}

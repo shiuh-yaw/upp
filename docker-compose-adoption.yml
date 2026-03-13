@@ -1,0 +1,154 @@
+version: '3.8'
+
+services:
+  # UPP Gateway
+  upp-gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: upp-gateway
+    ports:
+      - "8080:8080"
+      - "50051:50051"
+    environment:
+      # Core configuration
+      UPP_LISTEN_ADDR: "0.0.0.0:8080"
+      UPP_GRPC_ADDR: "0.0.0.0:50051"
+      UPP_LOG_LEVEL: "info"
+
+      # Provider API Keys (set via .env file)
+      KALSHI_API_KEY: "${KALSHI_API_KEY:-}"
+      KALSHI_API_URL: "${KALSHI_API_URL:-https://api.kalshi.com}"
+
+      POLYMARKET_API_KEY: "${POLYMARKET_API_KEY:-}"
+      POLYMARKET_API_URL: "${POLYMARKET_API_URL:-https://api.polymarket.com}"
+
+      OPINION_API_KEY: "${OPINION_API_KEY:-}"
+      OPINION_API_URL: "${OPINION_API_URL:-https://api.opinion.trade}"
+
+      # Rate limiting
+      UPP_RATE_LIMIT_REQUESTS: "1000"
+      UPP_RATE_LIMIT_WINDOW: "60"
+
+      # Circuit breaker
+      UPP_CIRCUIT_BREAKER_THRESHOLD: "50"
+      UPP_CIRCUIT_BREAKER_TIMEOUT: "30"
+
+      # Database
+      UPP_DATABASE_URL: "postgres://upp:upp@postgres:5432/upp"
+
+      # Cache
+      UPP_REDIS_URL: "redis://redis:6379"
+
+      # WebSocket
+      UPP_WEBSOCKET_ENABLED: "true"
+      UPP_WEBSOCKET_PATH: "/ws"
+
+      # MCP Server
+      UPP_MCP_ENABLED: "true"
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - upp-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    volumes:
+      - ./config:/app/config:ro
+      - ./logs:/app/logs
+
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: upp-postgres
+    environment:
+      POSTGRES_DB: "upp"
+      POSTGRES_USER: "upp"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:-upp-dev-only}"
+    ports:
+      - "5432:5432"
+    networks:
+      - upp-network
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U upp"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: upp-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - upp-network
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    command: redis-server --appendonly yes
+
+  # Optional: Prometheus for metrics
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: upp-prometheus
+    ports:
+      - "9090:9090"
+    environment:
+      - PROMETHEUS_TSDB_RETENTION_TIME=7d
+    volumes:
+      - ./config/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    networks:
+      - upp-network
+    restart: unless-stopped
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+
+  # Optional: Grafana for visualization
+  grafana:
+    image: grafana/grafana:latest
+    container_name: upp-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: "${GRAFANA_PASSWORD:-admin}"
+      GF_INSTALL_PLUGINS: "redis-datasource"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./config/grafana/datasources:/etc/grafana/provisioning/datasources:ro
+      - ./config/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
+    networks:
+      - upp-network
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+
+networks:
+  upp-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local

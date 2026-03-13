@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universal Prediction Protocol - Unified Market Access</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0a0a0f 0%, #1a0a2e 100%);
+            color: #e0e0e0;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Navigation */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 2rem;
+            background: rgba(10, 10, 15, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 212, 255, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #00d4ff;
+            text-decoration: none;
+            letter-spacing: -0.5px;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        nav a {
+            color: #b0b0c0;
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: color 0.3s ease;
+        }
+
+        nav a:hover {
+            color: #00d4ff;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 90vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            background: linear-gradient(180deg, rgba(0, 212, 255, 0.05) 0%, rgba(10, 10, 15, 0) 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(0, 212, 255, 0.1) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .hero-content {
+            text-align: center;
+            max-width: 800px;
+            z-index: 1;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 8vw, 4rem);
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #00d4ff 0%, #7dd4ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-tagline {
+            font-size: clamp(1rem, 3vw, 1.3rem);
+            color: #90a0d0;
+            margin-bottom: 2rem;
+            font-weight: 500;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+
+        .btn {
+            padding: 0.75rem 2rem;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            border: none;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
+            color: #0a0a0f;
+            box-shadow: 0 8px 24px rgba(0, 212, 255, 0.2);
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 12px 32px rgba(0, 212, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: #00d4ff;
+            border: 2px solid #00d4ff;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(0, 212, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            margin-top: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #00d4ff;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: #707090;
+            margin-top: 0.5rem;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 4rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .features h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            background: linear-gradient(135deg, #00d4ff 0%, #7dd4ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            border-radius: 8px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            border-color: #00d4ff;
+            box-shadow: 0 8px 32px rgba(0, 212, 255, 0.15);
+            transform: translateY(-4px);
+        }
+
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            background: rgba(0, 212, 255, 0.1);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 0.75rem;
+            color: #00d4ff;
+        }
+
+        .feature-card p {
+            color: #a0a0c0;
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
+
+        /* Code Example Section */
+        .code-section {
+            padding: 4rem 2rem;
+            background: rgba(0, 10, 20, 0.5);
+        }
+
+        .code-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .code-section h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            background: linear-gradient(135deg, #00d4ff 0%, #7dd4ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .code-examples {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .code-example {
+            background: #0f0f18;
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .code-label {
+            background: rgba(0, 212, 255, 0.1);
+            border-bottom: 1px solid rgba(0, 212, 255, 0.2);
+            padding: 0.75rem 1rem;
+            font-weight: 600;
+            color: #00d4ff;
+            font-size: 0.85rem;
+        }
+
+        pre {
+            padding: 1.5rem;
+            overflow-x: auto;
+            margin: 0;
+        }
+
+        code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: #e0e0e0;
+        }
+
+        .keyword { color: #ff79c6; }
+        .string { color: #f1fa8c; }
+        .function { color: #50fa7b; }
+        .comment { color: #6272a4; }
+        .number { color: #bd93f9; }
+        .type { color: #8be9fd; }
+
+        /* Architecture Section */
+        .architecture {
+            padding: 4rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .architecture h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            background: linear-gradient(135deg, #00d4ff 0%, #7dd4ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .arch-diagram {
+            background: #0f0f18;
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            border-radius: 8px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            overflow-x: auto;
+        }
+
+        .arch-text {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: #00d4ff;
+            line-height: 1.8;
+            white-space: pre;
+            text-align: center;
+        }
+
+        .arch-description {
+            color: #a0a0c0;
+            text-align: center;
+            font-size: 0.95rem;
+            margin-top: 1rem;
+        }
+
+        /* Quick Start Section */
+        .quickstart {
+            padding: 4rem 2rem;
+            background: rgba(0, 10, 20, 0.5);
+        }
+
+        .quickstart-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .quickstart h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            background: linear-gradient(135deg, #00d4ff 0%, #7dd4ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .step {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            border-radius: 8px;
+            padding: 2rem;
+            position: relative;
+        }
+
+        .step-number {
+            position: absolute;
+            top: -15px;
+            left: 20px;
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: #0a0a0f;
+        }
+
+        .step h3 {
+            margin-top: 1rem;
+            margin-bottom: 0.75rem;
+            color: #00d4ff;
+        }
+
+        .step p {
+            color: #a0a0c0;
+            font-size: 0.95rem;
+            margin-bottom: 1rem;
+        }
+
+        .step code {
+            background: #0f0f18;
+            border: 1px solid rgba(0, 212, 255, 0.1);
+            border-radius: 4px;
+            padding: 0.5rem 0.75rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: #f1fa8c;
+            display: block;
+            overflow-x: auto;
+        }
+
+        /* API Endpoints Section */
+        .endpoints {
+            padding: 4rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .endpoints h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            background: linear-gradient(135deg, #00d4ff 0%, #7dd4ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .endpoint-categories {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 2rem;
+        }
+
+        .endpoint-category {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .category-title {
+            background: rgba(0, 212, 255, 0.1);
+            border-bottom: 1px solid rgba(0, 212, 255, 0.2);
+            padding: 1rem;
+            font-weight: 600;
+            color: #00d4ff;
+        }
+
+        .endpoint-list {
+            padding: 1rem;
+        }
+
+        .endpoint-item {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid rgba(0, 212, 255, 0.1);
+            font-size: 0.85rem;
+        }
+
+        .endpoint-item:last-child {
+            border-bottom: none;
+        }
+
+        .method {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 3px;
+            font-weight: 600;
+            font-size: 0.7rem;
+            margin-right: 0.5rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .method-get { background: rgba(82, 199, 255, 0.2); color: #52c7ff; }
+        .method-post { background: rgba(81, 250, 123, 0.2); color: #51fa7b; }
+        .method-delete { background: rgba(255, 121, 198, 0.2); color: #ff79c6; }
+
+        .endpoint-path {
+            color: #a0a0c0;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Footer */
+        footer {
+            background: rgba(10, 10, 15, 0.9);
+            border-top: 1px solid rgba(0, 212, 255, 0.1);
+            padding: 3rem 2rem;
+            margin-top: 4rem;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h4 {
+            color: #00d4ff;
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+        }
+
+        .footer-section a {
+            display: block;
+            color: #707090;
+            text-decoration: none;
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+            transition: color 0.3s ease;
+        }
+
+        .footer-section a:hover {
+            color: #00d4ff;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(0, 212, 255, 0.1);
+            color: #707090;
+            font-size: 0.85rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            nav {
+                padding: 1rem;
+            }
+
+            nav ul {
+                gap: 1rem;
+            }
+
+            .hero {
+                min-height: 60vh;
+            }
+
+            .features-grid,
+            .code-examples,
+            .endpoint-categories,
+            .steps {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-stats {
+                gap: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <a href="#" class="logo">UPP</a>
+        <ul>
+            <li><a href="#features">Features</a></li>
+            <li><a href="#examples">Examples</a></li>
+            <li><a href="#api">API</a></li>
+            <li><a href="swagger.html">Docs</a></li>
+        </ul>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Universal Prediction Protocol</h1>
+            <p class="hero-tagline">Unified access to prediction markets across Kalshi, Polymarket, Opinion.trade, and beyond</p>
+            <div class="cta-buttons">
+                <button class="btn btn-primary" onclick="document.getElementById('quickstart').scrollIntoView({behavior: 'smooth'})">Get Started</button>
+                <a href="swagger.html" class="btn btn-secondary">View Docs</a>
+            </div>
+            <div class="hero-stats">
+                <div class="stat">
+                    <div class="stat-number">3+</div>
+                    <div class="stat-label">Integrated Providers</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">100k+</div>
+                    <div class="stat-label">Markets</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">Real-time</div>
+                    <div class="stat-label">WebSocket Streaming</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <h2>Why UPP?</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🔗</div>
+                <h3>Multi-Provider</h3>
+                <p>Seamlessly connect to Kalshi, Polymarket, Opinion.trade, and other prediction markets through a single unified API.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3>Real-Time Streaming</h3>
+                <p>WebSocket support for live market data, order updates, and price feeds with minimal latency.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🤖</div>
+                <h3>AI-Native</h3>
+                <p>Built on Model Context Protocol (MCP) with Agent-to-Agent capabilities for autonomous trading systems.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">✅</div>
+                <h3>Type-Safe SDKs</h3>
+                <p>Production-ready TypeScript and Python SDKs with full type definitions and intuitive APIs.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🛡️</div>
+                <h3>Production Ready</h3>
+                <p>Circuit breakers, rate limiting, automatic retries, and comprehensive error handling out of the box.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📋</div>
+                <h3>Open Standard</h3>
+                <p>Protocol-first design with protobuf-based specifications. MIT licensed. Built for the community.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Code Examples Section -->
+    <section class="code-section" id="examples">
+        <div class="code-container">
+            <h2>Quick Integration</h2>
+            <div class="code-examples">
+                <div class="code-example">
+                    <div class="code-label">TypeScript</div>
+                    <pre><code><span class="keyword">import</span> { <span class="type">UPPClient</span> } <span class="keyword">from</span> <span class="string">'@upp/sdk'</span>;
+
+<span class="keyword">const</span> <span class="function">client</span> = <span class="keyword">new</span> <span class="type">UPPClient</span>({
+  <span class="function">baseURL</span>: <span class="string">'http://localhost:8080'</span>,
+  <span class="function">apiKey</span>: <span class="string">process.env.UPP_API_KEY</span>
+});
+
+<span class="comment">// Fetch markets across all providers</span>
+<span class="keyword">const</span> <span class="function">markets</span> = <span class="keyword">await</span> <span class="function">client</span>.<span class="function">markets</span>.<span class="function">list</span>({
+  <span class="function">query</span>: <span class="string">'Trump 2024'</span>,
+  <span class="function">limit</span>: <span class="number">10</span>
+});
+
+<span class="keyword">for</span> (<span class="keyword">const</span> <span class="function">market</span> <span class="keyword">of</span> <span class="function">markets</span>) {
+  <span class="function">console</span>.<span class="function">log</span>(<span class="function">market</span>.<span class="function">name</span>);
+}</code></pre>
+                </div>
+                <div class="code-example">
+                    <div class="code-label">Python</div>
+                    <pre><code><span class="keyword">from</span> <span class="function">upp</span> <span class="keyword">import</span> <span class="type">UPPClient</span>
+
+<span class="function">client</span> = <span class="type">UPPClient</span>(
+    base_url=<span class="string">"http://localhost:8080"</span>,
+    api_key=<span class="string">"your-api-key"</span>
+)
+
+<span class="comment"># Fetch markets across all providers</span>
+<span class="function">markets</span> = <span class="function">client</span>.<span class="function">markets</span>.<span class="function">list</span>(
+    <span class="function">query</span>=<span class="string">"Trump 2024"</span>,
+    <span class="function">limit</span>=<span class="number">10</span>
+)
+
+<span class="keyword">for</span> <span class="function">market</span> <span class="keyword">in</span> <span class="function">markets</span>:
+    <span class="function">print</span>(<span class="function">market</span>.<span class="function">name</span>)</code></pre>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Architecture Section -->
+    <section class="architecture" id="architecture">
+        <h2>Architecture</h2>
+        <div class="arch-diagram">
+            <div class="arch-text">
+     ┌──────────────────────────────────────────┐
+     │     Player Surfaces                      │
+     │  (Web, Mobile, Desktop, Agents)          │
+     └──────────────────────┬───────────────────┘
+                            │
+                            │ (REST + WebSocket)
+                            │
+     ┌──────────────────────▼───────────────────┐
+     │      UPP Gateway (Central Hub)           │
+     │  • Market Aggregation                    │
+     │  • Order Management                      │
+     │  • Portfolio Tracking                    │
+     │  • MCP Server Interface                  │
+     └──────────────────────┬───────────────────┘
+                            │
+           ┌────────────────┼────────────────┐
+           │                │                │
+    ┌──────▼──────┐ ┌──────▼──────┐ ┌──────▼──────┐
+    │   Kalshi    │ │ Polymarket  │ │  Opinion    │
+    │   Adapter   │ │  Adapter    │ │   Adapter   │
+    └─────────────┘ └─────────────┘ └─────────────┘
+            </div>
+        </div>
+        <p class="arch-description">
+            The UPP Gateway provides a unified interface to multiple prediction market providers,
+            handling authentication, rate limiting, aggregation, and real-time streaming.
+        </p>
+    </section>
+
+    <!-- Quick Start Section -->
+    <section class="quickstart" id="quickstart">
+        <div class="quickstart-container">
+            <h2>Quick Start</h2>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3>Install SDK</h3>
+                    <p>Add the UPP SDK to your project:</p>
+                    <code>npm install @upp/sdk</code>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3>Create Client</h3>
+                    <p>Initialize the client with your configuration:</p>
+                    <code>const client = new UPPClient({...})</code>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3>Fetch Markets</h3>
+                    <p>Start querying markets and placing orders:</p>
+                    <code>await client.markets.list()</code>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- API Endpoints Section -->
+    <section class="endpoints" id="api">
+        <h2>API Endpoints</h2>
+        <div class="endpoint-categories">
+            <div class="endpoint-category">
+                <div class="category-title">Discovery & Health</div>
+                <div class="endpoint-list">
+                    <div class="endpoint-item">
+                        <span class="method method-get">GET</span>
+                        <span class="endpoint-path">/health</span>
+                    </div>
+                    <div class="endpoint-item">
+                        <span class="method method-get">GET</span>
+                        <span class="endpoint-path">/ready</span>
+                    </div>
+                    <div class="endpoint-item">
+                        <span class="method method-get">GET</span>
+                        <span class="endpoint-path">/.well-known/upp</span>
+                    </div>
+                    <div class="endpoint-item">
+                        <span class="method method-get">GET</span>
+                        <span class="endpoint-path">/upp/v1/discovery/providers</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="endpoint-category">
+                <div class="category-title">Markets</div>
+                <div class="endpoint-list">
+                    <div class="endpoint-item">
+                        <span class="method method-get">GET</span>
+                        <span class="endpoint-path">/upp/v1/markets</span>
+                    </div>
+                    <div class="endpoint-item">
+                        <span class="method method-get">GET</span>
+                        <span class="endpoint-path">/upp/v1/markets/search</span>
+                    </div>
+                    <div class="endpoint-item">
+                        <span class="method method-get">GET</span>
+                        <span class="endpoint-path">/upp/v1/markets/:id</span>
+                    </div>
+                    <div class="endpoint-item">
+                        <span class="method method-get">GET</span>
+                        <span class="endpoint-path">/upp/v1/markets/:id/orderbook</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="endpoint-category">
+                <div class="category-title">Trading</div>
+                <div class="endpoint-list">
+                    <div class="endpoint-item">
+                        <span class="method method-post">POST</span>
+                        <span class="endpoint-path">/upp/v1/orders</span>
+                    </div>
+                    <div class="endpoint-item">
+                        <span class="method method-get">GET</span>
+                        <span class="endpoint-path">/upp/v1/orders</span>
+                    </div>
+                    <div class="endpoint-item">
+                        <span class="method method-delete">DELETE</span>
+                        <span class="endpoint-path">/upp/v1/orders/:id</span>
+                    </div>
+                    <div class="endpoint-item">
+                        <span class="method method-post">POST</span>
+                        <span class="endpoint-path">/upp/v1/orders/estimate</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="endpoint-category">
+                <div class="category-title">Portfolio</div>
+                <div class="endpoint-list">
+                    <div class="endpoint-item">
+                        <span class="method method-get">GET</span>
+                        <span class="endpoint-path">/upp/v1/portfolio/positions</span>
+                    </div>
+                    <div class="endpoint-item">
+                        <span class="method method-get">GET</span>
+                        <span class="endpoint-path">/upp/v1/portfolio/summary</span>
+                    </div>
+                    <div class="endpoint-item">
+                        <span class="method method-get">GET</span>
+                        <span class="endpoint-path">/upp/v1/portfolio/balances</span>
+                    </div>
+                    <div class="endpoint-item">
+                        <span class="method method-get">GET</span>
+                        <span class="endpoint-path">/upp/v1/trades</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="endpoint-category">
+                <div class="category-title">MCP Server</div>
+                <div class="endpoint-list">
+                    <div class="endpoint-item">
+                        <span class="method method-get">GET</span>
+                        <span class="endpoint-path">/upp/v1/mcp/tools</span>
+                    </div>
+                    <div class="endpoint-item">
+                        <span class="method method-get">GET</span>
+                        <span class="endpoint-path">/upp/v1/mcp/schema</span>
+                    </div>
+                    <div class="endpoint-item">
+                        <span class="method method-post">POST</span>
+                        <span class="endpoint-path">/upp/v1/mcp/execute</span>
+                    </div>
+                    <div class="endpoint-item">
+                        <span class="method method-get">GET</span>
+                        <span class="endpoint-path">/.well-known/agent.json</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="endpoint-category">
+                <div class="category-title">Resolution & Settlement</div>
+                <div class="endpoint-list">
+                    <div class="endpoint-item">
+                        <span class="method method-get">GET</span>
+                        <span class="endpoint-path">/upp/v1/resolutions</span>
+                    </div>
+                    <div class="endpoint-item">
+                        <span class="method method-get">GET</span>
+                        <span class="endpoint-path">/upp/v1/resolutions/:id</span>
+                    </div>
+                    <div class="endpoint-item">
+                        <span class="method method-get">GET</span>
+                        <span class="endpoint-path">/upp/v1/settlement/instruments</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>Product</h4>
+                <a href="#features">Features</a>
+                <a href="#api">API</a>
+                <a href="swagger.html">Documentation</a>
+                <a href="#">Pricing</a>
+            </div>
+            <div class="footer-section">
+                <h4>Developers</h4>
+                <a href="#">SDKs</a>
+                <a href="#">Examples</a>
+                <a href="#">API Reference</a>
+                <a href="#">Status</a>
+            </div>
+            <div class="footer-section">
+                <h4>Community</h4>
+                <a href="#">GitHub</a>
+                <a href="#">Discord</a>
+                <a href="#">Twitter</a>
+                <a href="#">Blog</a>
+            </div>
+            <div class="footer-section">
+                <h4>Legal</h4>
+                <a href="#">License (MIT)</a>
+                <a href="#">Terms</a>
+                <a href="#">Privacy</a>
+                <a href="#">Security</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>Built for the prediction market ecosystem. MIT Licensed.</p>
+        </div>
+    </footer>
+</body>
+</html>

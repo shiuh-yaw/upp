@@ -1,0 +1,54 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/MarketVolume",
+    "definitions": {
+        "MarketVolume": {
+            "properties": {
+                "total_volume": {
+                    "type": "string",
+                    "description": "All-time volume in settlement currency"
+                },
+                "volume_24h": {
+                    "type": "string",
+                    "description": "Last 24h volume"
+                },
+                "volume_7d": {
+                    "type": "string",
+                    "description": "Last 7d volume"
+                },
+                "open_interest": {
+                    "type": "string",
+                    "description": "Currently outstanding contracts"
+                },
+                "num_traders": {
+                    "type": "integer",
+                    "description": "Unique traders (if available)"
+                },
+                "updated_at": {
+                    "$ref": "#/definitions/upp.v1.Timestamp",
+                    "additionalProperties": true
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "─── Volume ──────────────────────────────────────────────────",
+            "description": "─── Volume ──────────────────────────────────────────────────  Trading activity metrics."
+        },
+        "upp.v1.Timestamp": {
+            "properties": {
+                "seconds": {
+                    "type": "string",
+                    "description": "Unix epoch seconds"
+                },
+                "nanos": {
+                    "type": "integer",
+                    "description": "Sub-second nanoseconds [0, 999999999]"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "─── Temporal ────────────────────────────────────────────────",
+            "description": "─── Temporal ────────────────────────────────────────────────  High-precision timestamp for trading events. Always UTC. Nanosecond precision for orderbook/trade events."
+        }
+    }
+}

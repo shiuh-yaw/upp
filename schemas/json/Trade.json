@@ -1,0 +1,148 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/Trade",
+    "definitions": {
+        "Trade": {
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "description": "Trade ID"
+                },
+                "order_id": {
+                    "type": "string",
+                    "description": "Parent order ID"
+                },
+                "market_id": {
+                    "$ref": "#/definitions/upp.v1.UniversalMarketId",
+                    "additionalProperties": true
+                },
+                "outcome_id": {
+                    "type": "string"
+                },
+                "side": {
+                    "enum": [
+                        "SIDE_UNSPECIFIED",
+                        0,
+                        "SIDE_BUY",
+                        1,
+                        "SIDE_SELL",
+                        2
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "integer"
+                        }
+                    ],
+                    "title": "Side"
+                },
+                "price": {
+                    "type": "string",
+                    "description": "Execution price"
+                },
+                "quantity": {
+                    "type": "string",
+                    "description": "Contracts filled in this trade"
+                },
+                "notional": {
+                    "type": "string",
+                    "description": "price * quantity in settlement currency"
+                },
+                "role": {
+                    "enum": [
+                        "TRADE_ROLE_UNSPECIFIED",
+                        0,
+                        "TRADE_ROLE_MAKER",
+                        1,
+                        "TRADE_ROLE_TAKER",
+                        2
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "integer"
+                        }
+                    ],
+                    "title": "Trade Role"
+                },
+                "fees": {
+                    "$ref": "#/definitions/upp.v1.OrderFees",
+                    "additionalProperties": true
+                },
+                "executed_at": {
+                    "$ref": "#/definitions/upp.v1.Timestamp",
+                    "additionalProperties": true
+                },
+                "provider_metadata": {
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "type": "object"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "─── Trade ───────────────────────────────────────────────────",
+            "description": "─── Trade ───────────────────────────────────────────────────  An executed trade — a matched order fill. Equivalent to UCP's \"Transaction\"."
+        },
+        "upp.v1.OrderFees": {
+            "properties": {
+                "maker_fee": {
+                    "type": "string",
+                    "description": "Fee paid for adding liquidity"
+                },
+                "taker_fee": {
+                    "type": "string",
+                    "description": "Fee paid for removing liquidity"
+                },
+                "total_fee": {
+                    "type": "string",
+                    "description": "Total fees for this order"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Order Fees"
+        },
+        "upp.v1.Timestamp": {
+            "properties": {
+                "seconds": {
+                    "type": "string",
+                    "description": "Unix epoch seconds"
+                },
+                "nanos": {
+                    "type": "integer",
+                    "description": "Sub-second nanoseconds [0, 999999999]"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "─── Temporal ────────────────────────────────────────────────",
+            "description": "─── Temporal ────────────────────────────────────────────────  High-precision timestamp for trading events. Always UTC. Nanosecond precision for orderbook/trade events."
+        },
+        "upp.v1.UniversalMarketId": {
+            "properties": {
+                "provider": {
+                    "type": "string",
+                    "description": "Provider domain, e.g. \"kalshi.com\""
+                },
+                "native_id": {
+                    "type": "string",
+                    "description": "Provider's native market ID"
+                },
+                "full_id": {
+                    "type": "string",
+                    "description": "Computed: \"upp:{provider}:{native_id}\""
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "─── Identity ────────────────────────────────────────────────",
+            "description": "─── Identity ────────────────────────────────────────────────  Universal Market Identifier. Format: \"upp:{provider}:{native_id}\" Enables cross-provider market matching and portfolio aggregation."
+        }
+    }
+}

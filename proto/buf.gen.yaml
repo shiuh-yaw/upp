@@ -1,0 +1,64 @@
+# buf.gen.yaml — Code generation configuration.
+# Generates Rust, TypeScript, Go, Python, and JSON Schema from .proto files.
+version: v2
+
+managed:
+  enabled: true
+  override:
+    - file_option: go_package_prefix
+      value: github.com/universal-prediction-protocol/upp/gen/go
+
+plugins:
+  # ── Rust (prost + tonic for gRPC) ──
+  - remote: buf.build/community/neoeinstein-prost
+    out: ../gateway/src/gen
+    opt:
+      - compile_well_known_types=true
+
+  - remote: buf.build/community/neoeinstein-tonic
+    out: ../gateway/src/gen
+    opt:
+      - compile_well_known_types=true
+
+  # ── Go ──
+  - remote: buf.build/protocolbuffers/go
+    out: ../gen/go
+    opt:
+      - paths=source_relative
+
+  - remote: buf.build/grpc/go
+    out: ../gen/go
+    opt:
+      - paths=source_relative
+
+  # ── TypeScript (ts-proto for type-safe clients) ──
+  - remote: buf.build/community/stephenh-ts-proto
+    out: ../sdk/typescript/src/gen
+    opt:
+      - outputServices=nice-grpc
+      - outputJsonMethods=true
+      - useExactTypes=false
+      - esModuleInterop=true
+      - env=node
+
+  # ── Python ──
+  - remote: buf.build/protocolbuffers/python
+    out: ../sdk/python/src/gen
+
+  - remote: buf.build/grpc/python
+    out: ../sdk/python/src/gen
+
+  # ── OpenAPI 3.1 (for REST API documentation) ──
+  - remote: buf.build/grpc-ecosystem/openapiv2
+    out: ../schemas/openapi
+    opt:
+      - allow_merge=true
+      - merge_file_name=upp
+      - output_format=json
+
+  # ── JSON Schema ──
+  - remote: buf.build/community/chrusty-jsonschema
+    out: ../schemas/json
+    opt:
+      - enforce_oneof=true
+      - json_fieldnames=true

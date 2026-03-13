@@ -1,0 +1,58 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/GetPnLHistoryRequest",
+    "definitions": {
+        "GetPnLHistoryRequest": {
+            "properties": {
+                "provider": {
+                    "type": "string",
+                    "description": "Optional: filter by provider"
+                },
+                "range": {
+                    "$ref": "#/definitions/upp.v1.TimeRange",
+                    "additionalProperties": true,
+                    "description": "Time range"
+                },
+                "granularity": {
+                    "type": "string",
+                    "description": "\"1h\", \"1d\", \"1w\" — aggregation period"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Get Pn L History Request"
+        },
+        "upp.v1.TimeRange": {
+            "properties": {
+                "start": {
+                    "$ref": "#/definitions/upp.v1.Timestamp",
+                    "additionalProperties": true
+                },
+                "end": {
+                    "$ref": "#/definitions/upp.v1.Timestamp",
+                    "additionalProperties": true
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Time Range",
+            "description": "Time range for queries and filters."
+        },
+        "upp.v1.Timestamp": {
+            "properties": {
+                "seconds": {
+                    "type": "string",
+                    "description": "Unix epoch seconds"
+                },
+                "nanos": {
+                    "type": "integer",
+                    "description": "Sub-second nanoseconds [0, 999999999]"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "─── Temporal ────────────────────────────────────────────────",
+            "description": "─── Temporal ────────────────────────────────────────────────  High-precision timestamp for trading events. Always UTC. Nanosecond precision for orderbook/trade events."
+        }
+    }
+}

@@ -1,0 +1,146 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/ListMarketsRequest",
+    "definitions": {
+        "ListMarketsRequest": {
+            "properties": {
+                "provider": {
+                    "type": "string",
+                    "description": "Filters  Filter by provider domain"
+                },
+                "category": {
+                    "type": "string",
+                    "description": "Filter by category"
+                },
+                "status": {
+                    "enum": [
+                        "MARKET_STATUS_UNSPECIFIED",
+                        0,
+                        "MARKET_STATUS_PENDING",
+                        1,
+                        "MARKET_STATUS_OPEN",
+                        2,
+                        "MARKET_STATUS_HALTED",
+                        3,
+                        "MARKET_STATUS_CLOSED",
+                        4,
+                        "MARKET_STATUS_RESOLVED",
+                        5,
+                        "MARKET_STATUS_DISPUTED",
+                        6,
+                        "MARKET_STATUS_VOIDED",
+                        7
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "integer"
+                        }
+                    ],
+                    "title": "Market Status"
+                },
+                "market_type": {
+                    "enum": [
+                        "MARKET_TYPE_UNSPECIFIED",
+                        0,
+                        "MARKET_TYPE_BINARY",
+                        1,
+                        "MARKET_TYPE_CATEGORICAL",
+                        2,
+                        "MARKET_TYPE_SCALAR",
+                        3
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "integer"
+                        }
+                    ],
+                    "title": "─── Market Types ────────────────────────────────────────────",
+                    "description": "─── Market Types ────────────────────────────────────────────"
+                },
+                "tags": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array",
+                    "description": "Filter by tags (AND)"
+                },
+                "sort_by": {
+                    "enum": [
+                        "MARKET_SORT_FIELD_UNSPECIFIED",
+                        0,
+                        "MARKET_SORT_FIELD_VOLUME_24H",
+                        1,
+                        "MARKET_SORT_FIELD_CREATED_AT",
+                        2,
+                        "MARKET_SORT_FIELD_CLOSES_AT",
+                        3,
+                        "MARKET_SORT_FIELD_OPEN_INTEREST",
+                        4,
+                        "MARKET_SORT_FIELD_NUM_TRADERS",
+                        5
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "integer"
+                        }
+                    ],
+                    "title": "Market Sort Field"
+                },
+                "sort_dir": {
+                    "enum": [
+                        "SORT_DIRECTION_UNSPECIFIED",
+                        0,
+                        "SORT_DIRECTION_ASC",
+                        1,
+                        "SORT_DIRECTION_DESC",
+                        2
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "integer"
+                        }
+                    ],
+                    "title": "─── Enums ───────────────────────────────────────────────────",
+                    "description": "─── Enums ───────────────────────────────────────────────────  Sort direction for list queries."
+                },
+                "pagination": {
+                    "$ref": "#/definitions/upp.v1.PaginationRequest",
+                    "additionalProperties": true,
+                    "description": "Pagination"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "─── Request/Response Messages ───────────────────────────────",
+            "description": "─── Request/Response Messages ───────────────────────────────"
+        },
+        "upp.v1.PaginationRequest": {
+            "properties": {
+                "limit": {
+                    "type": "integer",
+                    "description": "Max items per page [1, 1000], default 50"
+                },
+                "cursor": {
+                    "type": "string",
+                    "description": "Opaque cursor from previous response"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "─── Pagination ──────────────────────────────────────────────",
+            "description": "─── Pagination ──────────────────────────────────────────────  Cursor-based pagination request. Cursor-based (not offset-based) for consistency under real-time inserts."
+        }
+    }
+}

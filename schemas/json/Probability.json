@@ -1,0 +1,18 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/Probability",
+    "definitions": {
+        "Probability": {
+            "properties": {
+                "basis_points": {
+                    "type": "integer",
+                    "description": "6300 = 63.00% = 0.6300"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Probability",
+            "description": "Probability value [0.0, 1.0] representing market-implied likelihood. Stored as basis points internally (0-10000) for precision."
+        }
+    }
+}

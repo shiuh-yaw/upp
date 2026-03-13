@@ -1,0 +1,20 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/A2aConfig",
+    "definitions": {
+        "A2aConfig": {
+            "properties": {
+                "supported": {
+                    "type": "boolean"
+                },
+                "agent_card_url": {
+                    "type": "string",
+                    "description": "URL to A2A agent card"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "A 2 A Config"
+        }
+    }
+}

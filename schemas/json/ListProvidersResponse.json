@@ -1,0 +1,612 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/ListProvidersResponse",
+    "definitions": {
+        "ListProvidersResponse": {
+            "properties": {
+                "providers": {
+                    "items": {
+                        "$ref": "#/definitions/upp.v1.ProviderManifest"
+                    },
+                    "type": "array"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "List Providers Response"
+        },
+        "upp.v1.A2aConfig": {
+            "properties": {
+                "supported": {
+                    "type": "boolean"
+                },
+                "agent_card_url": {
+                    "type": "string",
+                    "description": "URL to A2A agent card"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "A 2 A Config"
+        },
+        "upp.v1.AuthConfig": {
+            "properties": {
+                "methods": {
+                    "items": {
+                        "$ref": "#/definitions/upp.v1.AuthMethod"
+                    },
+                    "type": "array",
+                    "description": "Supported auth methods"
+                },
+                "credential_providers": {
+                    "items": {
+                        "$ref": "#/definitions/upp.v1.CredentialProviderInfo"
+                    },
+                    "type": "array",
+                    "description": "Credential providers (third-party identity verification)"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "─── Authentication ──────────────────────────────────────────",
+            "description": "─── Authentication ──────────────────────────────────────────"
+        },
+        "upp.v1.AuthMethod": {
+            "properties": {
+                "type": {
+                    "enum": [
+                        "AUTH_METHOD_TYPE_UNSPECIFIED",
+                        0,
+                        "AUTH_METHOD_TYPE_API_KEY",
+                        1,
+                        "AUTH_METHOD_TYPE_API_KEY_RSA",
+                        2,
+                        "AUTH_METHOD_TYPE_WALLET_SIG",
+                        3,
+                        "AUTH_METHOD_TYPE_OAUTH2",
+                        4,
+                        "AUTH_METHOD_TYPE_MCP_TOKEN",
+                        5,
+                        "AUTH_METHOD_TYPE_JWT",
+                        6
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "integer"
+                        }
+                    ],
+                    "title": "Auth Method Type"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "docs_url": {
+                    "type": "string",
+                    "description": "Documentation for this auth method"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Auth Method"
+        },
+        "upp.v1.CapabilityConfig": {
+            "properties": {
+                "supported_market_types": {
+                    "items": {
+                        "enum": [
+                            "MARKET_TYPE_UNSPECIFIED",
+                            0,
+                            "MARKET_TYPE_BINARY",
+                            1,
+                            "MARKET_TYPE_CATEGORICAL",
+                            2,
+                            "MARKET_TYPE_SCALAR",
+                            3
+                        ]
+                    },
+                    "type": "array",
+                    "title": "─── Market Types ────────────────────────────────────────────",
+                    "description": "─── Market Types ────────────────────────────────────────────"
+                },
+                "categories": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array",
+                    "description": "Available categories"
+                },
+                "supported_order_types": {
+                    "items": {
+                        "enum": [
+                            "ORDER_TYPE_UNSPECIFIED",
+                            0,
+                            "ORDER_TYPE_LIMIT",
+                            1,
+                            "ORDER_TYPE_MARKET",
+                            2
+                        ]
+                    },
+                    "type": "array",
+                    "title": "Order Type",
+                    "description": "Order types supported by the market."
+                },
+                "supported_tif": {
+                    "items": {
+                        "enum": [
+                            "TIME_IN_FORCE_UNSPECIFIED",
+                            0,
+                            "TIME_IN_FORCE_GTC",
+                            1,
+                            "TIME_IN_FORCE_GTD",
+                            2,
+                            "TIME_IN_FORCE_FOK",
+                            3,
+                            "TIME_IN_FORCE_IOC",
+                            4
+                        ]
+                    },
+                    "type": "array",
+                    "title": "Time In Force",
+                    "description": "Time-in-force policies."
+                },
+                "supported_oracle_types": {
+                    "items": {
+                        "enum": [
+                            "ORACLE_TYPE_UNSPECIFIED",
+                            0,
+                            "ORACLE_TYPE_OFFICIAL_DATA",
+                            1,
+                            "ORACLE_TYPE_FINANCIAL_DATA",
+                            2,
+                            "ORACLE_TYPE_HUMAN_COMMITTEE",
+                            3,
+                            "ORACLE_TYPE_AI_ORACLE",
+                            4,
+                            "ORACLE_TYPE_SMART_CONTRACT",
+                            5,
+                            "ORACLE_TYPE_DECENTRALIZED",
+                            6,
+                            "ORACLE_TYPE_PROVIDER_INTERNAL",
+                            7
+                        ]
+                    },
+                    "type": "array",
+                    "title": "Oracle Type",
+                    "description": "Type of resolution oracle."
+                },
+                "dispute_window_hours": {
+                    "type": "integer"
+                },
+                "supported_currencies": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array",
+                    "description": "Settlement capability config"
+                },
+                "supported_funding_types": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Capability Config",
+            "description": "Capability-specific configuration."
+        },
+        "upp.v1.CapabilityDeclaration": {
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "\"markets\", \"trading\", \"portfolio\", etc."
+                },
+                "version": {
+                    "type": "string",
+                    "description": "Capability version (date-based)"
+                },
+                "schema_url": {
+                    "type": "string",
+                    "description": "URL to the capability's JSON Schema"
+                },
+                "operations": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array",
+                    "description": "Supported operations within this capability  e.g. [\"listMarkets\", \"getMarket\", \"searchMarkets\"]"
+                },
+                "extensions": {
+                    "items": {
+                        "$ref": "#/definitions/upp.v1.ExtensionDeclaration"
+                    },
+                    "type": "array",
+                    "description": "Active extensions for this capability"
+                },
+                "config": {
+                    "$ref": "#/definitions/upp.v1.CapabilityConfig",
+                    "additionalProperties": true,
+                    "description": "Capability-specific config"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "─── Capabilities ────────────────────────────────────────────",
+            "description": "─── Capabilities ────────────────────────────────────────────  A declared capability with version, operations, and extensions. Mirroring UCP's capability model."
+        },
+        "upp.v1.CredentialProviderInfo": {
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "description": "e.g. \"kalshi_native\", \"civic\", \"worldcoin\""
+                },
+                "name": {
+                    "type": "string",
+                    "description": "Human-readable name"
+                },
+                "type": {
+                    "type": "string",
+                    "description": "\"native\", \"third_party\""
+                },
+                "docs_url": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Credential Provider Info"
+        },
+        "upp.v1.ExtensionDeclaration": {
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "\"analytics\", \"streaming\", \"liquidity\", etc."
+                },
+                "version": {
+                    "type": "string"
+                },
+                "schema_url": {
+                    "type": "string",
+                    "description": "URL to the extension's JSON Schema"
+                },
+                "operations": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array",
+                    "description": "Operations added by this extension"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Extension Declaration",
+            "description": "An extension that augments a capability. Mirroring UCP's extension model."
+        },
+        "upp.v1.FixConfig": {
+            "properties": {
+                "supported": {
+                    "type": "boolean"
+                },
+                "version": {
+                    "type": "string",
+                    "description": "e.g. \"4.4\""
+                },
+                "endpoint": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Fix Config"
+        },
+        "upp.v1.GrpcConfig": {
+            "properties": {
+                "endpoint": {
+                    "type": "string",
+                    "description": "e.g. \"api.kalshi.com:443\""
+                },
+                "tls_required": {
+                    "type": "boolean"
+                },
+                "proto_url": {
+                    "type": "string",
+                    "description": "URL to .proto files"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Grpc Config"
+        },
+        "upp.v1.McpConfig": {
+            "properties": {
+                "supported": {
+                    "type": "boolean"
+                },
+                "manifest_url": {
+                    "type": "string",
+                    "description": "URL to MCP manifest"
+                },
+                "tools": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array",
+                    "description": "Available MCP tool names"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Mcp Config"
+        },
+        "upp.v1.ProviderInfo": {
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "Human-readable name, e.g. \"Kalshi\""
+                },
+                "id": {
+                    "type": "string",
+                    "description": "Domain identifier, e.g. \"kalshi.com\""
+                },
+                "type": {
+                    "enum": [
+                        "PROVIDER_TYPE_UNSPECIFIED",
+                        0,
+                        "PROVIDER_TYPE_REGULATED_EXCHANGE",
+                        1,
+                        "PROVIDER_TYPE_DECENTRALIZED",
+                        2,
+                        "PROVIDER_TYPE_HYBRID",
+                        3,
+                        "PROVIDER_TYPE_AGGREGATOR",
+                        4
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "integer"
+                        }
+                    ],
+                    "title": "Provider Type"
+                },
+                "description": {
+                    "type": "string",
+                    "description": "Brief description"
+                },
+                "website_url": {
+                    "type": "string",
+                    "description": "Provider website"
+                },
+                "docs_url": {
+                    "type": "string",
+                    "description": "API documentation URL"
+                },
+                "support_email": {
+                    "type": "string",
+                    "description": "Developer support contact"
+                },
+                "logo_url": {
+                    "type": "string",
+                    "description": "Provider logo"
+                },
+                "regulatory": {
+                    "$ref": "#/definitions/upp.v1.RegulatoryInfo",
+                    "additionalProperties": true,
+                    "description": "Regulatory info"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "─── Provider Info ───────────────────────────────────────────",
+            "description": "─── Provider Info ───────────────────────────────────────────"
+        },
+        "upp.v1.ProviderManifest": {
+            "properties": {
+                "upp_version": {
+                    "type": "string",
+                    "description": "Protocol version (date-based: \"2026-03-11\")"
+                },
+                "provider": {
+                    "$ref": "#/definitions/upp.v1.ProviderInfo",
+                    "additionalProperties": true,
+                    "description": "Provider identity"
+                },
+                "capabilities": {
+                    "items": {
+                        "$ref": "#/definitions/upp.v1.CapabilityDeclaration"
+                    },
+                    "type": "array",
+                    "description": "Supported capabilities"
+                },
+                "transport": {
+                    "$ref": "#/definitions/upp.v1.TransportConfig",
+                    "additionalProperties": true,
+                    "description": "Transport bindings"
+                },
+                "authentication": {
+                    "$ref": "#/definitions/upp.v1.AuthConfig",
+                    "additionalProperties": true,
+                    "description": "Authentication methods"
+                },
+                "rate_limits": {
+                    "$ref": "#/definitions/upp.v1.RateLimitConfig",
+                    "additionalProperties": true,
+                    "description": "Rate limiting info"
+                },
+                "updated_at": {
+                    "$ref": "#/definitions/upp.v1.Timestamp",
+                    "additionalProperties": true,
+                    "description": "When this manifest was last updated"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "─── Provider Manifest ───────────────────────────────────────",
+            "description": "─── Provider Manifest ───────────────────────────────────────  Published at /.well-known/upp on the provider's domain. This is the entry point for all UPP interactions."
+        },
+        "upp.v1.RateLimitConfig": {
+            "properties": {
+                "rules": {
+                    "items": {
+                        "$ref": "#/definitions/upp.v1.RateLimitRule"
+                    },
+                    "type": "array",
+                    "description": "Per-endpoint rate limits"
+                },
+                "tier": {
+                    "type": "string",
+                    "description": "Tier info  Current tier (e.g. \"standard\", \"premium\")"
+                },
+                "upgrade_url": {
+                    "type": "string",
+                    "description": "URL to request higher limits"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "─── Rate Limits ─────────────────────────────────────────────",
+            "description": "─── Rate Limits ─────────────────────────────────────────────"
+        },
+        "upp.v1.RateLimitRule": {
+            "properties": {
+                "endpoint_pattern": {
+                    "type": "string",
+                    "description": "Glob pattern, e.g. \"/markets/*\""
+                },
+                "requests_per_second": {
+                    "type": "integer"
+                },
+                "requests_per_minute": {
+                    "type": "integer"
+                },
+                "burst_limit": {
+                    "type": "integer",
+                    "description": "Max burst above sustained rate"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Rate Limit Rule"
+        },
+        "upp.v1.RegulatoryInfo": {
+            "properties": {
+                "jurisdictions": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array",
+                    "description": "Where regulated"
+                },
+                "regulator": {
+                    "type": "string",
+                    "description": "Regulatory body"
+                },
+                "license_type": {
+                    "type": "string",
+                    "description": "License type"
+                },
+                "compliant": {
+                    "type": "boolean",
+                    "description": "Self-attestation"
+                },
+                "compliance_url": {
+                    "type": "string",
+                    "description": "Compliance documentation"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Regulatory Info"
+        },
+        "upp.v1.RestConfig": {
+            "properties": {
+                "base_url": {
+                    "type": "string",
+                    "description": "e.g. \"https://api.kalshi.com/upp/v1\""
+                },
+                "openapi_spec_url": {
+                    "type": "string",
+                    "description": "URL to OpenAPI 3.1 spec"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Rest Config"
+        },
+        "upp.v1.Timestamp": {
+            "properties": {
+                "seconds": {
+                    "type": "string",
+                    "description": "Unix epoch seconds"
+                },
+                "nanos": {
+                    "type": "integer",
+                    "description": "Sub-second nanoseconds [0, 999999999]"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "─── Temporal ────────────────────────────────────────────────",
+            "description": "─── Temporal ────────────────────────────────────────────────  High-precision timestamp for trading events. Always UTC. Nanosecond precision for orderbook/trade events."
+        },
+        "upp.v1.TransportConfig": {
+            "properties": {
+                "rest": {
+                    "$ref": "#/definitions/upp.v1.RestConfig",
+                    "additionalProperties": true
+                },
+                "websocket": {
+                    "$ref": "#/definitions/upp.v1.WebSocketConfig",
+                    "additionalProperties": true
+                },
+                "grpc": {
+                    "$ref": "#/definitions/upp.v1.GrpcConfig",
+                    "additionalProperties": true
+                },
+                "mcp": {
+                    "$ref": "#/definitions/upp.v1.McpConfig",
+                    "additionalProperties": true
+                },
+                "a2a": {
+                    "$ref": "#/definitions/upp.v1.A2aConfig",
+                    "additionalProperties": true
+                },
+                "fix": {
+                    "$ref": "#/definitions/upp.v1.FixConfig",
+                    "additionalProperties": true
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "─── Transport ───────────────────────────────────────────────",
+            "description": "OracleType is imported from resolution.proto  ─── Transport ───────────────────────────────────────────────  Transport configuration for a provider."
+        },
+        "upp.v1.WebSocketConfig": {
+            "properties": {
+                "url": {
+                    "type": "string",
+                    "description": "e.g. \"wss://api.kalshi.com/upp/ws/v1\""
+                },
+                "channels": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array",
+                    "description": "Available subscription channels"
+                },
+                "heartbeat_interval_seconds": {
+                    "type": "integer"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Web Socket Config"
+        }
+    }
+}

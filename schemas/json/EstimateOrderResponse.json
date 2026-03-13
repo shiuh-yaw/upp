@@ -1,0 +1,49 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/EstimateOrderResponse",
+    "definitions": {
+        "EstimateOrderResponse": {
+            "properties": {
+                "estimate": {
+                    "$ref": "#/definitions/upp.v1.OrderEstimate",
+                    "additionalProperties": true
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Estimate Order Response"
+        },
+        "upp.v1.OrderEstimate": {
+            "properties": {
+                "max_cost": {
+                    "type": "string",
+                    "description": "Maximum cost in settlement currency"
+                },
+                "estimated_fees": {
+                    "type": "string",
+                    "description": "Estimated fees"
+                },
+                "total_with_fees": {
+                    "type": "string",
+                    "description": "max_cost + estimated_fees"
+                },
+                "funding_instrument": {
+                    "type": "string",
+                    "description": "Which funding source would be used"
+                },
+                "available_balance": {
+                    "type": "string",
+                    "description": "Current balance in that instrument"
+                },
+                "sufficient_funds": {
+                    "type": "boolean",
+                    "description": "Whether balance covers the order"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Order Estimate",
+            "description": "Cost estimate for an order."
+        }
+    }
+}

@@ -1,0 +1,159 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/ListTransactionsResponse",
+    "definitions": {
+        "ListTransactionsResponse": {
+            "properties": {
+                "transactions": {
+                    "items": {
+                        "$ref": "#/definitions/upp.v1.SettlementTransaction"
+                    },
+                    "type": "array"
+                },
+                "pagination": {
+                    "$ref": "#/definitions/upp.v1.PaginationResponse",
+                    "additionalProperties": true
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "List Transactions Response"
+        },
+        "upp.v1.PaginationResponse": {
+            "properties": {
+                "cursor": {
+                    "type": "string",
+                    "description": "Cursor for next page (empty if no more)"
+                },
+                "has_more": {
+                    "type": "boolean",
+                    "description": "Whether more results exist"
+                },
+                "total": {
+                    "type": "integer",
+                    "description": "Total count (if available, -1 if unknown)"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Pagination Response",
+            "description": "Cursor-based pagination response."
+        },
+        "upp.v1.SettlementTransaction": {
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "type": {
+                    "enum": [
+                        "SETTLEMENT_TRANSACTION_TYPE_UNSPECIFIED",
+                        0,
+                        "SETTLEMENT_TRANSACTION_TYPE_DEPOSIT",
+                        1,
+                        "SETTLEMENT_TRANSACTION_TYPE_WITHDRAWAL",
+                        2,
+                        "SETTLEMENT_TRANSACTION_TYPE_PAYOUT",
+                        3,
+                        "SETTLEMENT_TRANSACTION_TYPE_FEE",
+                        4,
+                        "SETTLEMENT_TRANSACTION_TYPE_REFUND",
+                        5
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "integer"
+                        }
+                    ],
+                    "title": "Settlement Transaction Type"
+                },
+                "amount": {
+                    "type": "string"
+                },
+                "currency": {
+                    "type": "string"
+                },
+                "instrument_id": {
+                    "type": "string",
+                    "description": "Which funding instrument"
+                },
+                "handler_id": {
+                    "type": "string",
+                    "description": "Which settlement handler"
+                },
+                "status": {
+                    "enum": [
+                        "SETTLEMENT_TRANSACTION_STATUS_UNSPECIFIED",
+                        0,
+                        "SETTLEMENT_TRANSACTION_STATUS_PENDING",
+                        1,
+                        "SETTLEMENT_TRANSACTION_STATUS_PROCESSING",
+                        2,
+                        "SETTLEMENT_TRANSACTION_STATUS_COMPLETED",
+                        3,
+                        "SETTLEMENT_TRANSACTION_STATUS_FAILED",
+                        4,
+                        "SETTLEMENT_TRANSACTION_STATUS_CANCELLED",
+                        5
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "integer"
+                        }
+                    ],
+                    "title": "Settlement Transaction Status"
+                },
+                "tx_hash": {
+                    "type": "string",
+                    "description": "On-chain details (if applicable)  Blockchain transaction hash"
+                },
+                "chain_id": {
+                    "type": "string",
+                    "description": "Chain identifier"
+                },
+                "initiated_at": {
+                    "$ref": "#/definitions/upp.v1.Timestamp",
+                    "additionalProperties": true
+                },
+                "completed_at": {
+                    "$ref": "#/definitions/upp.v1.Timestamp",
+                    "additionalProperties": true
+                },
+                "failure_reason": {
+                    "type": "string"
+                },
+                "metadata": {
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "type": "object"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "─── Transactions ────────────────────────────────────────────",
+            "description": "─── Transactions ────────────────────────────────────────────  A deposit or withdrawal transaction."
+        },
+        "upp.v1.Timestamp": {
+            "properties": {
+                "seconds": {
+                    "type": "string",
+                    "description": "Unix epoch seconds"
+                },
+                "nanos": {
+                    "type": "integer",
+                    "description": "Sub-second nanoseconds [0, 999999999]"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "─── Temporal ────────────────────────────────────────────────",
+            "description": "─── Temporal ────────────────────────────────────────────────  High-precision timestamp for trading events. Always UTC. Nanosecond precision for orderbook/trade events."
+        }
+    }
+}

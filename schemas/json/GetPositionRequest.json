@@ -1,0 +1,25 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/GetPositionRequest",
+    "definitions": {
+        "GetPositionRequest": {
+            "properties": {
+                "universal_id": {
+                    "type": "string",
+                    "description": "Market universal ID"
+                },
+                "outcome_id": {
+                    "type": "string",
+                    "description": "Outcome"
+                },
+                "provider": {
+                    "type": "string",
+                    "description": "Provider"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Get Position Request"
+        }
+    }
+}

@@ -1,0 +1,161 @@
+// Copyright 2026 Universal Prediction Protocol Authors
+// SPDX-License-Identifier: Apache-2.0
+//
+// portfolio.proto — Position management, balances, and P&L.
+// Maps to UCP's Orders capability (post-purchase tracking).
+
+syntax = "proto3";
+
+package upp.v1;
+
+import "upp/v1/common.proto";
+import "upp/v1/market.proto";
+
+option java_package = "dev.upp.v1";
+option go_package = "github.com/universal-prediction-protocol/upp/gen/go/upp/v1";
+
+// ─── Position ────────────────────────────────────────────────
+
+// A user's holding in a specific market outcome.
+message Position {
+  UniversalMarketId market_id = 1;
+  string outcome_id           = 2;  // Which outcome (e.g. "yes")
+
+  int64  quantity              = 3;  // Number of contracts held
+  string average_entry_price   = 4;  // Weighted average entry price
+  string current_price         = 5;  // Current market price for this outcome
+
+  // P&L
+  string cost_basis            = 6;  // Total cost paid
+  string current_value         = 7;  // quantity * current_price
+  string unrealized_pnl        = 8;  // current_value - cost_basis
+  string realized_pnl          = 9;  // Profit from closed portions
+
+  // Position metadata
+  PositionStatus status        = 10;
+  Timestamp      opened_at     = 11; // When first contract was acquired
+  Timestamp      updated_at    = 12; // Last change
+
+  // Market context (denormalized for convenience)
+  string market_title          = 13;
+  MarketStatus market_status   = 14;
+
+  map<string, string> provider_metadata = 20;
+}
+
+enum PositionStatus {
+  POSITION_STATUS_UNSPECIFIED = 0;
+  POSITION_STATUS_OPEN        = 1;  // Active position
+  POSITION_STATUS_CLOSED      = 2;  // Fully exited
+  POSITION_STATUS_SETTLED     = 3;  // Market resolved, payout claimed
+  POSITION_STATUS_EXPIRED     = 4;  // Market voided
+}
+
+// ─── Balance ─────────────────────────────────────────────────
+
+// Account balance for a specific funding instrument.
+message Balance {
+  string provider        = 1;  // Provider domain
+  string instrument_type = 2;  // "usd_balance", "usdc_wallet", etc.
+  string available       = 3;  // Available for trading
+  string reserved        = 4;  // Locked in open orders
+  string total           = 5;  // available + reserved
+  string currency        = 6;  // Currency code
+  Timestamp updated_at   = 7;
+}
+
+// ─── Portfolio Summary ───────────────────────────────────────
+
+// Aggregated portfolio metrics across positions.
+message PortfolioSummary {
+  string total_invested      = 1;  // Sum of all cost bases
+  string total_current_value = 2;  // Sum of all current values
+  string total_unrealized_pnl = 3; // Sum of all unrealized P&L
+  string total_realized_pnl  = 4;  // Sum of all realized P&L
+  int32  open_position_count = 5;  // Number of open positions
+  int32  market_count        = 6;  // Unique markets with positions
+
+  // Per-provider breakdown
+  repeated ProviderSummary provider_summaries = 7;
+}
+
+message ProviderSummary {
+  string provider         = 1;
+  string invested         = 2;
+  string current_value    = 3;
+  string unrealized_pnl   = 4;
+  string realized_pnl     = 5;
+  int32  position_count   = 6;
+}
+
+// ─── Portfolio Service ───────────────────────────────────────
+
+// PortfolioService — Position management and account information.
+// Equivalent to UCP's Orders capability.
+service PortfolioService {
+  // List open positions across all providers.
+  rpc ListPositions(ListPositionsRequest) returns (ListPositionsResponse);
+
+  // Get a specific position.
+  rpc GetPosition(GetPositionRequest) returns (Position);
+
+  // Get aggregated portfolio summary.
+  rpc GetPortfolioSummary(GetPortfolioSummaryRequest) returns (PortfolioSummary);
+
+  // Get account balances.
+  rpc ListBalances(ListBalancesRequest) returns (ListBalancesResponse);
+
+  // Get P&L history over time.
+  rpc GetPnLHistory(GetPnLHistoryRequest) returns (GetPnLHistoryResponse);
+}
+
+// ─── Request/Response Messages ───────────────────────────────
+
+message ListPositionsRequest {
+  string provider          = 1;  // Optional: filter by provider
+  PositionStatus status    = 2;  // Optional: filter by status
+  string market_id         = 3;  // Optional: filter by market
+  PaginationRequest pagination = 10;
+}
+
+message ListPositionsResponse {
+  repeated Position positions   = 1;
+  PortfolioSummary summary      = 2;  // Aggregated summary for this result set
+  PaginationResponse pagination = 3;
+}
+
+message GetPositionRequest {
+  string universal_id = 1;  // Market universal ID
+  string outcome_id   = 2;  // Outcome
+  string provider     = 3;  // Provider
+}
+
+message GetPortfolioSummaryRequest {
+  string provider = 1;  // Optional: filter by provider
+}
+
+message ListBalancesRequest {
+  string provider = 1;  // Optional: filter by provider
+}
+
+message ListBalancesResponse {
+  repeated Balance balances = 1;
+  string total_available    = 2;  // Sum across all providers (USD equivalent)
+}
+
+message GetPnLHistoryRequest {
+  string provider   = 1;  // Optional: filter by provider
+  TimeRange range   = 2;  // Time range
+  string granularity = 3; // "1h", "1d", "1w" — aggregation period
+}
+
+message GetPnLHistoryResponse {
+  repeated PnLDataPoint data_points = 1;
+}
+
+message PnLDataPoint {
+  Timestamp timestamp       = 1;
+  string    portfolio_value = 2;
+  string    cumulative_pnl  = 3;
+  string    period_pnl      = 4;  // P&L for this specific period
+}

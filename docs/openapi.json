@@ -1,0 +1,1436 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Universal Prediction Protocol (UPP)",
+    "description": "Unified access to prediction markets across multiple providers via a single API",
+    "version": "0.1.0",
+    "contact": {
+      "name": "UPP Team",
+      "url": "https://github.com/upp-labs"
+    },
+    "license": {
+      "name": "MIT",
+      "url": "https://opensource.org/licenses/MIT"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080",
+      "description": "Local development server"
+    },
+    {
+      "url": "https://api.upp.dev",
+      "description": "Production server"
+    }
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "summary": "Health check",
+        "description": "Returns 200 if the service is running and healthy",
+        "operationId": "getHealth",
+        "tags": ["Health"],
+        "responses": {
+          "200": {
+            "description": "Service is healthy",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "healthy"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ready": {
+      "get": {
+        "summary": "Readiness check",
+        "description": "Returns 200 if the service is ready to handle requests",
+        "operationId": "getReady",
+        "tags": ["Health"],
+        "responses": {
+          "200": {
+            "description": "Service is ready",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ready": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/metrics": {
+      "get": {
+        "summary": "Prometheus metrics",
+        "description": "Returns metrics in Prometheus format",
+        "operationId": "getMetrics",
+        "tags": ["Health"],
+        "responses": {
+          "200": {
+            "description": "Metrics",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/.well-known/upp": {
+      "get": {
+        "summary": "UPP service discovery",
+        "description": "Returns service metadata for UPP discovery",
+        "operationId": "getWellKnownUpp",
+        "tags": ["Discovery"],
+        "responses": {
+          "200": {
+            "description": "Service metadata",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "version": {
+                      "type": "string"
+                    },
+                    "apiVersion": {
+                      "type": "string"
+                    },
+                    "providers": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/.well-known/agent.json": {
+      "get": {
+        "summary": "Agent service manifest",
+        "description": "Returns MCP manifest for AI agent integration",
+        "operationId": "getAgentManifest",
+        "tags": ["Discovery"],
+        "responses": {
+          "200": {
+            "description": "Agent manifest",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/upp/v1/discovery/providers": {
+      "get": {
+        "summary": "List available providers",
+        "description": "Returns list of integrated prediction market providers",
+        "operationId": "listProviders",
+        "tags": ["Discovery"],
+        "responses": {
+          "200": {
+            "description": "List of providers",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Provider"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/upp/v1/discovery/manifest/{provider}": {
+      "get": {
+        "summary": "Get provider manifest",
+        "description": "Returns manifest and capabilities for a specific provider",
+        "operationId": "getProviderManifest",
+        "tags": ["Discovery"],
+        "parameters": [
+          {
+            "name": "provider",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Provider name (e.g., 'kalshi', 'polymarket', 'opinion')"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Provider manifest",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProviderManifest"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/upp/v1/discovery/health/{provider}": {
+      "get": {
+        "summary": "Get provider health",
+        "description": "Returns health status of a specific provider",
+        "operationId": "getProviderHealth",
+        "tags": ["Discovery"],
+        "parameters": [
+          {
+            "name": "provider",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Provider health",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "provider": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "string",
+                      "enum": ["healthy", "degraded", "down"]
+                    },
+                    "lastChecked": {
+                      "type": "string",
+                      "format": "date-time"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/upp/v1/discovery/negotiate": {
+      "post": {
+        "summary": "Negotiate connection parameters",
+        "description": "Negotiate connection parameters with the gateway",
+        "operationId": "negotiate",
+        "tags": ["Discovery"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "version": {
+                    "type": "string"
+                  },
+                  "features": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Negotiation result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/upp/v1/markets": {
+      "get": {
+        "summary": "List markets",
+        "description": "Returns paginated list of prediction markets from all providers",
+        "operationId": "listMarkets",
+        "tags": ["Markets"],
+        "parameters": [
+          {
+            "name": "skip",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 0
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 20,
+              "maximum": 100
+            }
+          },
+          {
+            "name": "provider",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filter by provider"
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": ["open", "closed", "resolved"]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of markets",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "markets": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Market"
+                      }
+                    },
+                    "total": {
+                      "type": "integer"
+                    },
+                    "skip": {
+                      "type": "integer"
+                    },
+                    "limit": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/upp/v1/markets/search": {
+      "get": {
+        "summary": "Search markets",
+        "description": "Full-text search for markets by title, description, or tags",
+        "operationId": "searchMarkets",
+        "tags": ["Markets"],
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Search query"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Search results",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "results": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Market"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/upp/v1/markets/{marketId}": {
+      "get": {
+        "summary": "Get market details",
+        "description": "Returns detailed information about a specific market",
+        "operationId": "getMarket",
+        "tags": ["Markets"],
+        "parameters": [
+          {
+            "name": "marketId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Market details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Market"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Market not found"
+          }
+        }
+      }
+    },
+    "/upp/v1/markets/{marketId}/orderbook": {
+      "get": {
+        "summary": "Get market orderbook",
+        "description": "Returns current orderbook for a market from its native provider",
+        "operationId": "getOrderbook",
+        "tags": ["Markets"],
+        "parameters": [
+          {
+            "name": "marketId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "depth",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Orderbook",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Orderbook"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/upp/v1/markets/{marketId}/orderbook/merged": {
+      "get": {
+        "summary": "Get merged orderbook",
+        "description": "Returns aggregated orderbook across all related markets",
+        "operationId": "getMergedOrderbook",
+        "tags": ["Markets"],
+        "parameters": [
+          {
+            "name": "marketId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Merged orderbook",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Orderbook"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/upp/v1/markets/categories": {
+      "get": {
+        "summary": "Get market categories",
+        "description": "Returns available market categories and taxonomies",
+        "operationId": "getCategories",
+        "tags": ["Markets"],
+        "responses": {
+          "200": {
+            "description": "Categories",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "categories": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "name": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/upp/v1/resolutions": {
+      "get": {
+        "summary": "List resolutions",
+        "description": "Returns recent market resolutions",
+        "operationId": "listResolutions",
+        "tags": ["Resolution"],
+        "parameters": [
+          {
+            "name": "skip",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 0
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 20
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of resolutions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "resolutions": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Resolution"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/upp/v1/resolutions/{resolutionId}": {
+      "get": {
+        "summary": "Get resolution",
+        "description": "Returns details of a specific market resolution",
+        "operationId": "getResolution",
+        "tags": ["Resolution"],
+        "parameters": [
+          {
+            "name": "resolutionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resolution details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Resolution"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/upp/v1/settlement/instruments": {
+      "get": {
+        "summary": "Get settlement instruments",
+        "description": "Returns available settlement instruments and currencies",
+        "operationId": "getSettlementInstruments",
+        "tags": ["Settlement"],
+        "responses": {
+          "200": {
+            "description": "Settlement instruments",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "instruments": {
+                      "type": "array",
+                      "items": {
+                        "type": "object"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/upp/v1/settlement/handlers": {
+      "get": {
+        "summary": "Get settlement handlers",
+        "description": "Returns available settlement handlers",
+        "operationId": "getSettlementHandlers",
+        "tags": ["Settlement"],
+        "responses": {
+          "200": {
+            "description": "Settlement handlers",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/upp/v1/orders": {
+      "post": {
+        "summary": "Create order",
+        "description": "Creates a new order on the specified market",
+        "operationId": "createOrder",
+        "tags": ["Trading"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateOrderRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Order created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Order"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid order parameters"
+          }
+        }
+      },
+      "get": {
+        "summary": "List orders",
+        "description": "Returns list of orders for the authenticated user",
+        "operationId": "listOrders",
+        "tags": ["Trading"],
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": ["pending", "open", "filled", "cancelled"]
+            }
+          },
+          {
+            "name": "skip",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 0
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 20
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of orders",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "orders": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Order"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/upp/v1/orders/{orderId}": {
+      "get": {
+        "summary": "Get order",
+        "description": "Returns details of a specific order",
+        "operationId": "getOrder",
+        "tags": ["Trading"],
+        "parameters": [
+          {
+            "name": "orderId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Order details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Order"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Cancel order",
+        "description": "Cancels a pending order",
+        "operationId": "cancelOrder",
+        "tags": ["Trading"],
+        "parameters": [
+          {
+            "name": "orderId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Order cancelled"
+          },
+          "400": {
+            "description": "Cannot cancel order"
+          }
+        }
+      }
+    },
+    "/upp/v1/orders/cancel-all": {
+      "post": {
+        "summary": "Cancel all open orders",
+        "description": "Cancels all open orders for the authenticated user",
+        "operationId": "cancelAllOrders",
+        "tags": ["Trading"],
+        "responses": {
+          "200": {
+            "description": "Orders cancelled",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "cancelled": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/upp/v1/orders/estimate": {
+      "post": {
+        "summary": "Estimate order",
+        "description": "Estimates the cost and execution details of an order without placing it",
+        "operationId": "estimateOrder",
+        "tags": ["Trading"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateOrderRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Order estimate",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "estimatedCost": {
+                      "type": "number"
+                    },
+                    "estimatedFee": {
+                      "type": "number"
+                    },
+                    "slippage": {
+                      "type": "number"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/upp/v1/trades": {
+      "get": {
+        "summary": "List trades",
+        "description": "Returns list of executed trades for the authenticated user",
+        "operationId": "listTrades",
+        "tags": ["Trading"],
+        "parameters": [
+          {
+            "name": "skip",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 0
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 20
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of trades",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "trades": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Trade"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/upp/v1/portfolio/positions": {
+      "get": {
+        "summary": "Get portfolio positions",
+        "description": "Returns current positions in the portfolio",
+        "operationId": "getPositions",
+        "tags": ["Portfolio"],
+        "responses": {
+          "200": {
+            "description": "Portfolio positions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "positions": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Position"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/upp/v1/portfolio/summary": {
+      "get": {
+        "summary": "Get portfolio summary",
+        "description": "Returns portfolio summary including PnL and allocation",
+        "operationId": "getPortfolioSummary",
+        "tags": ["Portfolio"],
+        "responses": {
+          "200": {
+            "description": "Portfolio summary",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PortfolioSummary"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/upp/v1/portfolio/balances": {
+      "get": {
+        "summary": "Get portfolio balances",
+        "description": "Returns available balances and margin information",
+        "operationId": "getBalances",
+        "tags": ["Portfolio"],
+        "responses": {
+          "200": {
+            "description": "Portfolio balances",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "available": {
+                      "type": "number"
+                    },
+                    "reserved": {
+                      "type": "number"
+                    },
+                    "total": {
+                      "type": "number"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/upp/v1/mcp/tools": {
+      "get": {
+        "summary": "List MCP tools",
+        "description": "Returns list of available MCP tools",
+        "operationId": "listMcpTools",
+        "tags": ["MCP"],
+        "responses": {
+          "200": {
+            "description": "Available tools",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "tools": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/McpTool"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/upp/v1/mcp/schema": {
+      "get": {
+        "summary": "Get MCP schema",
+        "description": "Returns JSON Schema for MCP types",
+        "operationId": "getMcpSchema",
+        "tags": ["MCP"],
+        "responses": {
+          "200": {
+            "description": "MCP schema",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/upp/v1/mcp/execute": {
+      "post": {
+        "summary": "Execute MCP tool",
+        "description": "Executes an MCP tool with provided arguments",
+        "operationId": "executeMcpTool",
+        "tags": ["MCP"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "toolName": {
+                    "type": "string"
+                  },
+                  "arguments": {
+                    "type": "object"
+                  }
+                },
+                "required": ["toolName", "arguments"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Tool result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Provider": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["healthy", "degraded", "down"]
+          },
+          "capabilities": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": ["id", "name", "status"]
+      },
+      "ProviderManifest": {
+        "type": "object",
+        "properties": {
+          "providerId": {
+            "type": "string"
+          },
+          "providerName": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          },
+          "capabilities": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "rateLimits": {
+            "type": "object"
+          }
+        }
+      },
+      "Market": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique market identifier"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "provider": {
+            "type": "string",
+            "description": "Market provider (kalshi, polymarket, opinion)"
+          },
+          "category": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["open", "closed", "resolved"]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "closesAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "resolvesAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "outcomes": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "probability": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                }
+              }
+            }
+          },
+          "volume": {
+            "type": "number",
+            "description": "24h trading volume"
+          },
+          "liquidity": {
+            "type": "number"
+          }
+        },
+        "required": ["id", "title", "provider", "status", "outcomes"]
+      },
+      "Orderbook": {
+        "type": "object",
+        "properties": {
+          "marketId": {
+            "type": "string"
+          },
+          "bids": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "price": {
+                  "type": "number"
+                },
+                "size": {
+                  "type": "number"
+                }
+              }
+            }
+          },
+          "asks": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "price": {
+                  "type": "number"
+                },
+                "size": {
+                  "type": "number"
+                }
+              }
+            }
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "CreateOrderRequest": {
+        "type": "object",
+        "properties": {
+          "marketId": {
+            "type": "string"
+          },
+          "side": {
+            "type": "string",
+            "enum": ["buy", "sell"]
+          },
+          "size": {
+            "type": "number"
+          },
+          "price": {
+            "type": "number"
+          },
+          "orderType": {
+            "type": "string",
+            "enum": ["limit", "market"]
+          },
+          "timeInForce": {
+            "type": "string",
+            "enum": ["GTC", "IOC", "FOK"],
+            "default": "GTC"
+          }
+        },
+        "required": ["marketId", "side", "size", "orderType"]
+      },
+      "Order": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "marketId": {
+            "type": "string"
+          },
+          "side": {
+            "type": "string",
+            "enum": ["buy", "sell"]
+          },
+          "size": {
+            "type": "number"
+          },
+          "price": {
+            "type": "number"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["pending", "open", "filled", "cancelled"]
+          },
+          "filledSize": {
+            "type": "number"
+          },
+          "averagePrice": {
+            "type": "number"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": ["id", "marketId", "side", "size", "status"]
+      },
+      "Trade": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "orderId": {
+            "type": "string"
+          },
+          "marketId": {
+            "type": "string"
+          },
+          "side": {
+            "type": "string",
+            "enum": ["buy", "sell"]
+          },
+          "size": {
+            "type": "number"
+          },
+          "price": {
+            "type": "number"
+          },
+          "fee": {
+            "type": "number"
+          },
+          "executedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "Position": {
+        "type": "object",
+        "properties": {
+          "marketId": {
+            "type": "string"
+          },
+          "outcome": {
+            "type": "string"
+          },
+          "size": {
+            "type": "number"
+          },
+          "avgPrice": {
+            "type": "number"
+          },
+          "currentPrice": {
+            "type": "number"
+          },
+          "unrealizedPnL": {
+            "type": "number"
+          },
+          "realizedPnL": {
+            "type": "number"
+          }
+        }
+      },
+      "PortfolioSummary": {
+        "type": "object",
+        "properties": {
+          "totalValue": {
+            "type": "number"
+          },
+          "totalCost": {
+            "type": "number"
+          },
+          "unrealizedPnL": {
+            "type": "number"
+          },
+          "realizedPnL": {
+            "type": "number"
+          },
+          "positionCount": {
+            "type": "integer"
+          },
+          "allocation": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "number"
+            }
+          }
+        }
+      },
+      "Resolution": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "marketId": {
+            "type": "string"
+          },
+          "outcome": {
+            "type": "string"
+          },
+          "resolvesAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "source": {
+            "type": "string"
+          }
+        }
+      },
+      "McpTool": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "inputSchema": {
+            "type": "object"
+          }
+        },
+        "required": ["name", "description", "inputSchema"]
+      }
+    }
+  }
+}

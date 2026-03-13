@@ -1,0 +1,25 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/FileDisputeRequest",
+    "definitions": {
+        "FileDisputeRequest": {
+            "properties": {
+                "universal_id": {
+                    "type": "string"
+                },
+                "provider": {
+                    "type": "string"
+                },
+                "reason": {
+                    "type": "string"
+                },
+                "evidence_url": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "File Dispute Request"
+        }
+    }
+}

@@ -1,0 +1,73 @@
+[package]
+name = "upp-gateway"
+version = "0.1.0"
+edition = "2021"
+license = "Apache-2.0"
+description = "Universal Prediction Protocol — High-performance gateway"
+repository = "https://github.com/universal-prediction-protocol/upp"
+
+[dependencies]
+# ── Web framework ──
+axum = { version = "0.7", features = ["ws", "macros"] }
+tower = { version = "0.5", features = ["timeout", "limit", "retry", "buffer"] }
+tower-http = { version = "0.6", features = ["cors", "trace", "compression-gzip"] }
+
+# ── gRPC ──
+tonic = "0.12"
+prost = "0.13"
+prost-types = "0.13"
+
+# ── Async runtime ──
+tokio = { version = "1", features = ["full"] }
+tokio-tungstenite = { version = "0.24", features = ["native-tls"] }
+futures = "0.3"
+
+# ── HTTP client (for provider APIs) ──
+reqwest = { version = "0.12", features = ["json", "rustls-tls", "gzip"] }
+
+# ── Serialization ──
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+# ── Caching ──
+moka = { version = "0.12", features = ["future"] }
+dashmap = "6"
+
+# ── Redis (shared state, pub/sub, rate limiting) ──
+redis = { version = "0.27", features = ["tokio-comp", "streams"] }
+
+# ── Configuration ──
+config = "0.14"
+dotenvy = "0.15"
+
+# ── Observability ──
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
+metrics = "0.24"
+metrics-exporter-prometheus = "0.16"
+
+# ── Error handling ──
+anyhow = "1"
+thiserror = "2"
+
+# ── Crypto (for auth) ──
+ring = "0.17"
+jsonwebtoken = "9"
+
+# ── Utilities ──
+uuid = { version = "1", features = ["v4", "serde"] }
+chrono = { version = "0.4", features = ["serde"] }
+url = "2"
+urlencoding = "2"
+async-trait = "0.1"
+
+[dev-dependencies]
+tokio-test = "0.4"
+wiremock = "0.6"
+criterion = { version = "0.5", features = ["async_tokio"] }
+
+[profile.release]
+lto = true
+codegen-units = 1
+strip = true
+opt-level = 3

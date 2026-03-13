@@ -1,0 +1,91 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/AuthConfig",
+    "definitions": {
+        "AuthConfig": {
+            "properties": {
+                "methods": {
+                    "items": {
+                        "$ref": "#/definitions/upp.v1.AuthMethod"
+                    },
+                    "type": "array",
+                    "description": "Supported auth methods"
+                },
+                "credential_providers": {
+                    "items": {
+                        "$ref": "#/definitions/upp.v1.CredentialProviderInfo"
+                    },
+                    "type": "array",
+                    "description": "Credential providers (third-party identity verification)"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "─── Authentication ──────────────────────────────────────────",
+            "description": "─── Authentication ──────────────────────────────────────────"
+        },
+        "upp.v1.AuthMethod": {
+            "properties": {
+                "type": {
+                    "enum": [
+                        "AUTH_METHOD_TYPE_UNSPECIFIED",
+                        0,
+                        "AUTH_METHOD_TYPE_API_KEY",
+                        1,
+                        "AUTH_METHOD_TYPE_API_KEY_RSA",
+                        2,
+                        "AUTH_METHOD_TYPE_WALLET_SIG",
+                        3,
+                        "AUTH_METHOD_TYPE_OAUTH2",
+                        4,
+                        "AUTH_METHOD_TYPE_MCP_TOKEN",
+                        5,
+                        "AUTH_METHOD_TYPE_JWT",
+                        6
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "integer"
+                        }
+                    ],
+                    "title": "Auth Method Type"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "docs_url": {
+                    "type": "string",
+                    "description": "Documentation for this auth method"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Auth Method"
+        },
+        "upp.v1.CredentialProviderInfo": {
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "description": "e.g. \"kalshi_native\", \"civic\", \"worldcoin\""
+                },
+                "name": {
+                    "type": "string",
+                    "description": "Human-readable name"
+                },
+                "type": {
+                    "type": "string",
+                    "description": "\"native\", \"third_party\""
+                },
+                "docs_url": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Credential Provider Info"
+        }
+    }
+}

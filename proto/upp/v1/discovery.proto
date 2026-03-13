@@ -1,0 +1,308 @@
+// Copyright 2026 Universal Prediction Protocol Authors
+// SPDX-License-Identifier: Apache-2.0
+//
+// discovery.proto — Provider discovery and capability negotiation.
+// Maps to UCP's /.well-known/ucp mechanism.
+//
+// Prediction providers publish a manifest declaring their capabilities,
+// extensions, transports, and authentication methods. Player surfaces
+// fetch this manifest to determine the intersection of supported features.
+
+syntax = "proto3";
+
+package upp.v1;
+
+import "upp/v1/common.proto";
+import "upp/v1/market.proto";
+import "upp/v1/resolution.proto";
+
+option java_package = "dev.upp.v1";
+option go_package = "github.com/universal-prediction-protocol/upp/gen/go/upp/v1";
+
+// ─── Provider Manifest ───────────────────────────────────────
+
+// Published at /.well-known/upp on the provider's domain.
+// This is the entry point for all UPP interactions.
+message ProviderManifest {
+  // Protocol version (date-based: "2026-03-11")
+  string upp_version = 1;
+
+  // Provider identity
+  ProviderInfo provider = 2;
+
+  // Supported capabilities
+  repeated CapabilityDeclaration capabilities = 3;
+
+  // Transport bindings
+  TransportConfig transport = 4;
+
+  // Authentication methods
+  AuthConfig authentication = 5;
+
+  // Rate limiting info
+  RateLimitConfig rate_limits = 6;
+
+  // When this manifest was last updated
+  Timestamp updated_at = 7;
+}
+
+// ─── Provider Info ───────────────────────────────────────────
+
+message ProviderInfo {
+  string name             = 1;   // Human-readable name, e.g. "Kalshi"
+  string id               = 2;   // Domain identifier, e.g. "kalshi.com"
+  ProviderType type       = 3;   // Type of provider
+  string description      = 4;   // Brief description
+  string website_url      = 5;   // Provider website
+  string docs_url         = 6;   // API documentation URL
+  string support_email    = 7;   // Developer support contact
+  string logo_url         = 8;   // Provider logo
+
+  // Regulatory info
+  RegulatoryInfo regulatory = 10;
+}
+
+enum ProviderType {
+  PROVIDER_TYPE_UNSPECIFIED    = 0;
+  PROVIDER_TYPE_REGULATED_EXCHANGE = 1;  // CFTC/SEC regulated (Kalshi)
+  PROVIDER_TYPE_DECENTRALIZED  = 2;      // On-chain, decentralized (Polymarket)
+  PROVIDER_TYPE_HYBRID         = 3;      // Off-chain matching, on-chain settlement
+  PROVIDER_TYPE_AGGREGATOR     = 4;      // Aggregates multiple providers (Dome)
+}
+
+message RegulatoryInfo {
+  repeated string jurisdictions = 1;  // Where regulated
+  string regulator              = 2;  // Regulatory body
+  string license_type           = 3;  // License type
+  bool   compliant              = 4;  // Self-attestation
+  string compliance_url         = 5;  // Compliance documentation
+}
+
+// ─── Capabilities ────────────────────────────────────────────
+
+// A declared capability with version, operations, and extensions.
+// Mirroring UCP's capability model.
+message CapabilityDeclaration {
+  string name       = 1;  // "markets", "trading", "portfolio", etc.
+  string version    = 2;  // Capability version (date-based)
+  string schema_url = 3;  // URL to the capability's JSON Schema
+
+  // Supported operations within this capability
+  repeated string operations = 4;  // e.g. ["listMarkets", "getMarket", "searchMarkets"]
+
+  // Active extensions for this capability
+  repeated ExtensionDeclaration extensions = 5;
+
+  // Capability-specific config
+  CapabilityConfig config = 6;
+}
+
+// An extension that augments a capability.
+// Mirroring UCP's extension model.
+message ExtensionDeclaration {
+  string name       = 1;  // "analytics", "streaming", "liquidity", etc.
+  string version    = 2;
+  string schema_url = 3;  // URL to the extension's JSON Schema
+  repeated string operations = 4;  // Operations added by this extension
+}
+
+// Capability-specific configuration.
+message CapabilityConfig {
+  // Markets capability config
+  repeated MarketType supported_market_types = 1;
+  repeated string categories                = 2;  // Available categories
+
+  // Trading capability config
+  repeated OrderType supported_order_types  = 3;
+  repeated TimeInForce supported_tif        = 4;
+
+  // Resolution capability config
+  repeated OracleType supported_oracle_types = 5;
+  int32 dispute_window_hours                = 6;
+
+  // Settlement capability config
+  repeated string supported_currencies      = 7;
+  repeated string supported_funding_types   = 8;
+}
+
+// OracleType is imported from resolution.proto
+
+// ─── Transport ───────────────────────────────────────────────
+
+// Transport configuration for a provider.
+message TransportConfig {
+  RestConfig      rest      = 1;
+  WebSocketConfig websocket = 2;
+  GrpcConfig      grpc      = 3;
+  McpConfig       mcp       = 4;
+  A2aConfig       a2a       = 5;
+  FixConfig       fix       = 6;
+}
+
+message RestConfig {
+  string base_url          = 1;  // e.g. "https://api.kalshi.com/upp/v1"
+  string openapi_spec_url  = 2;  // URL to OpenAPI 3.1 spec
+}
+
+message WebSocketConfig {
+  string url               = 1;  // e.g. "wss://api.kalshi.com/upp/ws/v1"
+  repeated string channels = 2;  // Available subscription channels
+  int32 heartbeat_interval_seconds = 3;
+}
+
+message GrpcConfig {
+  string endpoint          = 1;  // e.g. "api.kalshi.com:443"
+  bool   tls_required      = 2;
+  string proto_url         = 3;  // URL to .proto files
+}
+
+message McpConfig {
+  bool   supported         = 1;
+  string manifest_url      = 2;  // URL to MCP manifest
+  repeated string tools    = 3;  // Available MCP tool names
+}
+
+message A2aConfig {
+  bool   supported         = 1;
+  string agent_card_url    = 2;  // URL to A2A agent card
+}
+
+message FixConfig {
+  bool   supported         = 1;
+  string version           = 2;  // e.g. "4.4"
+  string endpoint          = 3;
+}
+
+// ─── Authentication ──────────────────────────────────────────
+
+message AuthConfig {
+  repeated AuthMethod methods = 1;  // Supported auth methods
+
+  // Credential providers (third-party identity verification)
+  repeated CredentialProviderInfo credential_providers = 2;
+}
+
+message AuthMethod {
+  AuthMethodType type   = 1;
+  string description    = 2;
+  string docs_url       = 3;  // Documentation for this auth method
+}
+
+enum AuthMethodType {
+  AUTH_METHOD_TYPE_UNSPECIFIED   = 0;
+  AUTH_METHOD_TYPE_API_KEY       = 1;  // Simple API key
+  AUTH_METHOD_TYPE_API_KEY_RSA   = 2;  // API key + RSA signature (Kalshi)
+  AUTH_METHOD_TYPE_WALLET_SIG    = 3;  // Ethereum wallet signature / EIP-712 (Polymarket)
+  AUTH_METHOD_TYPE_OAUTH2        = 4;  // OAuth 2.0 / OIDC
+  AUTH_METHOD_TYPE_MCP_TOKEN     = 5;  // MCP-specific token
+  AUTH_METHOD_TYPE_JWT           = 6;  // JWT Bearer token
+}
+
+message CredentialProviderInfo {
+  string id          = 1;  // e.g. "kalshi_native", "civic", "worldcoin"
+  string name        = 2;  // Human-readable name
+  string type        = 3;  // "native", "third_party"
+  string docs_url    = 4;
+}
+
+// ─── Rate Limits ─────────────────────────────────────────────
+
+message RateLimitConfig {
+  // Per-endpoint rate limits
+  repeated RateLimitRule rules = 1;
+
+  // Tier info
+  string tier          = 2;  // Current tier (e.g. "standard", "premium")
+  string upgrade_url   = 3;  // URL to request higher limits
+}
+
+message RateLimitRule {
+  string endpoint_pattern = 1;  // Glob pattern, e.g. "/markets/*"
+  int32  requests_per_second = 2;
+  int32  requests_per_minute = 3;
+  int32  burst_limit         = 4;  // Max burst above sustained rate
+}
+
+// ─── Negotiation ─────────────────────────────────────────────
+
+// Player surface profile — declares what the surface supports.
+// Sent during the negotiation handshake.
+message SurfaceProfile {
+  string id          = 1;  // Surface identifier
+  string name        = 2;  // Human-readable name
+  string type        = 3;  // "trading_app", "ai_agent", "dashboard", etc.
+
+  // What the surface supports
+  repeated string requested_capabilities = 4;
+  repeated string requested_extensions   = 5;
+  repeated string preferred_transports   = 6;
+  repeated AuthMethodType supported_auth = 7;
+
+  // Jurisdiction
+  string jurisdiction = 8;  // Where the user is located
+}
+
+// Result of capability negotiation.
+message NegotiationResult {
+  // Intersection of surface and provider capabilities
+  repeated CapabilityDeclaration active_capabilities = 1;
+  repeated ExtensionDeclaration active_extensions     = 2;
+
+  // Selected transport
+  string selected_transport = 3;
+
+  // Selected auth method
+  AuthMethodType selected_auth = 4;
+
+  // Any restrictions
+  repeated string restrictions = 5;  // Reason strings for limited features
+}
+
+// ─── Discovery Service ───────────────────────────────────────
+
+// DiscoveryService — Provider discovery and capability negotiation.
+service DiscoveryService {
+  // Fetch a provider's manifest.
+  rpc GetManifest(GetManifestRequest) returns (ProviderManifest);
+
+  // List all registered providers.
+  rpc ListProviders(ListProvidersRequest) returns (ListProvidersResponse);
+
+  // Negotiate capabilities between a surface and provider.
+  rpc Negotiate(NegotiateRequest) returns (NegotiationResult);
+
+  // Health check for a specific provider.
+  rpc HealthCheck(HealthCheckRequest) returns (HealthCheckResponse);
+}
+
+// ─── Request/Response Messages ───────────────────────────────
+
+message GetManifestRequest {
+  string provider = 1;  // Provider domain
+}
+
+message ListProvidersRequest {
+  string jurisdiction = 1;  // Optional: filter by jurisdiction
+  string capability   = 2;  // Optional: filter by capability name
+}
+
+message ListProvidersResponse {
+  repeated ProviderManifest providers = 1;
+}
+
+message NegotiateRequest {
+  string provider           = 1;
+  SurfaceProfile surface    = 2;
+}
+
+message HealthCheckRequest {
+  string provider = 1;
+}
+
+message HealthCheckResponse {
+  string provider  = 1;
+  bool   healthy   = 2;
+  string status    = 3;  // "operational", "degraded", "down"
+  int64  latency_ms = 4; // Current latency to provider
+  Timestamp checked_at = 5;
+}

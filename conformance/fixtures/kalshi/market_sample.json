@@ -1,0 +1,69 @@
+{
+  "_comment": "Golden fixture: Kalshi market response transformed to UPP format. Captured from Kalshi API and normalized by KalshiAdapter.",
+  "_captured_at": "2026-03-11T00:00:00Z",
+  "_raw_source": "GET https://api.elections.kalshi.com/trade-api/v2/markets/KXBTC-26MAR14-T100",
+
+  "id": {
+    "provider": "kalshi.com",
+    "native_id": "KXBTC-26MAR14-T100",
+    "full_id": "upp:kalshi.com:KXBTC-26MAR14-T100"
+  },
+  "event": {
+    "id": "KXBTC-26MAR14",
+    "title": "Bitcoin above $100,000 on March 14?",
+    "description": "This market will resolve to 'Yes' if the settlement price of Bitcoin (BTC/USD) is at or above $100,000 at 4:00 PM ET on March 14, 2026, as determined by the CME CF Bitcoin Reference Rate.",
+    "category": "crypto",
+    "tags": ["bitcoin", "btc", "crypto", "price"],
+    "series_id": "KXBTC",
+    "series_title": "Bitcoin Price Markets"
+  },
+  "market_type": "binary",
+  "outcomes": [
+    { "id": "yes", "label": "Yes" },
+    { "id": "no", "label": "No" }
+  ],
+  "pricing": {
+    "last_price": { "yes": "0.63", "no": "0.37" },
+    "best_bid": { "yes": "0.62", "no": "0.36" },
+    "best_ask": { "yes": "0.64", "no": "0.38" },
+    "mid_price": { "yes": "0.63", "no": "0.37" },
+    "spread": { "yes": "0.02", "no": "0.02" },
+    "tick_size": "0.01",
+    "currency": "USD",
+    "min_order_size": 1,
+    "max_order_size": 25000,
+    "updated_at": "2026-03-11T10:30:00Z"
+  },
+  "volume": {
+    "total_volume": "1250000",
+    "volume_24h": "85000",
+    "open_interest": "420000",
+    "num_traders": 3200,
+    "updated_at": "2026-03-11T10:30:00Z"
+  },
+  "lifecycle": {
+    "status": "open",
+    "created_at": "2026-02-01T00:00:00Z",
+    "closes_at": "2026-03-14T20:00:00Z",
+    "resolution_source": "CME CF Bitcoin Reference Rate"
+  },
+  "rules": {
+    "allowed_order_types": ["limit", "market"],
+    "allowed_tif": ["GTC", "GTD", "FOK", "IOC"],
+    "allows_short_selling": false,
+    "allows_partial_fill": true,
+    "maker_fee_rate": "0.00",
+    "taker_fee_rate": "0.00",
+    "max_position_size": 25000
+  },
+  "regulatory": {
+    "jurisdiction": "US",
+    "compliant": true,
+    "eligible_regions": ["US"],
+    "restricted_regions": [],
+    "regulator": "CFTC",
+    "license_type": "DCM",
+    "contract_type": "event_contract",
+    "required_kyc": "enhanced"
+  }
+}

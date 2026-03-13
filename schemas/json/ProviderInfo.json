@@ -1,0 +1,100 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/ProviderInfo",
+    "definitions": {
+        "ProviderInfo": {
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "Human-readable name, e.g. \"Kalshi\""
+                },
+                "id": {
+                    "type": "string",
+                    "description": "Domain identifier, e.g. \"kalshi.com\""
+                },
+                "type": {
+                    "enum": [
+                        "PROVIDER_TYPE_UNSPECIFIED",
+                        0,
+                        "PROVIDER_TYPE_REGULATED_EXCHANGE",
+                        1,
+                        "PROVIDER_TYPE_DECENTRALIZED",
+                        2,
+                        "PROVIDER_TYPE_HYBRID",
+                        3,
+                        "PROVIDER_TYPE_AGGREGATOR",
+                        4
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "integer"
+                        }
+                    ],
+                    "title": "Provider Type"
+                },
+                "description": {
+                    "type": "string",
+                    "description": "Brief description"
+                },
+                "website_url": {
+                    "type": "string",
+                    "description": "Provider website"
+                },
+                "docs_url": {
+                    "type": "string",
+                    "description": "API documentation URL"
+                },
+                "support_email": {
+                    "type": "string",
+                    "description": "Developer support contact"
+                },
+                "logo_url": {
+                    "type": "string",
+                    "description": "Provider logo"
+                },
+                "regulatory": {
+                    "$ref": "#/definitions/upp.v1.RegulatoryInfo",
+                    "additionalProperties": true,
+                    "description": "Regulatory info"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "─── Provider Info ───────────────────────────────────────────",
+            "description": "─── Provider Info ───────────────────────────────────────────"
+        },
+        "upp.v1.RegulatoryInfo": {
+            "properties": {
+                "jurisdictions": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array",
+                    "description": "Where regulated"
+                },
+                "regulator": {
+                    "type": "string",
+                    "description": "Regulatory body"
+                },
+                "license_type": {
+                    "type": "string",
+                    "description": "License type"
+                },
+                "compliant": {
+                    "type": "boolean",
+                    "description": "Self-attestation"
+                },
+                "compliance_url": {
+                    "type": "string",
+                    "description": "Compliance documentation"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Regulatory Info"
+        }
+    }
+}

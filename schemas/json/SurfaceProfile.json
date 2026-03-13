@@ -1,0 +1,71 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/SurfaceProfile",
+    "definitions": {
+        "SurfaceProfile": {
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "description": "Surface identifier"
+                },
+                "name": {
+                    "type": "string",
+                    "description": "Human-readable name"
+                },
+                "type": {
+                    "type": "string",
+                    "description": "\"trading_app\", \"ai_agent\", \"dashboard\", etc."
+                },
+                "requested_capabilities": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array",
+                    "description": "What the surface supports"
+                },
+                "requested_extensions": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "preferred_transports": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "supported_auth": {
+                    "items": {
+                        "enum": [
+                            "AUTH_METHOD_TYPE_UNSPECIFIED",
+                            0,
+                            "AUTH_METHOD_TYPE_API_KEY",
+                            1,
+                            "AUTH_METHOD_TYPE_API_KEY_RSA",
+                            2,
+                            "AUTH_METHOD_TYPE_WALLET_SIG",
+                            3,
+                            "AUTH_METHOD_TYPE_OAUTH2",
+                            4,
+                            "AUTH_METHOD_TYPE_MCP_TOKEN",
+                            5,
+                            "AUTH_METHOD_TYPE_JWT",
+                            6
+                        ]
+                    },
+                    "type": "array",
+                    "title": "Auth Method Type"
+                },
+                "jurisdiction": {
+                    "type": "string",
+                    "description": "Jurisdiction  Where the user is located"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "─── Negotiation ─────────────────────────────────────────────",
+            "description": "─── Negotiation ─────────────────────────────────────────────  Player surface profile — declares what the surface supports. Sent during the negotiation handshake."
+        }
+    }
+}

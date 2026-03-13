@@ -1,0 +1,68 @@
+{
+  "_comment": "Golden fixture: Opinion.trade market response transformed to UPP format. Normalized from Opinion Open API.",
+  "_captured_at": "2026-03-11T00:00:00Z",
+  "_raw_source": "GET https://openapi.opinion.trade/openapi/market/{marketId}",
+
+  "id": {
+    "provider": "opinion.trade",
+    "native_id": "42",
+    "full_id": "upp:opinion.trade:42"
+  },
+  "event": {
+    "id": "42",
+    "title": "Will ETH surpass $5,000 by June 2026?",
+    "description": "This market resolves to 'Yes' if the price of Ethereum (ETH) reaches or exceeds $5,000 USD at any point before June 30, 2026 11:59 PM UTC, as reported by CoinGecko.",
+    "category": "crypto",
+    "tags": ["ethereum", "eth", "crypto", "price-prediction"],
+    "image_url": "https://opinion.trade/images/markets/eth-5k.png"
+  },
+  "market_type": "binary",
+  "outcomes": [
+    { "id": "yes", "label": "Yes", "token_id": "0xabcdef1234567890abcdef1234567890abcdef12" },
+    { "id": "no", "label": "No", "token_id": "0x1234567890abcdef1234567890abcdef12345678" }
+  ],
+  "pricing": {
+    "last_price": { "yes": "0.42", "no": "0.58" },
+    "best_bid": {},
+    "best_ask": {},
+    "mid_price": { "yes": "0.42", "no": "0.58" },
+    "spread": {},
+    "tick_size": "0.01",
+    "currency": "USDC",
+    "min_order_size": 1,
+    "max_order_size": 0,
+    "updated_at": "2026-03-11T10:30:00Z"
+  },
+  "volume": {
+    "total_volume": "850000",
+    "volume_24h": "45000",
+    "volume_7d": "280000",
+    "open_interest": "0",
+    "updated_at": "2026-03-11T10:30:00Z"
+  },
+  "lifecycle": {
+    "status": "open",
+    "created_at": "2026-02-01T00:00:00Z",
+    "closes_at": "2026-06-30T23:59:59Z",
+    "resolution_source": "Opinion AI Multi-Agent Oracle"
+  },
+  "rules": {
+    "allowed_order_types": ["limit", "market"],
+    "allowed_tif": ["GTC", "FOK"],
+    "allows_short_selling": true,
+    "allows_partial_fill": true,
+    "maker_fee_rate": "0.00",
+    "taker_fee_rate": "0.01",
+    "max_position_size": 0
+  },
+  "regulatory": {
+    "jurisdiction": "GLOBAL",
+    "compliant": false,
+    "eligible_regions": ["GLOBAL"],
+    "restricted_regions": ["US"],
+    "regulator": "none",
+    "license_type": "none",
+    "contract_type": "binary_option",
+    "required_kyc": "none"
+  }
+}

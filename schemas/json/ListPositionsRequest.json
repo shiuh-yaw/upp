@@ -1,0 +1,65 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/ListPositionsRequest",
+    "definitions": {
+        "ListPositionsRequest": {
+            "properties": {
+                "provider": {
+                    "type": "string",
+                    "description": "Optional: filter by provider"
+                },
+                "status": {
+                    "enum": [
+                        "POSITION_STATUS_UNSPECIFIED",
+                        0,
+                        "POSITION_STATUS_OPEN",
+                        1,
+                        "POSITION_STATUS_CLOSED",
+                        2,
+                        "POSITION_STATUS_SETTLED",
+                        3,
+                        "POSITION_STATUS_EXPIRED",
+                        4
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "integer"
+                        }
+                    ],
+                    "title": "Position Status"
+                },
+                "market_id": {
+                    "type": "string",
+                    "description": "Optional: filter by market"
+                },
+                "pagination": {
+                    "$ref": "#/definitions/upp.v1.PaginationRequest",
+                    "additionalProperties": true
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "─── Request/Response Messages ───────────────────────────────",
+            "description": "─── Request/Response Messages ───────────────────────────────"
+        },
+        "upp.v1.PaginationRequest": {
+            "properties": {
+                "limit": {
+                    "type": "integer",
+                    "description": "Max items per page [1, 1000], default 50"
+                },
+                "cursor": {
+                    "type": "string",
+                    "description": "Opaque cursor from previous response"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "─── Pagination ──────────────────────────────────────────────",
+            "description": "─── Pagination ──────────────────────────────────────────────  Cursor-based pagination request. Cursor-based (not offset-based) for consistency under real-time inserts."
+        }
+    }
+}

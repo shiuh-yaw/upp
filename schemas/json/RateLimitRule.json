@@ -1,0 +1,27 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/RateLimitRule",
+    "definitions": {
+        "RateLimitRule": {
+            "properties": {
+                "endpoint_pattern": {
+                    "type": "string",
+                    "description": "Glob pattern, e.g. \"/markets/*\""
+                },
+                "requests_per_second": {
+                    "type": "integer"
+                },
+                "requests_per_minute": {
+                    "type": "integer"
+                },
+                "burst_limit": {
+                    "type": "integer",
+                    "description": "Max burst above sustained rate"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Rate Limit Rule"
+        }
+    }
+}

@@ -1,0 +1,22 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/ClaimPayoutRequest",
+    "definitions": {
+        "ClaimPayoutRequest": {
+            "properties": {
+                "universal_id": {
+                    "type": "string"
+                },
+                "outcome_id": {
+                    "type": "string"
+                },
+                "provider": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Claim Payout Request"
+        }
+    }
+}

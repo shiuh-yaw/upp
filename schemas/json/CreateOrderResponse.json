@@ -1,0 +1,292 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/CreateOrderResponse",
+    "definitions": {
+        "CreateOrderResponse": {
+            "properties": {
+                "order": {
+                    "$ref": "#/definitions/upp.v1.Order",
+                    "additionalProperties": true
+                },
+                "estimate": {
+                    "$ref": "#/definitions/upp.v1.OrderEstimate",
+                    "additionalProperties": true,
+                    "description": "Cost estimate at time of placement"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Create Order Response"
+        },
+        "upp.v1.Order": {
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "description": "UPP-assigned order ID"
+                },
+                "provider_order_id": {
+                    "type": "string",
+                    "description": "Provider's native order ID"
+                },
+                "client_order_id": {
+                    "type": "string",
+                    "description": "Client-assigned ID (idempotency)"
+                },
+                "market_id": {
+                    "$ref": "#/definitions/upp.v1.UniversalMarketId",
+                    "additionalProperties": true
+                },
+                "outcome_id": {
+                    "type": "string",
+                    "description": "Which outcome (e.g. \"yes\", \"no\")"
+                },
+                "side": {
+                    "enum": [
+                        "SIDE_UNSPECIFIED",
+                        0,
+                        "SIDE_BUY",
+                        1,
+                        "SIDE_SELL",
+                        2
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "integer"
+                        }
+                    ],
+                    "title": "Side"
+                },
+                "order_type": {
+                    "enum": [
+                        "ORDER_TYPE_UNSPECIFIED",
+                        0,
+                        "ORDER_TYPE_LIMIT",
+                        1,
+                        "ORDER_TYPE_MARKET",
+                        2
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "integer"
+                        }
+                    ],
+                    "title": "Order Type",
+                    "description": "Order types supported by the market."
+                },
+                "tif": {
+                    "enum": [
+                        "TIME_IN_FORCE_UNSPECIFIED",
+                        0,
+                        "TIME_IN_FORCE_GTC",
+                        1,
+                        "TIME_IN_FORCE_GTD",
+                        2,
+                        "TIME_IN_FORCE_FOK",
+                        3,
+                        "TIME_IN_FORCE_IOC",
+                        4
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "integer"
+                        }
+                    ],
+                    "title": "Time In Force",
+                    "description": "Time-in-force policies."
+                },
+                "price": {
+                    "type": "string",
+                    "description": "Pricing  Limit price (decimal string, 0.01-0.99)"
+                },
+                "quantity": {
+                    "type": "string",
+                    "description": "Number of contracts"
+                },
+                "filled_quantity": {
+                    "type": "string",
+                    "description": "Contracts filled so far"
+                },
+                "average_fill_price": {
+                    "type": "string",
+                    "description": "Weighted average fill price"
+                },
+                "remaining_quantity": {
+                    "type": "string",
+                    "description": "quantity - filled_quantity"
+                },
+                "status": {
+                    "enum": [
+                        "ORDER_STATUS_UNSPECIFIED",
+                        0,
+                        "ORDER_STATUS_PENDING",
+                        1,
+                        "ORDER_STATUS_OPEN",
+                        2,
+                        "ORDER_STATUS_PARTIALLY_FILLED",
+                        3,
+                        "ORDER_STATUS_FILLED",
+                        4,
+                        "ORDER_STATUS_CANCELLED",
+                        5,
+                        "ORDER_STATUS_REJECTED",
+                        6,
+                        "ORDER_STATUS_EXPIRED",
+                        7
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "integer"
+                        }
+                    ],
+                    "title": "Order Status"
+                },
+                "fees": {
+                    "$ref": "#/definitions/upp.v1.OrderFees",
+                    "additionalProperties": true,
+                    "description": "Financial"
+                },
+                "cost_basis": {
+                    "type": "string",
+                    "description": "Total cost of filled contracts"
+                },
+                "created_at": {
+                    "$ref": "#/definitions/upp.v1.Timestamp",
+                    "additionalProperties": true,
+                    "description": "Timestamps"
+                },
+                "updated_at": {
+                    "$ref": "#/definitions/upp.v1.Timestamp",
+                    "additionalProperties": true
+                },
+                "expires_at": {
+                    "$ref": "#/definitions/upp.v1.Timestamp",
+                    "additionalProperties": true,
+                    "description": "For GTD orders"
+                },
+                "filled_at": {
+                    "$ref": "#/definitions/upp.v1.Timestamp",
+                    "additionalProperties": true,
+                    "description": "When fully filled (if applicable)"
+                },
+                "cancelled_at": {
+                    "$ref": "#/definitions/upp.v1.Timestamp",
+                    "additionalProperties": true,
+                    "description": "When cancelled (if applicable)"
+                },
+                "cancel_reason": {
+                    "type": "string",
+                    "description": "Execution details  Reason for cancellation/rejection"
+                },
+                "provider_metadata": {
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "type": "object"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "─── Order ───────────────────────────────────────────────────",
+            "description": "─── Order ───────────────────────────────────────────────────  A trading order — instruction to buy or sell outcome contracts. Equivalent to UCP's \"Line Item + Cart\" concept."
+        },
+        "upp.v1.OrderEstimate": {
+            "properties": {
+                "max_cost": {
+                    "type": "string",
+                    "description": "Maximum cost in settlement currency"
+                },
+                "estimated_fees": {
+                    "type": "string",
+                    "description": "Estimated fees"
+                },
+                "total_with_fees": {
+                    "type": "string",
+                    "description": "max_cost + estimated_fees"
+                },
+                "funding_instrument": {
+                    "type": "string",
+                    "description": "Which funding source would be used"
+                },
+                "available_balance": {
+                    "type": "string",
+                    "description": "Current balance in that instrument"
+                },
+                "sufficient_funds": {
+                    "type": "boolean",
+                    "description": "Whether balance covers the order"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Order Estimate",
+            "description": "Cost estimate for an order."
+        },
+        "upp.v1.OrderFees": {
+            "properties": {
+                "maker_fee": {
+                    "type": "string",
+                    "description": "Fee paid for adding liquidity"
+                },
+                "taker_fee": {
+                    "type": "string",
+                    "description": "Fee paid for removing liquidity"
+                },
+                "total_fee": {
+                    "type": "string",
+                    "description": "Total fees for this order"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Order Fees"
+        },
+        "upp.v1.Timestamp": {
+            "properties": {
+                "seconds": {
+                    "type": "string",
+                    "description": "Unix epoch seconds"
+                },
+                "nanos": {
+                    "type": "integer",
+                    "description": "Sub-second nanoseconds [0, 999999999]"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "─── Temporal ────────────────────────────────────────────────",
+            "description": "─── Temporal ────────────────────────────────────────────────  High-precision timestamp for trading events. Always UTC. Nanosecond precision for orderbook/trade events."
+        },
+        "upp.v1.UniversalMarketId": {
+            "properties": {
+                "provider": {
+                    "type": "string",
+                    "description": "Provider domain, e.g. \"kalshi.com\""
+                },
+                "native_id": {
+                    "type": "string",
+                    "description": "Provider's native market ID"
+                },
+                "full_id": {
+                    "type": "string",
+                    "description": "Computed: \"upp:{provider}:{native_id}\""
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "─── Identity ────────────────────────────────────────────────",
+            "description": "─── Identity ────────────────────────────────────────────────  Universal Market Identifier. Format: \"upp:{provider}:{native_id}\" Enables cross-provider market matching and portfolio aggregation."
+        }
+    }
+}

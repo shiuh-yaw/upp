@@ -1,0 +1,233 @@
+// Copyright 2026 Universal Prediction Protocol Authors
+// SPDX-License-Identifier: Apache-2.0
+//
+// resolution.proto — Market resolution, disputes, and payouts.
+// UPP INNOVATION: No direct UCP equivalent.
+//
+// Resolution is the defining difference between commerce and prediction
+// markets. This capability handles the lifecycle from market close to
+// outcome determination to financial settlement.
+
+syntax = "proto3";
+
+package upp.v1;
+
+import "upp/v1/common.proto";
+
+option java_package = "dev.upp.v1";
+option go_package = "github.com/universal-prediction-protocol/upp/gen/go/upp/v1";
+
+// ─── Resolution ──────────────────────────────────────────────
+
+// The resolved outcome of a prediction market.
+message Resolution {
+  string id                    = 1;  // Resolution ID
+  UniversalMarketId market_id  = 2;
+
+  // Outcome
+  string resolved_outcome_id   = 3;  // Which outcome won (e.g. "yes")
+  string resolved_outcome_label = 4; // Human-readable label
+  ResolutionStatus status      = 5;
+
+  // Resolution details
+  ResolutionDetails details    = 6;
+
+  // Dispute info
+  DisputeInfo dispute          = 7;
+
+  // Payout info
+  PayoutInfo payout            = 8;
+
+  Timestamp resolved_at        = 9;
+  Timestamp finalized_at       = 10; // After dispute window closes
+
+  map<string, string> provider_metadata = 20;
+}
+
+enum ResolutionStatus {
+  RESOLUTION_STATUS_UNSPECIFIED = 0;
+  RESOLUTION_STATUS_PENDING     = 1;  // Market closed, awaiting resolution
+  RESOLUTION_STATUS_PROPOSED    = 2;  // Outcome proposed, in dispute window
+  RESOLUTION_STATUS_FINALIZED   = 3;  // Dispute window closed, outcome final
+  RESOLUTION_STATUS_DISPUTED    = 4;  // Active dispute in progress
+  RESOLUTION_STATUS_OVERTURNED  = 5;  // Original resolution overturned
+  RESOLUTION_STATUS_VOIDED      = 6;  // Market voided, no winner
+}
+
+// ─── Resolution Details ──────────────────────────────────────
+
+// How the outcome was determined.
+message ResolutionDetails {
+  OracleType oracle_type    = 1;   // Type of resolution mechanism
+
+  // Evidence
+  string source_description = 2;   // Human-readable source description
+  string source_url         = 3;   // URL to evidence (if applicable)
+
+  // For numeric markets
+  string observed_value     = 4;   // The actual observed value
+  string threshold          = 5;   // The threshold for YES resolution
+
+  // Confidence
+  float  confidence         = 6;   // Oracle confidence [0.0, 1.0]
+
+  // Chain of evidence (for multi-source resolution)
+  repeated OracleAttestation attestations = 7;
+}
+
+// Type of resolution oracle.
+enum OracleType {
+  ORACLE_TYPE_UNSPECIFIED       = 0;
+  ORACLE_TYPE_OFFICIAL_DATA     = 1;  // Government/official data feeds
+  ORACLE_TYPE_FINANCIAL_DATA    = 2;  // Market data providers (CoinGecko, etc.)
+  ORACLE_TYPE_HUMAN_COMMITTEE   = 3;  // Human judges/committee
+  ORACLE_TYPE_AI_ORACLE         = 4;  // AI-powered resolution (Opinion AI)
+  ORACLE_TYPE_SMART_CONTRACT    = 5;  // On-chain automated resolution
+  ORACLE_TYPE_DECENTRALIZED     = 6;  // Decentralized oracle (UMA, Chainlink)
+  ORACLE_TYPE_PROVIDER_INTERNAL = 7;  // Provider's internal determination
+}
+
+// Individual oracle attestation (for multi-source verification).
+message OracleAttestation {
+  string oracle_id         = 1;  // Identifier for this oracle source
+  string oracle_name       = 2;  // Human-readable name
+  OracleType type          = 3;
+  string attested_outcome  = 4;  // What this oracle says the outcome is
+  float  confidence        = 5;  // This oracle's confidence
+  string evidence_url      = 6;  // Supporting evidence
+  Timestamp attested_at    = 7;
+
+  // Cryptographic proof (if available)
+  string signature         = 8;  // Digital signature of attestation
+  string public_key        = 9;  // Verifying public key
+}
+
+// ─── Disputes ────────────────────────────────────────────────
+
+// Dispute information for a market resolution.
+message DisputeInfo {
+  bool      disputable             = 1;  // Whether disputes are allowed
+  Timestamp dispute_window_start   = 2;  // When dispute window opens
+  Timestamp dispute_window_end     = 3;  // When dispute window closes
+
+  int32     disputes_filed         = 4;  // Number of disputes filed
+  repeated Dispute disputes        = 5;  // Individual dispute records
+}
+
+// An individual dispute filed against a resolution.
+message Dispute {
+  string id           = 1;
+  string filer_id     = 2;  // Who filed the dispute (anonymized)
+  string reason       = 3;  // Dispute reason
+  string evidence_url = 4;  // Supporting evidence
+
+  DisputeStatus status = 5;
+  string ruling        = 6;  // Outcome of dispute review
+
+  Timestamp filed_at    = 7;
+  Timestamp resolved_at = 8;
+}
+
+enum DisputeStatus {
+  DISPUTE_STATUS_UNSPECIFIED = 0;
+  DISPUTE_STATUS_FILED       = 1;  // Dispute submitted
+  DISPUTE_STATUS_UNDER_REVIEW = 2; // Being reviewed
+  DISPUTE_STATUS_UPHELD      = 3;  // Original resolution upheld
+  DISPUTE_STATUS_OVERTURNED  = 4;  // Resolution changed
+  DISPUTE_STATUS_DISMISSED   = 5;  // Dispute dismissed
+}
+
+// ─── Payouts ─────────────────────────────────────────────────
+
+// Payout information after market resolution.
+message PayoutInfo {
+  string payout_per_contract = 1;  // Amount paid per winning contract
+  string currency            = 2;  // Payout currency
+  PayoutStatus payout_status = 3;
+  string settlement_handler  = 4;  // How payout is processed
+}
+
+enum PayoutStatus {
+  PAYOUT_STATUS_UNSPECIFIED = 0;
+  PAYOUT_STATUS_PENDING     = 1;  // Resolution finalized, payout not yet processed
+  PAYOUT_STATUS_PROCESSING  = 2;  // Payout being processed
+  PAYOUT_STATUS_COMPLETED   = 3;  // Payout delivered
+  PAYOUT_STATUS_FAILED      = 4;  // Payout failed
+}
+
+// A user's payout claim for a resolved market.
+message PayoutClaim {
+  string id                    = 1;
+  UniversalMarketId market_id  = 2;
+  string outcome_id            = 3;
+  int64  contracts             = 4;  // Number of winning contracts
+  string payout_amount         = 5;  // Total payout
+  string currency              = 6;
+  PayoutStatus status          = 7;
+  Timestamp claimed_at         = 8;
+  Timestamp completed_at       = 9;
+  string transaction_id        = 10; // Settlement transaction ID
+}
+
+// ─── Resolution Service ──────────────────────────────────────
+
+// ResolutionService — Market resolution and payout management.
+// UPP INNOVATION: No direct UCP equivalent.
+service ResolutionService {
+  // Get the resolution for a specific market.
+  rpc GetResolution(GetResolutionRequest) returns (Resolution);
+
+  // List resolved markets with filtering.
+  rpc ListResolutions(ListResolutionsRequest) returns (ListResolutionsResponse);
+
+  // Claim payout for a winning position.
+  rpc ClaimPayout(ClaimPayoutRequest) returns (PayoutClaim);
+
+  // File a dispute against a resolution.
+  rpc FileDispute(FileDisputeRequest) returns (Dispute);
+
+  // Get resolution source/oracle information.
+  rpc GetResolutionSources(GetResolutionSourcesRequest) returns (GetResolutionSourcesResponse);
+}
+
+// ─── Request/Response Messages ───────────────────────────────
+
+message GetResolutionRequest {
+  string universal_id = 1;
+  string provider     = 2;
+  string native_id    = 3;
+}
+
+message ListResolutionsRequest {
+  string provider          = 1;
+  ResolutionStatus status  = 2;
+  TimeRange time_range     = 3;
+  PaginationRequest pagination = 10;
+}
+
+message ListResolutionsResponse {
+  repeated Resolution resolutions = 1;
+  PaginationResponse pagination   = 2;
+}
+
+message ClaimPayoutRequest {
+  string universal_id = 1;
+  string outcome_id   = 2;
+  string provider     = 3;
+}
+
+message FileDisputeRequest {
+  string universal_id = 1;
+  string provider     = 2;
+  string reason       = 3;
+  string evidence_url = 4;
+}
+
+message GetResolutionSourcesRequest {
+  string universal_id = 1;
+  string provider     = 2;
+}
+
+message GetResolutionSourcesResponse {
+  repeated OracleAttestation sources = 1;
+}

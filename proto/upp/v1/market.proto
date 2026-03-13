@@ -1,0 +1,325 @@
+// Copyright 2026 Universal Prediction Protocol Authors
+// SPDX-License-Identifier: Apache-2.0
+//
+// market.proto — Market discovery, metadata, and orderbook types.
+// Maps to UCP's Catalog capability.
+//
+// Designed to normalize across:
+//   - Kalshi: Binary + ranged event contracts, CFTC-regulated
+//   - Polymarket: Binary token markets on Polygon (CLOB + CTF)
+//   - Opinion.trade: Binary + categorical on BNB Chain
+
+syntax = "proto3";
+
+package upp.v1;
+
+import "upp/v1/common.proto";
+
+option java_package = "dev.upp.v1";
+option go_package = "github.com/universal-prediction-protocol/upp/gen/go/upp/v1";
+
+// ─── Market ──────────────────────────────────────────────────
+
+// A prediction market — the core tradeable entity.
+// Equivalent to UCP's "Product" in commerce.
+message Market {
+  UniversalMarketId id = 1;  // Universal ID: upp:{provider}:{native_id}
+
+  Event      event      = 2;   // The event being predicted
+  MarketType market_type = 3;  // Binary, categorical, or scalar
+  repeated Outcome outcomes = 4;  // Possible outcomes (2 for binary, N for categorical)
+
+  MarketPricing   pricing   = 5;  // Current price/probability data
+  MarketVolume    volume    = 6;  // Trading volume metrics
+  MarketLifecycle lifecycle = 7;  // Status and key dates
+  MarketRules     rules     = 8;  // Trading rules and constraints
+  MarketRegulatory regulatory = 9;  // Compliance metadata
+
+  // Provider-specific metadata (passthrough for provider extensions)
+  map<string, string> provider_metadata = 15;
+}
+
+// The event being predicted on.
+message Event {
+  string id          = 1;  // Provider's event identifier
+  string title       = 2;  // Human-readable title, e.g. "Will Bitcoin reach $100K?"
+  string description = 3;  // Detailed resolution criteria
+  string category    = 4;  // Primary category (crypto, politics, sports, etc.)
+  repeated string tags = 5;  // Searchable tags
+  string image_url   = 6;  // Event image/icon URL
+
+  // For grouped events (e.g. Kalshi "series")
+  string series_id    = 7;  // Parent series/group identifier
+  string series_title = 8;  // Series name
+}
+
+// A possible outcome of the market.
+message Outcome {
+  string id       = 1;  // Outcome identifier (e.g. "yes", "no", "candidate_a")
+  string label    = 2;  // Human-readable label
+  string token_id = 3;  // On-chain token ID (if applicable, e.g. Polymarket CTF)
+}
+
+// ─── Market Types ────────────────────────────────────────────
+
+enum MarketType {
+  MARKET_TYPE_UNSPECIFIED = 0;
+  MARKET_TYPE_BINARY      = 1;  // Yes/No — most common (Kalshi, Polymarket)
+  MARKET_TYPE_CATEGORICAL = 2;  // Multiple exclusive outcomes (Opinion)
+  MARKET_TYPE_SCALAR      = 3;  // Numeric range with continuous outcomes
+}
+
+// ─── Pricing ─────────────────────────────────────────────────
+
+// Current pricing snapshot for a market.
+message MarketPricing {
+  // Last traded prices per outcome
+  map<string, string> last_price = 1;  // outcome_id -> price string
+
+  // Best bid/ask per outcome
+  map<string, string> best_bid = 2;  // outcome_id -> best bid price
+  map<string, string> best_ask = 3;  // outcome_id -> best ask price
+
+  // Mid price (average of best bid and ask)
+  map<string, string> mid_price = 4;
+
+  // Spread
+  map<string, string> spread = 5;  // outcome_id -> bid-ask spread
+
+  string tick_size      = 6;   // Minimum price increment, e.g. "0.01"
+  string currency       = 7;   // Settlement currency (USD, USDC, etc.)
+  int32  min_order_size = 8;   // Minimum contracts per order
+  int32  max_order_size = 9;   // Maximum contracts per order (0 = unlimited)
+
+  Timestamp updated_at = 10;  // When pricing was last updated
+}
+
+// ─── Volume ──────────────────────────────────────────────────
+
+// Trading activity metrics.
+message MarketVolume {
+  string total_volume   = 1;  // All-time volume in settlement currency
+  string volume_24h     = 2;  // Last 24h volume
+  string volume_7d      = 3;  // Last 7d volume
+  string open_interest  = 4;  // Currently outstanding contracts
+  int32  num_traders    = 5;  // Unique traders (if available)
+
+  Timestamp updated_at  = 6;
+}
+
+// ─── Lifecycle ───────────────────────────────────────────────
+
+// Market status and key dates.
+message MarketLifecycle {
+  MarketStatus status = 1;
+
+  Timestamp created_at     = 2;  // When market was created
+  Timestamp opens_at       = 3;  // When trading opens (if scheduled)
+  Timestamp closes_at      = 4;  // When trading closes
+  Timestamp resolved_at    = 5;  // When market was resolved (if resolved)
+  Timestamp expires_at     = 6;  // Hard expiry date
+
+  string resolution_source = 7;  // Description of resolution mechanism
+}
+
+enum MarketStatus {
+  MARKET_STATUS_UNSPECIFIED = 0;
+  MARKET_STATUS_PENDING     = 1;  // Created but not yet open
+  MARKET_STATUS_OPEN        = 2;  // Actively trading
+  MARKET_STATUS_HALTED      = 3;  // Temporarily suspended
+  MARKET_STATUS_CLOSED      = 4;  // Trading closed, awaiting resolution
+  MARKET_STATUS_RESOLVED    = 5;  // Outcome determined
+  MARKET_STATUS_DISPUTED    = 6;  // Resolution under dispute
+  MARKET_STATUS_VOIDED      = 7;  // Market cancelled/voided
+}
+
+// ─── Rules ───────────────────────────────────────────────────
+
+// Trading rules and constraints for a market.
+message MarketRules {
+  repeated OrderType allowed_order_types = 1;
+  repeated TimeInForce allowed_tif       = 2;
+
+  bool   allows_short_selling = 3;  // Can sell without holding
+  bool   allows_partial_fill  = 4;  // Can orders partially fill
+  string maker_fee_rate       = 5;  // Maker fee as decimal, e.g. "0.00"
+  string taker_fee_rate       = 6;  // Taker fee as decimal, e.g. "0.02"
+
+  // Position limits
+  int32 max_position_size     = 7;  // Max contracts per user (0 = unlimited)
+}
+
+// Order types supported by the market.
+enum OrderType {
+  ORDER_TYPE_UNSPECIFIED = 0;
+  ORDER_TYPE_LIMIT       = 1;  // Limit order at specified price
+  ORDER_TYPE_MARKET      = 2;  // Market order at best available price
+}
+
+// Time-in-force policies.
+enum TimeInForce {
+  TIME_IN_FORCE_UNSPECIFIED = 0;
+  TIME_IN_FORCE_GTC         = 1;  // Good 'Til Cancelled
+  TIME_IN_FORCE_GTD         = 2;  // Good 'Til Date
+  TIME_IN_FORCE_FOK         = 3;  // Fill or Kill
+  TIME_IN_FORCE_IOC         = 4;  // Immediate or Cancel
+}
+
+// ─── Regulatory ──────────────────────────────────────────────
+
+// Compliance and regulatory metadata.
+// Critical for multi-jurisdiction prediction market access.
+message MarketRegulatory {
+  string jurisdiction        = 1;  // Primary jurisdiction (ISO 3166-1 alpha-2)
+  bool   compliant           = 2;  // Provider self-attestation of compliance
+  repeated string eligible_regions    = 3;  // Regions allowed to trade
+  repeated string restricted_regions  = 4;  // Regions explicitly blocked
+
+  string regulator       = 5;  // Regulatory body (e.g. "CFTC", "none")
+  string license_type    = 6;  // License type (e.g. "DCM", "none")
+  string contract_type   = 7;  // Legal classification (event_contract, binary_option, swap)
+
+  KycLevel required_kyc  = 8;  // Minimum KYC level required
+}
+
+enum KycLevel {
+  KYC_LEVEL_UNSPECIFIED    = 0;
+  KYC_LEVEL_NONE           = 1;  // No KYC required (decentralized)
+  KYC_LEVEL_BASIC          = 2;  // Email + phone verification
+  KYC_LEVEL_ENHANCED       = 3;  // Government ID + address verification
+  KYC_LEVEL_INSTITUTIONAL  = 4;  // Full institutional onboarding
+}
+
+// ─── OrderBook ───────────────────────────────────────────────
+
+// Orderbook snapshot for a specific outcome.
+message OrderBook {
+  UniversalMarketId market_id = 1;
+  string outcome_id           = 2;  // Which outcome's book
+
+  repeated OrderBookLevel bids = 3;  // Buy side, sorted price descending
+  repeated OrderBookLevel asks = 4;  // Sell side, sorted price ascending
+
+  Timestamp timestamp = 5;  // Snapshot timestamp
+
+  // Note: Kalshi only returns bids. UPP adapters must compute asks
+  // by inverting the opposing outcome's bids: ask_price = 1 - bid_price
+  bool asks_computed = 6;  // True if asks were computed, not native
+}
+
+// A single price level in the orderbook.
+message OrderBookLevel {
+  string price    = 1;  // Price at this level (decimal string)
+  int64  quantity = 2;  // Number of contracts at this level
+}
+
+// ─── Market Service ──────────────────────────────────────────
+
+// MarketService — Discovery and browsing of prediction markets.
+// Equivalent to UCP's Catalog capability.
+service MarketService {
+  // List markets with filtering, sorting, and pagination.
+  rpc ListMarkets(ListMarketsRequest) returns (ListMarketsResponse);
+
+  // Get detailed metadata for a single market.
+  rpc GetMarket(GetMarketRequest) returns (Market);
+
+  // Full-text and semantic search across all providers.
+  rpc SearchMarkets(SearchMarketsRequest) returns (SearchMarketsResponse);
+
+  // Get the current orderbook for a market outcome.
+  rpc GetOrderBook(GetOrderBookRequest) returns (OrderBook);
+
+  // List available market categories.
+  rpc ListCategories(ListCategoriesRequest) returns (ListCategoriesResponse);
+
+  // Get a snapshot of related/correlated markets.
+  rpc GetRelatedMarkets(GetRelatedMarketsRequest) returns (GetRelatedMarketsResponse);
+}
+
+// ─── Request/Response Messages ───────────────────────────────
+
+message ListMarketsRequest {
+  // Filters
+  string provider     = 1;  // Filter by provider domain
+  string category     = 2;  // Filter by category
+  MarketStatus status = 3;  // Filter by status
+  MarketType market_type = 4;  // Filter by type
+  repeated string tags = 5;  // Filter by tags (AND)
+
+  // Sorting
+  MarketSortField sort_by   = 6;
+  SortDirection   sort_dir   = 7;
+
+  // Pagination
+  PaginationRequest pagination = 10;
+}
+
+enum MarketSortField {
+  MARKET_SORT_FIELD_UNSPECIFIED = 0;
+  MARKET_SORT_FIELD_VOLUME_24H  = 1;
+  MARKET_SORT_FIELD_CREATED_AT  = 2;
+  MARKET_SORT_FIELD_CLOSES_AT   = 3;
+  MARKET_SORT_FIELD_OPEN_INTEREST = 4;
+  MARKET_SORT_FIELD_NUM_TRADERS  = 5;
+}
+
+message ListMarketsResponse {
+  repeated Market markets           = 1;
+  PaginationResponse pagination     = 2;
+}
+
+message GetMarketRequest {
+  // Provide either universal_id or provider + native_id
+  string universal_id = 1;  // Full UPP ID: "upp:kalshi.com:KXBTC-26MAR14-100K"
+  string provider     = 2;  // Provider domain
+  string native_id    = 3;  // Provider's native ID
+}
+
+message SearchMarketsRequest {
+  string query      = 1;  // Search query string
+  string provider   = 2;  // Optional provider filter
+  string category   = 3;  // Optional category filter
+  MarketStatus status = 4;
+  PaginationRequest pagination = 10;
+}
+
+message SearchMarketsResponse {
+  repeated Market markets       = 1;
+  PaginationResponse pagination = 2;
+}
+
+message GetOrderBookRequest {
+  string universal_id = 1;
+  string outcome_id   = 2;  // Optional: specific outcome. If empty, returns all.
+  int32  depth        = 3;  // Max levels per side (default 20)
+}
+
+message ListCategoriesRequest {
+  string provider = 1;  // Optional: filter by provider
+}
+
+message ListCategoriesResponse {
+  repeated Category categories = 1;
+}
+
+message Category {
+  string id           = 1;
+  string name         = 2;
+  int32  market_count = 3;  // Number of open markets in this category
+}
+
+message GetRelatedMarketsRequest {
+  string universal_id = 1;
+  int32  limit        = 2;  // Max related markets to return (default 10)
+}
+
+message GetRelatedMarketsResponse {
+  repeated RelatedMarket markets = 1;
+}
+
+message RelatedMarket {
+  Market market           = 1;
+  string relationship     = 2;  // "same_event", "correlated", "opposing"
+  float  correlation_score = 3; // [-1.0, 1.0] estimated correlation
+}

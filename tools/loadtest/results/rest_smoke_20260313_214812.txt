@@ -1,0 +1,220 @@
+time="2026-03-13T21:48:12+08:00" level=warning msg="\"cli\" level configuration overrode scenarios configuration entirely"
+
+         /\      Grafana   /‾‾/  
+    /\  /  \     |\  __   /  /   
+   /  \/    \    | |/ /  /   ‾‾\ 
+  /          \   |   (  |  (‾)  |
+ / __________ \  |_|\_\  \_____/ 
+
+
+     execution: local
+        script: /Users/psy/Library/Application Support/Claude/local-agent-mode-sessions/bc657a38-8f2b-46e0-8622-bad1698c1918/8e994f75-4bc7-4c0b-b888-6318f73415b1/local_e9adb497-ed26-4b9b-b231-58b83ba6b8b7/outputs/upp/tools/loadtest/k6-rest.js
+        output: -
+
+     scenarios: (100.00%) 1 scenario, 1 max VUs, 1m0s max duration (incl. graceful stop):
+              * default: 1 looping VUs for 30s (gracefulStop: 30s)
+
+
+running (0m01.0s), 1/1 VUs, 0 complete and 0 interrupted iterations
+default   [   3% ] 1 VUs  01.0s/30s
+
+running (0m02.0s), 1/1 VUs, 0 complete and 0 interrupted iterations
+default   [   7% ] 1 VUs  02.0s/30s
+
+running (0m03.0s), 1/1 VUs, 1 complete and 0 interrupted iterations
+default   [  10% ] 1 VUs  03.0s/30s
+
+running (0m04.0s), 1/1 VUs, 1 complete and 0 interrupted iterations
+default   [  13% ] 1 VUs  04.0s/30s
+
+running (0m05.0s), 1/1 VUs, 2 complete and 0 interrupted iterations
+default   [  17% ] 1 VUs  05.0s/30s
+
+running (0m06.0s), 1/1 VUs, 3 complete and 0 interrupted iterations
+default   [  20% ] 1 VUs  06.0s/30s
+
+running (0m07.0s), 1/1 VUs, 4 complete and 0 interrupted iterations
+default   [  23% ] 1 VUs  07.0s/30s
+
+running (0m08.0s), 1/1 VUs, 4 complete and 0 interrupted iterations
+default   [  27% ] 1 VUs  08.0s/30s
+
+running (0m09.0s), 1/1 VUs, 5 complete and 0 interrupted iterations
+default   [  30% ] 1 VUs  09.0s/30s
+
+running (0m10.0s), 1/1 VUs, 6 complete and 0 interrupted iterations
+default   [  33% ] 1 VUs  10.0s/30s
+
+running (0m11.0s), 1/1 VUs, 6 complete and 0 interrupted iterations
+default   [  37% ] 1 VUs  11.0s/30s
+
+running (0m12.0s), 1/1 VUs, 7 complete and 0 interrupted iterations
+default   [  40% ] 1 VUs  12.0s/30s
+
+running (0m13.0s), 1/1 VUs, 8 complete and 0 interrupted iterations
+default   [  43% ] 1 VUs  13.0s/30s
+
+running (0m14.0s), 1/1 VUs, 9 complete and 0 interrupted iterations
+default   [  47% ] 1 VUs  14.0s/30s
+
+running (0m15.0s), 1/1 VUs, 9 complete and 0 interrupted iterations
+default   [  50% ] 1 VUs  15.0s/30s
+
+running (0m16.0s), 1/1 VUs, 10 complete and 0 interrupted iterations
+default   [  53% ] 1 VUs  16.0s/30s
+
+running (0m17.0s), 1/1 VUs, 10 complete and 0 interrupted iterations
+default   [  57% ] 1 VUs  17.0s/30s
+
+running (0m18.0s), 1/1 VUs, 11 complete and 0 interrupted iterations
+default   [  60% ] 1 VUs  18.0s/30s
+
+running (0m19.0s), 1/1 VUs, 12 complete and 0 interrupted iterations
+default   [  63% ] 1 VUs  19.0s/30s
+
+running (0m20.0s), 1/1 VUs, 13 complete and 0 interrupted iterations
+default   [  67% ] 1 VUs  20.0s/30s
+
+running (0m21.0s), 1/1 VUs, 13 complete and 0 interrupted iterations
+default   [  70% ] 1 VUs  21.0s/30s
+
+running (0m22.0s), 1/1 VUs, 14 complete and 0 interrupted iterations
+default   [  73% ] 1 VUs  22.0s/30s
+
+running (0m23.0s), 1/1 VUs, 14 complete and 0 interrupted iterations
+default   [  77% ] 1 VUs  23.0s/30s
+
+running (0m24.0s), 1/1 VUs, 15 complete and 0 interrupted iterations
+default   [  80% ] 1 VUs  24.0s/30s
+
+running (0m25.0s), 1/1 VUs, 16 complete and 0 interrupted iterations
+default   [  83% ] 1 VUs  25.0s/30s
+
+running (0m26.0s), 1/1 VUs, 16 complete and 0 interrupted iterations
+default   [  87% ] 1 VUs  26.0s/30s
+
+running (0m27.0s), 1/1 VUs, 17 complete and 0 interrupted iterations
+default   [  90% ] 1 VUs  27.0s/30s
+
+running (0m28.0s), 1/1 VUs, 18 complete and 0 interrupted iterations
+default   [  93% ] 1 VUs  28.0s/30s
+
+running (0m29.0s), 1/1 VUs, 19 complete and 0 interrupted iterations
+default   [  97% ] 1 VUs  29.0s/30s
+
+running (0m30.0s), 1/1 VUs, 19 complete and 0 interrupted iterations
+default   [ 100% ] 1 VUs  30.0s/30s
+
+
+  █ THRESHOLDS 
+
+    categories_latency
+    ✓ 'p(95)<500' p(95)=2.04ms
+    ✓ 'p(99)<1000' p(99)=2.8ms
+
+    error_rate
+    ✗ 'rate<0.05' rate=12.50%
+
+    estimate_latency
+    ✓ 'p(95)<500' p(95)=5ms
+    ✓ 'p(99)<1000' p(99)=5ms
+
+    execute_latency
+    ✓ 'p(95)<2500' p(95)=238.34ms
+    ✓ 'p(99)<4000' p(99)=426.06ms
+
+    health_latency
+    ✓ 'p(95)<100' p(95)=3ms
+    ✓ 'p(99)<200' p(99)=3ms
+
+    http_req_failed
+    ✗ 'rate<0.05' rate=12.50%
+
+    market_latency
+    ✓ 'p(95)<2000' p(95)=346.04ms
+    ✓ 'p(99)<3000' p(99)=818ms
+
+    search_latency
+    ✓ 'p(95)<2000' p(95)=506.49ms
+    ✓ 'p(99)<3000' p(99)=605.29ms
+
+    static_latency
+    ✓ 'p(95)<100' p(95)=4ms
+    ✓ 'p(99)<200' p(99)=4ms
+
+
+  █ TOTAL RESULTS 
+
+    checks_total.......: 500    16.492982/s
+    checks_succeeded...: 88.00% 440 out of 500
+    checks_failed......: 12.00% 60 out of 500
+
+    ✓ health status is 200
+    ✓ health response has content
+    ✓ health responds quickly
+    ✓ markets list status is 200
+    ✓ markets list returns array
+    ✓ markets list has market IDs
+    ✓ markets list within latency SLA
+    ✓ search status is 200
+    ✗ search returns results
+      ↳  0% — ✓ 0 / ✗ 20
+    ✓ search within latency SLA
+    ✓ categories status is 200
+    ✓ categories returns array
+    ✓ categories fast response
+    ✓ execute status is 200 or 201
+    ✓ execute returns result
+    ✓ execute within latency SLA
+    ✗ estimate status is 200
+      ↳  0% — ✓ 0 / ✗ 20
+    ✗ estimate returns cost
+      ↳  0% — ✓ 0 / ✗ 20
+    ✓ estimate fast response
+    ✓ agent config status is 200
+    ✓ agent config is valid JSON
+    ✓ agent config fast
+    ✓ tools list status is 200
+    ✓ tools list is array
+    ✓ tools list fast
+
+    CUSTOM
+    cache_hit_rate.................: 0.00%  0 out of 100
+    categories_latency.............: avg=1.75ms   min=1ms   med=2ms     max=3ms      p(90)=2ms      p(95)=2.04ms  
+    category_requests..............: 20     0.659719/s
+    error_rate.....................: 12.50% 20 out of 160
+    estimate_latency...............: avg=2.04ms   min=0s    med=2ms     max=5ms      p(90)=3.2ms    p(95)=5ms     
+    estimate_requests..............: 20     0.659719/s
+    execute_latency................: avg=189.1ms  min=159ms med=166ms   max=473ms    p(90)=208.9ms  p(95)=238.34ms
+    execute_requests...............: 20     0.659719/s
+    health_checks..................: 20     0.659719/s
+    health_latency.................: avg=1.55ms   min=1ms   med=1ms     max=3ms      p(90)=2.1ms    p(95)=3ms     
+    market_latency.................: avg=240.8ms  min=174ms med=186.5ms max=936ms    p(90)=272.7ms  p(95)=346.04ms
+    market_requests................: 20     0.659719/s
+    search_latency.................: avg=265.3ms  min=157ms med=225ms   max=630ms    p(90)=484.7ms  p(95)=506.49ms
+    search_requests................: 20     0.659719/s
+    static_latency.................: avg=2.17ms   min=1ms   med=2ms     max=4ms      p(90)=3.1ms    p(95)=4ms     
+    static_requests................: 40     1.319439/s
+
+    HTTP
+    http_req_duration..............: avg=87.9ms   min=637µs med=2.19ms  max=935.92ms p(90)=226.35ms p(95)=269.59ms
+      { expected_response:true }...: avg=100.17ms min=637µs med=2.77ms  max=935.92ms p(90)=232.13ms p(95)=310.03ms
+    http_req_failed................: 12.50% 20 out of 160
+    http_reqs......................: 160    5.277754/s
+
+    EXECUTION
+    iteration_duration.............: avg=1.51s    min=1.31s med=1.42s   max=2.54s    p(90)=1.71s    p(95)=1.83s   
+    iterations.....................: 20     0.659719/s
+    vus............................: 1      min=1         max=1
+    vus_max........................: 1      min=1         max=1
+
+    NETWORK
+    data_received..................: 504 kB 17 kB/s
+    data_sent......................: 19 kB  641 B/s
+
+
+
+
+running (0m30.3s), 0/1 VUs, 20 complete and 0 interrupted iterations
+default ✓ [ 100% ] 1 VUs  30s
+time="2026-03-13T21:48:42+08:00" level=error msg="thresholds on metrics 'error_rate, http_req_failed' have been crossed"

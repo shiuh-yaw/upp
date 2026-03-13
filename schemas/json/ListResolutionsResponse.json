@@ -1,0 +1,431 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/ListResolutionsResponse",
+    "definitions": {
+        "ListResolutionsResponse": {
+            "properties": {
+                "resolutions": {
+                    "items": {
+                        "$ref": "#/definitions/upp.v1.Resolution"
+                    },
+                    "type": "array"
+                },
+                "pagination": {
+                    "$ref": "#/definitions/upp.v1.PaginationResponse",
+                    "additionalProperties": true
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "List Resolutions Response"
+        },
+        "upp.v1.Dispute": {
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "filer_id": {
+                    "type": "string",
+                    "description": "Who filed the dispute (anonymized)"
+                },
+                "reason": {
+                    "type": "string",
+                    "description": "Dispute reason"
+                },
+                "evidence_url": {
+                    "type": "string",
+                    "description": "Supporting evidence"
+                },
+                "status": {
+                    "enum": [
+                        "DISPUTE_STATUS_UNSPECIFIED",
+                        0,
+                        "DISPUTE_STATUS_FILED",
+                        1,
+                        "DISPUTE_STATUS_UNDER_REVIEW",
+                        2,
+                        "DISPUTE_STATUS_UPHELD",
+                        3,
+                        "DISPUTE_STATUS_OVERTURNED",
+                        4,
+                        "DISPUTE_STATUS_DISMISSED",
+                        5
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "integer"
+                        }
+                    ],
+                    "title": "Dispute Status"
+                },
+                "ruling": {
+                    "type": "string",
+                    "description": "Outcome of dispute review"
+                },
+                "filed_at": {
+                    "$ref": "#/definitions/upp.v1.Timestamp",
+                    "additionalProperties": true
+                },
+                "resolved_at": {
+                    "$ref": "#/definitions/upp.v1.Timestamp",
+                    "additionalProperties": true
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Dispute",
+            "description": "An individual dispute filed against a resolution."
+        },
+        "upp.v1.DisputeInfo": {
+            "properties": {
+                "disputable": {
+                    "type": "boolean",
+                    "description": "Whether disputes are allowed"
+                },
+                "dispute_window_start": {
+                    "$ref": "#/definitions/upp.v1.Timestamp",
+                    "additionalProperties": true,
+                    "description": "When dispute window opens"
+                },
+                "dispute_window_end": {
+                    "$ref": "#/definitions/upp.v1.Timestamp",
+                    "additionalProperties": true,
+                    "description": "When dispute window closes"
+                },
+                "disputes_filed": {
+                    "type": "integer",
+                    "description": "Number of disputes filed"
+                },
+                "disputes": {
+                    "items": {
+                        "$ref": "#/definitions/upp.v1.Dispute"
+                    },
+                    "type": "array",
+                    "description": "Individual dispute records"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "─── Disputes ────────────────────────────────────────────────",
+            "description": "─── Disputes ────────────────────────────────────────────────  Dispute information for a market resolution."
+        },
+        "upp.v1.OracleAttestation": {
+            "properties": {
+                "oracle_id": {
+                    "type": "string",
+                    "description": "Identifier for this oracle source"
+                },
+                "oracle_name": {
+                    "type": "string",
+                    "description": "Human-readable name"
+                },
+                "type": {
+                    "enum": [
+                        "ORACLE_TYPE_UNSPECIFIED",
+                        0,
+                        "ORACLE_TYPE_OFFICIAL_DATA",
+                        1,
+                        "ORACLE_TYPE_FINANCIAL_DATA",
+                        2,
+                        "ORACLE_TYPE_HUMAN_COMMITTEE",
+                        3,
+                        "ORACLE_TYPE_AI_ORACLE",
+                        4,
+                        "ORACLE_TYPE_SMART_CONTRACT",
+                        5,
+                        "ORACLE_TYPE_DECENTRALIZED",
+                        6,
+                        "ORACLE_TYPE_PROVIDER_INTERNAL",
+                        7
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "integer"
+                        }
+                    ],
+                    "title": "Oracle Type",
+                    "description": "Type of resolution oracle."
+                },
+                "attested_outcome": {
+                    "type": "string",
+                    "description": "What this oracle says the outcome is"
+                },
+                "confidence": {
+                    "type": "number",
+                    "description": "This oracle's confidence"
+                },
+                "evidence_url": {
+                    "type": "string",
+                    "description": "Supporting evidence"
+                },
+                "attested_at": {
+                    "$ref": "#/definitions/upp.v1.Timestamp",
+                    "additionalProperties": true
+                },
+                "signature": {
+                    "type": "string",
+                    "description": "Cryptographic proof (if available)  Digital signature of attestation"
+                },
+                "public_key": {
+                    "type": "string",
+                    "description": "Verifying public key"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Oracle Attestation",
+            "description": "Individual oracle attestation (for multi-source verification)."
+        },
+        "upp.v1.PaginationResponse": {
+            "properties": {
+                "cursor": {
+                    "type": "string",
+                    "description": "Cursor for next page (empty if no more)"
+                },
+                "has_more": {
+                    "type": "boolean",
+                    "description": "Whether more results exist"
+                },
+                "total": {
+                    "type": "integer",
+                    "description": "Total count (if available, -1 if unknown)"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Pagination Response",
+            "description": "Cursor-based pagination response."
+        },
+        "upp.v1.PayoutInfo": {
+            "properties": {
+                "payout_per_contract": {
+                    "type": "string",
+                    "description": "Amount paid per winning contract"
+                },
+                "currency": {
+                    "type": "string",
+                    "description": "Payout currency"
+                },
+                "payout_status": {
+                    "enum": [
+                        "PAYOUT_STATUS_UNSPECIFIED",
+                        0,
+                        "PAYOUT_STATUS_PENDING",
+                        1,
+                        "PAYOUT_STATUS_PROCESSING",
+                        2,
+                        "PAYOUT_STATUS_COMPLETED",
+                        3,
+                        "PAYOUT_STATUS_FAILED",
+                        4
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "integer"
+                        }
+                    ],
+                    "title": "Payout Status"
+                },
+                "settlement_handler": {
+                    "type": "string",
+                    "description": "How payout is processed"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "─── Payouts ─────────────────────────────────────────────────",
+            "description": "─── Payouts ─────────────────────────────────────────────────  Payout information after market resolution."
+        },
+        "upp.v1.Resolution": {
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "description": "Resolution ID"
+                },
+                "market_id": {
+                    "$ref": "#/definitions/upp.v1.UniversalMarketId",
+                    "additionalProperties": true
+                },
+                "resolved_outcome_id": {
+                    "type": "string",
+                    "description": "Outcome  Which outcome won (e.g. \"yes\")"
+                },
+                "resolved_outcome_label": {
+                    "type": "string",
+                    "description": "Human-readable label"
+                },
+                "status": {
+                    "enum": [
+                        "RESOLUTION_STATUS_UNSPECIFIED",
+                        0,
+                        "RESOLUTION_STATUS_PENDING",
+                        1,
+                        "RESOLUTION_STATUS_PROPOSED",
+                        2,
+                        "RESOLUTION_STATUS_FINALIZED",
+                        3,
+                        "RESOLUTION_STATUS_DISPUTED",
+                        4,
+                        "RESOLUTION_STATUS_OVERTURNED",
+                        5,
+                        "RESOLUTION_STATUS_VOIDED",
+                        6
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "integer"
+                        }
+                    ],
+                    "title": "Resolution Status"
+                },
+                "details": {
+                    "$ref": "#/definitions/upp.v1.ResolutionDetails",
+                    "additionalProperties": true,
+                    "description": "Resolution details"
+                },
+                "dispute": {
+                    "$ref": "#/definitions/upp.v1.DisputeInfo",
+                    "additionalProperties": true,
+                    "description": "Dispute info"
+                },
+                "payout": {
+                    "$ref": "#/definitions/upp.v1.PayoutInfo",
+                    "additionalProperties": true,
+                    "description": "Payout info"
+                },
+                "resolved_at": {
+                    "$ref": "#/definitions/upp.v1.Timestamp",
+                    "additionalProperties": true
+                },
+                "finalized_at": {
+                    "$ref": "#/definitions/upp.v1.Timestamp",
+                    "additionalProperties": true,
+                    "description": "After dispute window closes"
+                },
+                "provider_metadata": {
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "type": "object"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "─── Resolution ──────────────────────────────────────────────",
+            "description": "─── Resolution ──────────────────────────────────────────────  The resolved outcome of a prediction market."
+        },
+        "upp.v1.ResolutionDetails": {
+            "properties": {
+                "oracle_type": {
+                    "enum": [
+                        "ORACLE_TYPE_UNSPECIFIED",
+                        0,
+                        "ORACLE_TYPE_OFFICIAL_DATA",
+                        1,
+                        "ORACLE_TYPE_FINANCIAL_DATA",
+                        2,
+                        "ORACLE_TYPE_HUMAN_COMMITTEE",
+                        3,
+                        "ORACLE_TYPE_AI_ORACLE",
+                        4,
+                        "ORACLE_TYPE_SMART_CONTRACT",
+                        5,
+                        "ORACLE_TYPE_DECENTRALIZED",
+                        6,
+                        "ORACLE_TYPE_PROVIDER_INTERNAL",
+                        7
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "integer"
+                        }
+                    ],
+                    "title": "Oracle Type",
+                    "description": "Type of resolution oracle."
+                },
+                "source_description": {
+                    "type": "string",
+                    "description": "Evidence  Human-readable source description"
+                },
+                "source_url": {
+                    "type": "string",
+                    "description": "URL to evidence (if applicable)"
+                },
+                "observed_value": {
+                    "type": "string",
+                    "description": "For numeric markets  The actual observed value"
+                },
+                "threshold": {
+                    "type": "string",
+                    "description": "The threshold for YES resolution"
+                },
+                "confidence": {
+                    "type": "number",
+                    "description": "Confidence  Oracle confidence [0.0, 1.0]"
+                },
+                "attestations": {
+                    "items": {
+                        "$ref": "#/definitions/upp.v1.OracleAttestation"
+                    },
+                    "type": "array",
+                    "description": "Chain of evidence (for multi-source resolution)"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "─── Resolution Details ──────────────────────────────────────",
+            "description": "─── Resolution Details ──────────────────────────────────────  How the outcome was determined."
+        },
+        "upp.v1.Timestamp": {
+            "properties": {
+                "seconds": {
+                    "type": "string",
+                    "description": "Unix epoch seconds"
+                },
+                "nanos": {
+                    "type": "integer",
+                    "description": "Sub-second nanoseconds [0, 999999999]"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "─── Temporal ────────────────────────────────────────────────",
+            "description": "─── Temporal ────────────────────────────────────────────────  High-precision timestamp for trading events. Always UTC. Nanosecond precision for orderbook/trade events."
+        },
+        "upp.v1.UniversalMarketId": {
+            "properties": {
+                "provider": {
+                    "type": "string",
+                    "description": "Provider domain, e.g. \"kalshi.com\""
+                },
+                "native_id": {
+                    "type": "string",
+                    "description": "Provider's native market ID"
+                },
+                "full_id": {
+                    "type": "string",
+                    "description": "Computed: \"upp:{provider}:{native_id}\""
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "─── Identity ────────────────────────────────────────────────",
+            "description": "─── Identity ────────────────────────────────────────────────  Universal Market Identifier. Format: \"upp:{provider}:{native_id}\" Enables cross-provider market matching and portfolio aggregation."
+        }
+    }
+}

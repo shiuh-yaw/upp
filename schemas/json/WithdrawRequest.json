@@ -1,0 +1,29 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/WithdrawRequest",
+    "definitions": {
+        "WithdrawRequest": {
+            "properties": {
+                "provider": {
+                    "type": "string"
+                },
+                "instrument_id": {
+                    "type": "string"
+                },
+                "amount": {
+                    "type": "string"
+                },
+                "currency": {
+                    "type": "string"
+                },
+                "destination": {
+                    "type": "string",
+                    "description": "Destination address/account"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Withdraw Request"
+        }
+    }
+}

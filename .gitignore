@@ -1,0 +1,42 @@
+# Environment and secrets
+.env
+.env.local
+*.pem
+keys/
+
+# Rust
+gateway/target/
+
+# Node
+node_modules/
+npm-debug.log*
+.npm
+conformance/node_modules/
+sdk/typescript/node_modules/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+.env/
+*.egg-info/
+.eggs/
+sdk/python/*.egg-info/
+
+# IDE and OS
+.idea/
+.vscode/
+*.swp
+.DS_Store
+
+# Build and generated (optional; uncomment if you prefer to regenerate)
+# gateway/src/gen/
+# schemas/json/*.json
+# schemas/openapi/*.json
+
+# Test and coverage
+.coverage
+htmlcov/
+*.log

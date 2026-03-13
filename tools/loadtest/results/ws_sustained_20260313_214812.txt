@@ -1,0 +1,661 @@
+
+         /\      Grafana   /‾‾/  
+    /\  /  \     |\  __   /  /   
+   /  \/    \    | |/ /  /   ‾‾\ 
+  /          \   |   (  |  (‾)  |
+ / __________ \  |_|\_\  \_____/ 
+
+
+     execution: local
+        script: /Users/psy/Library/Application Support/Claude/local-agent-mode-sessions/bc657a38-8f2b-46e0-8622-bad1698c1918/8e994f75-4bc7-4c0b-b888-6318f73415b1/local_e9adb497-ed26-4b9b-b231-58b83ba6b8b7/outputs/upp/tools/loadtest/k6-websocket.js
+        output: -
+
+     scenarios: (100.00%) 2 scenarios, 60 max VUs, 2m30s max duration (incl. graceful stop):
+              * websocket-spike: Up to 50 looping VUs for 45s over 3 stages (gracefulRampDown: 30s, gracefulStop: 30s)
+              * websocket-sustained: 10 looping VUs for 2m0s (gracefulStop: 30s)
+
+
+running (0m01.0s), 20/60 VUs, 0 complete and 0 interrupted iterations
+websocket-spike       [   2% ] 10/50 VUs  01.0s/45.0s
+websocket-sustained   [   1% ] 10 VUs     0m01.0s/2m0s
+
+running (0m02.0s), 30/60 VUs, 0 complete and 0 interrupted iterations
+websocket-spike       [   4% ] 20/50 VUs  02.0s/45.0s
+websocket-sustained   [   2% ] 10 VUs     0m02.0s/2m0s
+
+running (0m03.0s), 40/60 VUs, 0 complete and 0 interrupted iterations
+websocket-spike       [   7% ] 30/50 VUs  03.0s/45.0s
+websocket-sustained   [   2% ] 10 VUs     0m03.0s/2m0s
+
+running (0m04.0s), 50/60 VUs, 0 complete and 0 interrupted iterations
+websocket-spike       [   9% ] 40/50 VUs  04.0s/45.0s
+websocket-sustained   [   3% ] 10 VUs     0m04.0s/2m0s
+
+running (0m05.0s), 59/60 VUs, 0 complete and 0 interrupted iterations
+websocket-spike       [  11% ] 49/50 VUs  05.0s/45.0s
+websocket-sustained   [   4% ] 10 VUs     0m05.0s/2m0s
+
+running (0m06.0s), 60/60 VUs, 0 complete and 0 interrupted iterations
+websocket-spike       [  13% ] 50/50 VUs  06.0s/45.0s
+websocket-sustained   [   5% ] 10 VUs     0m06.0s/2m0s
+
+running (0m07.0s), 60/60 VUs, 0 complete and 0 interrupted iterations
+websocket-spike       [  16% ] 50/50 VUs  07.0s/45.0s
+websocket-sustained   [   6% ] 10 VUs     0m07.0s/2m0s
+
+running (0m08.0s), 60/60 VUs, 0 complete and 0 interrupted iterations
+websocket-spike       [  18% ] 50/50 VUs  08.0s/45.0s
+websocket-sustained   [   7% ] 10 VUs     0m08.0s/2m0s
+
+running (0m09.0s), 60/60 VUs, 0 complete and 0 interrupted iterations
+websocket-spike       [  20% ] 50/50 VUs  09.0s/45.0s
+websocket-sustained   [   7% ] 10 VUs     0m09.0s/2m0s
+
+running (0m10.0s), 60/60 VUs, 0 complete and 0 interrupted iterations
+websocket-spike       [  22% ] 50/50 VUs  10.0s/45.0s
+websocket-sustained   [   8% ] 10 VUs     0m10.0s/2m0s
+
+running (0m11.0s), 60/60 VUs, 0 complete and 0 interrupted iterations
+websocket-spike       [  24% ] 50/50 VUs  11.0s/45.0s
+websocket-sustained   [   9% ] 10 VUs     0m11.0s/2m0s
+
+running (0m12.0s), 60/60 VUs, 0 complete and 0 interrupted iterations
+websocket-spike       [  27% ] 50/50 VUs  12.0s/45.0s
+websocket-sustained   [  10% ] 10 VUs     0m12.0s/2m0s
+
+running (0m13.0s), 60/60 VUs, 0 complete and 0 interrupted iterations
+websocket-spike       [  29% ] 50/50 VUs  13.0s/45.0s
+websocket-sustained   [  11% ] 10 VUs     0m13.0s/2m0s
+
+running (0m14.0s), 60/60 VUs, 0 complete and 0 interrupted iterations
+websocket-spike       [  31% ] 50/50 VUs  14.0s/45.0s
+websocket-sustained   [  12% ] 10 VUs     0m14.0s/2m0s
+
+running (0m15.0s), 60/60 VUs, 0 complete and 0 interrupted iterations
+websocket-spike       [  33% ] 50/50 VUs  15.0s/45.0s
+websocket-sustained   [  12% ] 10 VUs     0m15.0s/2m0s
+
+running (0m16.0s), 60/60 VUs, 15 complete and 0 interrupted iterations
+websocket-spike       [  36% ] 50/50 VUs  16.0s/45.0s
+websocket-sustained   [  13% ] 10 VUs     0m16.0s/2m0s
+
+running (0m17.0s), 60/60 VUs, 24 complete and 0 interrupted iterations
+websocket-spike       [  38% ] 50/50 VUs  17.0s/45.0s
+websocket-sustained   [  14% ] 10 VUs     0m17.0s/2m0s
+
+running (0m18.0s), 60/60 VUs, 30 complete and 0 interrupted iterations
+websocket-spike       [  40% ] 50/50 VUs  18.0s/45.0s
+websocket-sustained   [  15% ] 10 VUs     0m18.0s/2m0s
+
+running (0m19.0s), 60/60 VUs, 41 complete and 0 interrupted iterations
+websocket-spike       [  42% ] 50/50 VUs  19.0s/45.0s
+websocket-sustained   [  16% ] 10 VUs     0m19.0s/2m0s
+
+running (0m20.0s), 60/60 VUs, 41 complete and 0 interrupted iterations
+websocket-spike       [  44% ] 50/50 VUs  20.0s/45.0s
+websocket-sustained   [  17% ] 10 VUs     0m20.0s/2m0s
+
+running (0m21.0s), 60/60 VUs, 41 complete and 0 interrupted iterations
+websocket-spike       [  47% ] 50/50 VUs  21.0s/45.0s
+websocket-sustained   [  17% ] 10 VUs     0m21.0s/2m0s
+
+running (0m22.0s), 60/60 VUs, 41 complete and 0 interrupted iterations
+websocket-spike       [  49% ] 50/50 VUs  22.0s/45.0s
+websocket-sustained   [  18% ] 10 VUs     0m22.0s/2m0s
+
+running (0m23.0s), 60/60 VUs, 41 complete and 0 interrupted iterations
+websocket-spike       [  51% ] 50/50 VUs  23.0s/45.0s
+websocket-sustained   [  19% ] 10 VUs     0m23.0s/2m0s
+
+running (0m24.0s), 60/60 VUs, 46 complete and 0 interrupted iterations
+websocket-spike       [  53% ] 50/50 VUs  24.0s/45.0s
+websocket-sustained   [  20% ] 10 VUs     0m24.0s/2m0s
+
+running (0m25.0s), 60/60 VUs, 55 complete and 0 interrupted iterations
+websocket-spike       [  56% ] 50/50 VUs  25.0s/45.0s
+websocket-sustained   [  21% ] 10 VUs     0m25.0s/2m0s
+
+running (0m26.0s), 60/60 VUs, 61 complete and 0 interrupted iterations
+websocket-spike       [  58% ] 50/50 VUs  26.0s/45.0s
+websocket-sustained   [  22% ] 10 VUs     0m26.0s/2m0s
+
+running (0m27.0s), 60/60 VUs, 62 complete and 0 interrupted iterations
+websocket-spike       [  60% ] 50/50 VUs  27.0s/45.0s
+websocket-sustained   [  22% ] 10 VUs     0m27.0s/2m0s
+
+running (0m28.0s), 60/60 VUs, 66 complete and 0 interrupted iterations
+websocket-spike       [  62% ] 50/50 VUs  28.0s/45.0s
+websocket-sustained   [  23% ] 10 VUs     0m28.0s/2m0s
+
+running (0m29.0s), 60/60 VUs, 68 complete and 0 interrupted iterations
+websocket-spike       [  64% ] 50/50 VUs  29.0s/45.0s
+websocket-sustained   [  24% ] 10 VUs     0m29.0s/2m0s
+
+running (0m30.0s), 60/60 VUs, 69 complete and 0 interrupted iterations
+websocket-spike       [  67% ] 50/50 VUs  30.0s/45.0s
+websocket-sustained   [  25% ] 10 VUs     0m30.0s/2m0s
+
+running (0m31.0s), 60/60 VUs, 71 complete and 0 interrupted iterations
+websocket-spike       [  69% ] 50/50 VUs  31.0s/45.0s
+websocket-sustained   [  26% ] 10 VUs     0m31.0s/2m0s
+
+running (0m32.0s), 60/60 VUs, 77 complete and 0 interrupted iterations
+websocket-spike       [  71% ] 50/50 VUs  32.0s/45.0s
+websocket-sustained   [  27% ] 10 VUs     0m32.0s/2m0s
+
+running (0m33.0s), 60/60 VUs, 81 complete and 0 interrupted iterations
+websocket-spike       [  73% ] 50/50 VUs  33.0s/45.0s
+websocket-sustained   [  27% ] 10 VUs     0m33.0s/2m0s
+
+running (0m34.0s), 60/60 VUs, 82 complete and 0 interrupted iterations
+websocket-spike       [  76% ] 50/50 VUs  34.0s/45.0s
+websocket-sustained   [  28% ] 10 VUs     0m34.0s/2m0s
+
+running (0m35.0s), 60/60 VUs, 86 complete and 0 interrupted iterations
+websocket-spike       [  78% ] 50/50 VUs  35.0s/45.0s
+websocket-sustained   [  29% ] 10 VUs     0m35.0s/2m0s
+
+running (0m36.0s), 60/60 VUs, 90 complete and 0 interrupted iterations
+websocket-spike       [  80% ] 50/50 VUs  36.0s/45.0s
+websocket-sustained   [  30% ] 10 VUs     0m36.0s/2m0s
+
+running (0m37.0s), 60/60 VUs, 91 complete and 0 interrupted iterations
+websocket-spike       [  82% ] 50/50 VUs  37.0s/45.0s
+websocket-sustained   [  31% ] 10 VUs     0m37.0s/2m0s
+
+running (0m38.0s), 60/60 VUs, 93 complete and 0 interrupted iterations
+websocket-spike       [  84% ] 50/50 VUs  38.0s/45.0s
+websocket-sustained   [  32% ] 10 VUs     0m38.0s/2m0s
+
+running (0m39.0s), 60/60 VUs, 95 complete and 0 interrupted iterations
+websocket-spike       [  87% ] 50/50 VUs  39.0s/45.0s
+websocket-sustained   [  32% ] 10 VUs     0m39.0s/2m0s
+
+running (0m40.0s), 60/60 VUs, 101 complete and 0 interrupted iterations
+websocket-spike       [  89% ] 50/50 VUs  40.0s/45.0s
+websocket-sustained   [  33% ] 10 VUs     0m40.0s/2m0s
+
+running (0m41.0s), 59/60 VUs, 103 complete and 0 interrupted iterations
+websocket-spike       [  91% ] 49/50 VUs  41.0s/45.0s
+websocket-sustained   [  34% ] 10 VUs     0m41.0s/2m0s
+
+running (0m42.0s), 56/60 VUs, 106 complete and 0 interrupted iterations
+websocket-spike       [  93% ] 46/50 VUs  42.0s/45.0s
+websocket-sustained   [  35% ] 10 VUs     0m42.0s/2m0s
+
+running (0m43.0s), 51/60 VUs, 111 complete and 0 interrupted iterations
+websocket-spike       [  96% ] 41/50 VUs  43.0s/45.0s
+websocket-sustained   [  36% ] 10 VUs     0m43.0s/2m0s
+
+running (0m44.0s), 50/60 VUs, 112 complete and 0 interrupted iterations
+websocket-spike       [  98% ] 40/50 VUs  44.0s/45.0s
+websocket-sustained   [  37% ] 10 VUs     0m44.0s/2m0s
+
+running (0m45.0s), 48/60 VUs, 114 complete and 0 interrupted iterations
+websocket-spike       [ 100% ] 38/50 VUs  45.0s/45.0s
+websocket-sustained   [  37% ] 10 VUs     0m45.0s/2m0s
+
+running (0m46.0s), 48/60 VUs, 114 complete and 0 interrupted iterations
+websocket-spike     ↓ [ 100% ] 38/50 VUs  45s
+websocket-sustained   [  38% ] 10 VUs     0m46.0s/2m0s
+
+running (0m47.0s), 47/60 VUs, 117 complete and 0 interrupted iterations
+websocket-spike     ↓ [ 100% ] 38/50 VUs  45s
+websocket-sustained   [  39% ] 10 VUs     0m47.0s/2m0s
+
+running (0m48.0s), 44/60 VUs, 121 complete and 0 interrupted iterations
+websocket-spike     ↓ [ 100% ] 38/50 VUs  45s
+websocket-sustained   [  40% ] 10 VUs     0m48.0s/2m0s
+
+running (0m49.0s), 38/60 VUs, 128 complete and 0 interrupted iterations
+websocket-spike     ↓ [ 100% ] 38/50 VUs  45s
+websocket-sustained   [  41% ] 10 VUs     0m49.0s/2m0s
+
+running (0m50.0s), 37/60 VUs, 129 complete and 0 interrupted iterations
+websocket-spike     ↓ [ 100% ] 38/50 VUs  45s
+websocket-sustained   [  42% ] 10 VUs     0m50.0s/2m0s
+
+running (0m51.0s), 36/60 VUs, 130 complete and 0 interrupted iterations
+websocket-spike     ↓ [ 100% ] 38/50 VUs  45s
+websocket-sustained   [  42% ] 10 VUs     0m51.0s/2m0s
+
+running (0m52.0s), 35/60 VUs, 131 complete and 0 interrupted iterations
+websocket-spike     ↓ [ 100% ] 38/50 VUs  45s
+websocket-sustained   [  43% ] 10 VUs     0m52.0s/2m0s
+
+running (0m53.0s), 32/60 VUs, 134 complete and 0 interrupted iterations
+websocket-spike     ↓ [ 100% ] 38/50 VUs  45s
+websocket-sustained   [  44% ] 10 VUs     0m53.0s/2m0s
+
+running (0m54.0s), 32/60 VUs, 134 complete and 0 interrupted iterations
+websocket-spike     ↓ [ 100% ] 38/50 VUs  45s
+websocket-sustained   [  45% ] 10 VUs     0m54.0s/2m0s
+
+running (0m55.0s), 28/60 VUs, 139 complete and 0 interrupted iterations
+websocket-spike     ↓ [ 100% ] 38/50 VUs  45s
+websocket-sustained   [  46% ] 10 VUs     0m55.0s/2m0s
+
+running (0m56.0s), 26/60 VUs, 143 complete and 0 interrupted iterations
+websocket-spike     ↓ [ 100% ] 38/50 VUs  45s
+websocket-sustained   [  47% ] 10 VUs     0m56.0s/2m0s
+
+running (0m57.0s), 25/60 VUs, 145 complete and 0 interrupted iterations
+websocket-spike     ↓ [ 100% ] 38/50 VUs  45s
+websocket-sustained   [  47% ] 10 VUs     0m57.0s/2m0s
+
+running (0m58.0s), 24/60 VUs, 146 complete and 0 interrupted iterations
+websocket-spike     ↓ [ 100% ] 38/50 VUs  45s
+websocket-sustained   [  48% ] 10 VUs     0m58.0s/2m0s
+
+running (0m59.0s), 21/60 VUs, 149 complete and 0 interrupted iterations
+websocket-spike     ↓ [ 100% ] 38/50 VUs  45s
+websocket-sustained   [  49% ] 10 VUs     0m59.0s/2m0s
+
+running (1m00.0s), 17/60 VUs, 153 complete and 0 interrupted iterations
+websocket-spike     ↓ [ 100% ] 38/50 VUs  45s
+websocket-sustained   [  50% ] 10 VUs     1m00.0s/2m0s
+
+running (1m01.0s), 16/60 VUs, 154 complete and 0 interrupted iterations
+websocket-spike     ↓ [ 100% ] 38/50 VUs  45s
+websocket-sustained   [  51% ] 10 VUs     1m01.0s/2m0s
+
+running (1m02.0s), 16/60 VUs, 156 complete and 0 interrupted iterations
+websocket-spike     ↓ [ 100% ] 38/50 VUs  45s
+websocket-sustained   [  52% ] 10 VUs     1m02.0s/2m0s
+
+running (1m03.0s), 16/60 VUs, 156 complete and 0 interrupted iterations
+websocket-spike     ↓ [ 100% ] 38/50 VUs  45s
+websocket-sustained   [  52% ] 10 VUs     1m03.0s/2m0s
+
+running (1m04.0s), 11/60 VUs, 161 complete and 0 interrupted iterations
+websocket-spike     ↓ [ 100% ] 38/50 VUs  45s
+websocket-sustained   [  53% ] 10 VUs     1m04.0s/2m0s
+
+running (1m05.0s), 10/60 VUs, 163 complete and 0 interrupted iterations
+websocket-spike     ✓ [ 100% ] 00/50 VUs  45s
+websocket-sustained   [  54% ] 10 VUs     1m05.0s/2m0s
+
+running (1m06.0s), 10/60 VUs, 163 complete and 0 interrupted iterations
+websocket-spike     ✓ [ 100% ] 00/50 VUs  45s
+websocket-sustained   [  55% ] 10 VUs     1m06.0s/2m0s
+
+running (1m07.0s), 10/60 VUs, 163 complete and 0 interrupted iterations
+websocket-spike     ✓ [ 100% ] 00/50 VUs  45s
+websocket-sustained   [  56% ] 10 VUs     1m07.0s/2m0s
+
+running (1m08.0s), 10/60 VUs, 163 complete and 0 interrupted iterations
+websocket-spike     ✓ [ 100% ] 00/50 VUs  45s
+websocket-sustained   [  57% ] 10 VUs     1m08.0s/2m0s
+
+running (1m09.0s), 10/60 VUs, 163 complete and 0 interrupted iterations
+websocket-spike     ✓ [ 100% ] 00/50 VUs  45s
+websocket-sustained   [  57% ] 10 VUs     1m09.0s/2m0s
+
+running (1m10.0s), 10/60 VUs, 163 complete and 0 interrupted iterations
+websocket-spike     ✓ [ 100% ] 00/50 VUs  45s
+websocket-sustained   [  58% ] 10 VUs     1m10.0s/2m0s
+
+running (1m11.0s), 10/60 VUs, 164 complete and 0 interrupted iterations
+websocket-spike     ✓ [ 100% ] 00/50 VUs  45s
+websocket-sustained   [  59% ] 10 VUs     1m11.0s/2m0s
+
+running (1m12.0s), 10/60 VUs, 165 complete and 0 interrupted iterations
+websocket-spike     ✓ [ 100% ] 00/50 VUs  45s
+websocket-sustained   [  60% ] 10 VUs     1m12.0s/2m0s
+
+running (1m13.0s), 10/60 VUs, 166 complete and 0 interrupted iterations
+websocket-spike     ✓ [ 100% ] 00/50 VUs  45s
+websocket-sustained   [  61% ] 10 VUs     1m13.0s/2m0s
+
+running (1m14.0s), 10/60 VUs, 166 complete and 0 interrupted iterations
+websocket-spike     ✓ [ 100% ] 00/50 VUs  45s
+websocket-sustained   [  62% ] 10 VUs     1m14.0s/2m0s
+
+running (1m15.0s), 10/60 VUs, 166 complete and 0 interrupted iterations
+websocket-spike     ✓ [ 100% ] 00/50 VUs  45s
+websocket-sustained   [  62% ] 10 VUs     1m15.0s/2m0s
+
+running (1m16.0s), 10/60 VUs, 166 complete and 0 interrupted iterations
+websocket-spike     ✓ [ 100% ] 00/50 VUs  45s
+websocket-sustained   [  63% ] 10 VUs     1m16.0s/2m0s
+
+running (1m17.0s), 10/60 VUs, 166 complete and 0 interrupted iterations
+websocket-spike     ✓ [ 100% ] 00/50 VUs  45s
+websocket-sustained   [  64% ] 10 VUs     1m17.0s/2m0s
+
+running (1m18.0s), 10/60 VUs, 166 complete and 0 interrupted iterations
+websocket-spike     ✓ [ 100% ] 00/50 VUs  45s
+websocket-sustained   [  65% ] 10 VUs     1m18.0s/2m0s
+
+running (1m19.0s), 10/60 VUs, 167 complete and 0 interrupted iterations
+websocket-spike     ✓ [ 100% ] 00/50 VUs  45s
+websocket-sustained   [  66% ] 10 VUs     1m19.0s/2m0s
+
+running (1m20.0s), 10/60 VUs, 169 complete and 0 interrupted iterations
+websocket-spike     ✓ [ 100% ] 00/50 VUs  45s
+websocket-sustained   [  67% ] 10 VUs     1m20.0s/2m0s
+
+running (1m21.0s), 10/60 VUs, 170 complete and 0 interrupted iterations
+websocket-spike     ✓ [ 100% ] 00/50 VUs  45s
+websocket-sustained   [  67% ] 10 VUs     1m21.0s/2m0s
+
+running (1m22.0s), 10/60 VUs, 170 complete and 0 interrupted iterations
+websocket-spike     ✓ [ 100% ] 00/50 VUs  45s
+websocket-sustained   [  68% ] 10 VUs     1m22.0s/2m0s
+
+running (1m23.0s), 10/60 VUs, 170 complete and 0 interrupted iterations
+websocket-spike     ✓ [ 100% ] 00/50 VUs  45s
+websocket-sustained   [  69% ] 10 VUs     1m23.0s/2m0s
+
+running (1m24.0s), 10/60 VUs, 170 complete and 0 interrupted iterations
+websocket-spike     ✓ [ 100% ] 00/50 VUs  45s
+websocket-sustained   [  70% ] 10 VUs     1m24.0s/2m0s
+
+running (1m25.0s), 10/60 VUs, 170 complete and 0 interrupted iterations
+websocket-spike     ✓ [ 100% ] 00/50 VUs  45s
+websocket-sustained   [  71% ] 10 VUs     1m25.0s/2m0s
+
+running (1m26.0s), 10/60 VUs, 172 complete and 0 interrupted iterations
+websocket-spike     ✓ [ 100% ] 00/50 VUs  45s
+websocket-sustained   [  72% ] 10 VUs     1m26.0s/2m0s
+
+running (1m27.0s), 10/60 VUs, 172 complete and 0 interrupted iterations
+websocket-spike     ✓ [ 100% ] 00/50 VUs  45s
+websocket-sustained   [  72% ] 10 VUs     1m27.0s/2m0s
+
+running (1m28.0s), 10/60 VUs, 172 complete and 0 interrupted iterations
+websocket-spike     ✓ [ 100% ] 00/50 VUs  45s
+websocket-sustained   [  73% ] 10 VUs     1m28.0s/2m0s
+
+running (1m29.0s), 10/60 VUs, 173 complete and 0 interrupted iterations
+websocket-spike     ✓ [ 100% ] 00/50 VUs  45s
+websocket-sustained   [  74% ] 10 VUs     1m29.0s/2m0s
+
+running (1m30.0s), 10/60 VUs, 173 complete and 0 interrupted iterations
+websocket-spike     ✓ [ 100% ] 00/50 VUs  45s
+websocket-sustained   [  75% ] 10 VUs     1m30.0s/2m0s
+
+running (1m31.0s), 10/60 VUs, 173 complete and 0 interrupted iterations
+websocket-spike     ✓ [ 100% ] 00/50 VUs  45s
+websocket-sustained   [  76% ] 10 VUs     1m31.0s/2m0s
+
+running (1m32.0s), 10/60 VUs, 173 complete and 0 interrupted iterations
+websocket-spike     ✓ [ 100% ] 00/50 VUs  45s
+websocket-sustained   [  77% ] 10 VUs     1m32.0s/2m0s
+
+running (1m33.0s), 10/60 VUs, 173 complete and 0 interrupted iterations
+websocket-spike     ✓ [ 100% ] 00/50 VUs  45s
+websocket-sustained   [  77% ] 10 VUs     1m33.0s/2m0s
+
+running (1m34.0s), 10/60 VUs, 173 complete and 0 interrupted iterations
+websocket-spike     ✓ [ 100% ] 00/50 VUs  45s
+websocket-sustained   [  78% ] 10 VUs     1m34.0s/2m0s
+
+running (1m35.0s), 10/60 VUs, 174 complete and 0 interrupted iterations
+websocket-spike     ✓ [ 100% ] 00/50 VUs  45s
+websocket-sustained   [  79% ] 10 VUs     1m35.0s/2m0s
+
+running (1m36.0s), 10/60 VUs, 175 complete and 0 interrupted iterations
+websocket-spike     ✓ [ 100% ] 00/50 VUs  45s
+websocket-sustained   [  80% ] 10 VUs     1m36.0s/2m0s
+
+running (1m37.0s), 10/60 VUs, 176 complete and 0 interrupted iterations
+websocket-spike     ✓ [ 100% ] 00/50 VUs  45s
+websocket-sustained   [  81% ] 10 VUs     1m37.0s/2m0s
+
+running (1m38.0s), 10/60 VUs, 176 complete and 0 interrupted iterations
+websocket-spike     ✓ [ 100% ] 00/50 VUs  45s
+websocket-sustained   [  82% ] 10 VUs     1m38.0s/2m0s
+
+running (1m39.0s), 10/60 VUs, 176 complete and 0 interrupted iterations
+websocket-spike     ✓ [ 100% ] 00/50 VUs  45s
+websocket-sustained   [  82% ] 10 VUs     1m39.0s/2m0s
+
+running (1m40.0s), 10/60 VUs, 176 complete and 0 interrupted iterations
+websocket-spike     ✓ [ 100% ] 00/50 VUs  45s
+websocket-sustained   [  83% ] 10 VUs     1m40.0s/2m0s
+
+running (1m41.0s), 10/60 VUs, 176 complete and 0 interrupted iterations
+websocket-spike     ✓ [ 100% ] 00/50 VUs  45s
+websocket-sustained   [  84% ] 10 VUs     1m41.0s/2m0s
+
+running (1m42.0s), 10/60 VUs, 176 complete and 0 interrupted iterations
+websocket-spike     ✓ [ 100% ] 00/50 VUs  45s
+websocket-sustained   [  85% ] 10 VUs     1m42.0s/2m0s
+
+running (1m43.0s), 10/60 VUs, 177 complete and 0 interrupted iterations
+websocket-spike     ✓ [ 100% ] 00/50 VUs  45s
+websocket-sustained   [  86% ] 10 VUs     1m43.0s/2m0s
+
+running (1m44.0s), 10/60 VUs, 179 complete and 0 interrupted iterations
+websocket-spike     ✓ [ 100% ] 00/50 VUs  45s
+websocket-sustained   [  87% ] 10 VUs     1m44.0s/2m0s
+
+running (1m45.0s), 10/60 VUs, 180 complete and 0 interrupted iterations
+websocket-spike     ✓ [ 100% ] 00/50 VUs  45s
+websocket-sustained   [  87% ] 10 VUs     1m45.0s/2m0s
+
+running (1m46.0s), 10/60 VUs, 180 complete and 0 interrupted iterations
+websocket-spike     ✓ [ 100% ] 00/50 VUs  45s
+websocket-sustained   [  88% ] 10 VUs     1m46.0s/2m0s
+
+running (1m47.0s), 10/60 VUs, 180 complete and 0 interrupted iterations
+websocket-spike     ✓ [ 100% ] 00/50 VUs  45s
+websocket-sustained   [  89% ] 10 VUs     1m47.0s/2m0s
+
+running (1m48.0s), 10/60 VUs, 180 complete and 0 interrupted iterations
+websocket-spike     ✓ [ 100% ] 00/50 VUs  45s
+websocket-sustained   [  90% ] 10 VUs     1m48.0s/2m0s
+
+running (1m49.0s), 10/60 VUs, 180 complete and 0 interrupted iterations
+websocket-spike     ✓ [ 100% ] 00/50 VUs  45s
+websocket-sustained   [  91% ] 10 VUs     1m49.0s/2m0s
+
+running (1m50.0s), 10/60 VUs, 182 complete and 0 interrupted iterations
+websocket-spike     ✓ [ 100% ] 00/50 VUs  45s
+websocket-sustained   [  92% ] 10 VUs     1m50.0s/2m0s
+
+running (1m51.0s), 10/60 VUs, 182 complete and 0 interrupted iterations
+websocket-spike     ✓ [ 100% ] 00/50 VUs  45s
+websocket-sustained   [  92% ] 10 VUs     1m51.0s/2m0s
+
+running (1m52.0s), 10/60 VUs, 182 complete and 0 interrupted iterations
+websocket-spike     ✓ [ 100% ] 00/50 VUs  45s
+websocket-sustained   [  93% ] 10 VUs     1m52.0s/2m0s
+
+running (1m53.0s), 10/60 VUs, 183 complete and 0 interrupted iterations
+websocket-spike     ✓ [ 100% ] 00/50 VUs  45s
+websocket-sustained   [  94% ] 10 VUs     1m53.0s/2m0s
+
+running (1m54.0s), 10/60 VUs, 183 complete and 0 interrupted iterations
+websocket-spike     ✓ [ 100% ] 00/50 VUs  45s
+websocket-sustained   [  95% ] 10 VUs     1m54.0s/2m0s
+
+running (1m55.0s), 10/60 VUs, 183 complete and 0 interrupted iterations
+websocket-spike     ✓ [ 100% ] 00/50 VUs  45s
+websocket-sustained   [  96% ] 10 VUs     1m55.0s/2m0s
+
+running (1m56.0s), 10/60 VUs, 183 complete and 0 interrupted iterations
+websocket-spike     ✓ [ 100% ] 00/50 VUs  45s
+websocket-sustained   [  97% ] 10 VUs     1m56.0s/2m0s
+
+running (1m57.0s), 10/60 VUs, 183 complete and 0 interrupted iterations
+websocket-spike     ✓ [ 100% ] 00/50 VUs  45s
+websocket-sustained   [  97% ] 10 VUs     1m57.0s/2m0s
+
+running (1m58.0s), 10/60 VUs, 183 complete and 0 interrupted iterations
+websocket-spike     ✓ [ 100% ] 00/50 VUs  45s
+websocket-sustained   [  98% ] 10 VUs     1m58.0s/2m0s
+
+running (1m59.0s), 10/60 VUs, 184 complete and 0 interrupted iterations
+websocket-spike     ✓ [ 100% ] 00/50 VUs  45s
+websocket-sustained   [  99% ] 10 VUs     1m59.0s/2m0s
+
+running (2m00.0s), 10/60 VUs, 185 complete and 0 interrupted iterations
+websocket-spike     ✓ [ 100% ] 00/50 VUs  45s
+websocket-sustained   [ 100% ] 10 VUs     2m00.0s/2m0s
+
+running (2m01.0s), 09/60 VUs, 186 complete and 0 interrupted iterations
+websocket-spike     ✓ [ 100% ] 00/50 VUs  45s
+websocket-sustained ↓ [ 100% ] 10 VUs     2m0s
+
+running (2m02.0s), 09/60 VUs, 186 complete and 0 interrupted iterations
+websocket-spike     ✓ [ 100% ] 00/50 VUs  45s
+websocket-sustained ↓ [ 100% ] 10 VUs     2m0s
+
+running (2m03.0s), 09/60 VUs, 186 complete and 0 interrupted iterations
+websocket-spike     ✓ [ 100% ] 00/50 VUs  45s
+websocket-sustained ↓ [ 100% ] 10 VUs     2m0s
+
+running (2m04.0s), 09/60 VUs, 186 complete and 0 interrupted iterations
+websocket-spike     ✓ [ 100% ] 00/50 VUs  45s
+websocket-sustained ↓ [ 100% ] 10 VUs     2m0s
+
+running (2m05.0s), 09/60 VUs, 186 complete and 0 interrupted iterations
+websocket-spike     ✓ [ 100% ] 00/50 VUs  45s
+websocket-sustained ↓ [ 100% ] 10 VUs     2m0s
+
+running (2m06.0s), 09/60 VUs, 186 complete and 0 interrupted iterations
+websocket-spike     ✓ [ 100% ] 00/50 VUs  45s
+websocket-sustained ↓ [ 100% ] 10 VUs     2m0s
+
+running (2m07.0s), 08/60 VUs, 187 complete and 0 interrupted iterations
+websocket-spike     ✓ [ 100% ] 00/50 VUs  45s
+websocket-sustained ↓ [ 100% ] 10 VUs     2m0s
+
+running (2m08.0s), 06/60 VUs, 189 complete and 0 interrupted iterations
+websocket-spike     ✓ [ 100% ] 00/50 VUs  45s
+websocket-sustained ↓ [ 100% ] 10 VUs     2m0s
+
+running (2m09.0s), 05/60 VUs, 190 complete and 0 interrupted iterations
+websocket-spike     ✓ [ 100% ] 00/50 VUs  45s
+websocket-sustained ↓ [ 100% ] 10 VUs     2m0s
+
+running (2m10.0s), 05/60 VUs, 190 complete and 0 interrupted iterations
+websocket-spike     ✓ [ 100% ] 00/50 VUs  45s
+websocket-sustained ↓ [ 100% ] 10 VUs     2m0s
+
+running (2m11.0s), 05/60 VUs, 190 complete and 0 interrupted iterations
+websocket-spike     ✓ [ 100% ] 00/50 VUs  45s
+websocket-sustained ↓ [ 100% ] 10 VUs     2m0s
+
+running (2m12.0s), 05/60 VUs, 190 complete and 0 interrupted iterations
+websocket-spike     ✓ [ 100% ] 00/50 VUs  45s
+websocket-sustained ↓ [ 100% ] 10 VUs     2m0s
+
+running (2m13.0s), 05/60 VUs, 190 complete and 0 interrupted iterations
+websocket-spike     ✓ [ 100% ] 00/50 VUs  45s
+websocket-sustained ↓ [ 100% ] 10 VUs     2m0s
+
+running (2m14.0s), 03/60 VUs, 192 complete and 0 interrupted iterations
+websocket-spike     ✓ [ 100% ] 00/50 VUs  45s
+websocket-sustained ↓ [ 100% ] 10 VUs     2m0s
+
+running (2m15.0s), 03/60 VUs, 192 complete and 0 interrupted iterations
+websocket-spike     ✓ [ 100% ] 00/50 VUs  45s
+websocket-sustained ↓ [ 100% ] 10 VUs     2m0s
+
+running (2m16.0s), 03/60 VUs, 192 complete and 0 interrupted iterations
+websocket-spike     ✓ [ 100% ] 00/50 VUs  45s
+websocket-sustained ↓ [ 100% ] 10 VUs     2m0s
+
+running (2m17.0s), 02/60 VUs, 193 complete and 0 interrupted iterations
+websocket-spike     ✓ [ 100% ] 00/50 VUs  45s
+websocket-sustained ↓ [ 100% ] 10 VUs     2m0s
+
+running (2m18.0s), 02/60 VUs, 193 complete and 0 interrupted iterations
+websocket-spike     ✓ [ 100% ] 00/50 VUs  45s
+websocket-sustained ↓ [ 100% ] 10 VUs     2m0s
+
+running (2m19.0s), 02/60 VUs, 193 complete and 0 interrupted iterations
+websocket-spike     ✓ [ 100% ] 00/50 VUs  45s
+websocket-sustained ↓ [ 100% ] 10 VUs     2m0s
+
+running (2m20.0s), 02/60 VUs, 193 complete and 0 interrupted iterations
+websocket-spike     ✓ [ 100% ] 00/50 VUs  45s
+websocket-sustained ↓ [ 100% ] 10 VUs     2m0s
+
+running (2m21.0s), 02/60 VUs, 193 complete and 0 interrupted iterations
+websocket-spike     ✓ [ 100% ] 00/50 VUs  45s
+websocket-sustained ↓ [ 100% ] 10 VUs     2m0s
+
+running (2m22.0s), 02/60 VUs, 193 complete and 0 interrupted iterations
+websocket-spike     ✓ [ 100% ] 00/50 VUs  45s
+websocket-sustained ↓ [ 100% ] 10 VUs     2m0s
+
+running (2m23.0s), 01/60 VUs, 194 complete and 0 interrupted iterations
+websocket-spike     ✓ [ 100% ] 00/50 VUs  45s
+websocket-sustained ↓ [ 100% ] 10 VUs     2m0s
+
+
+  █ THRESHOLDS 
+
+    ws_connection_errors
+    ✗ 'rate<0.01' rate=100.00%
+
+    ws_connection_time
+    ✗ 'p(95)<2000' p(95)=8.42s
+    ✗ 'p(99)<4000' p(99)=8.42s
+
+    ws_message_errors
+    ✓ 'rate<0.05' rate=0.00%
+
+    ws_message_latency
+    ✓ 'p(95)<1000' p(95)=0s
+    ✓ 'p(99)<2000' p(99)=0s
+
+    ws_ping_pong_latency
+    ✗ 'p(95)<500' p(95)=1s
+    ✗ 'p(99)<1000' p(99)=1s
+
+
+  █ TOTAL RESULTS 
+
+    checks_total.......: 782    5.448841/s
+    checks_succeeded...: 86.70% 678 out of 782
+    checks_failed......: 13.29% 104 out of 782
+
+    ✓ gateway is ready
+    ✗ WebSocket connection successful
+      ↳  78% — ✓ 154 / ✗ 41
+    ✓ connection established
+    ✓ attempted multiple connections
+    ✗ stress test connection established
+      ↳  67% — ✓ 132 / ✗ 63
+    ✓ metrics endpoint accessible
+
+    HTTP
+    http_req_duration..............: avg=1.28ms min=608µs    med=1.28ms   max=1.95ms p(90)=1.82ms p(95)=1.89ms
+      { expected_response:true }...: avg=1.28ms min=608µs    med=1.28ms   max=1.95ms p(90)=1.82ms p(95)=1.89ms
+    http_req_failed................: 0.00%   0 out of 2
+    http_reqs......................: 2       0.013936/s
+
+    EXECUTION
+    iteration_duration.............: avg=19.44s min=8.01s    med=23.03s   max=24.06s p(90)=24.05s p(95)=24.05s
+    iterations.....................: 195     1.358726/s
+    vus............................: 1       min=1          max=60
+    vus_max........................: 60      min=60         max=60
+
+    NETWORK
+    data_received..................: 384 kB  2.7 kB/s
+    data_sent......................: 424 kB  3.0 kB/s
+
+    WEBSOCKET
+    ws_connecting..................: avg=2.17ms min=526.2µs  med=1.83ms   max=9.38ms p(90)=3.5ms  p(95)=4.19ms
+    ws_connection_errors...........: 100.00% 385 out of 385
+    ws_connection_time.............: avg=3.18s  min=1ms      med=3ms      max=8.42s  p(90)=8.41s  p(95)=8.42s 
+    ws_message_errors..............: 0.00%   0 out of 0
+    ws_message_latency.............: avg=0s     min=0s       med=0s       max=0s     p(90)=0s     p(95)=0s    
+    ws_msgs_sent...................: 4355    30.344888/s
+    ws_ping_pong_latency...........: avg=1s     min=1s       med=1s       max=1s     p(90)=1s     p(95)=1s    
+    ws_reconnect_count.............: 395     2.752292/s
+    ws_session_duration............: avg=2.38s  min=533.87µs med=503.19ms max=8.42s  p(90)=8.41s  p(95)=8.41s 
+    ws_sessions....................: 975     6.793632/s
+
+
+
+
+running (2m23.5s), 00/60 VUs, 195 complete and 0 interrupted iterations
+websocket-spike     ✓ [ 100% ] 00/50 VUs  45s
+websocket-sustained ✓ [ 100% ] 10 VUs     2m0s
+time="2026-03-13T22:03:20+08:00" level=error msg="thresholds on metrics 'ws_connection_errors, ws_connection_time, ws_ping_pong_latency' have been crossed"

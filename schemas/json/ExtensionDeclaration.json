@@ -1,0 +1,32 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/ExtensionDeclaration",
+    "definitions": {
+        "ExtensionDeclaration": {
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "\"analytics\", \"streaming\", \"liquidity\", etc."
+                },
+                "version": {
+                    "type": "string"
+                },
+                "schema_url": {
+                    "type": "string",
+                    "description": "URL to the extension's JSON Schema"
+                },
+                "operations": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array",
+                    "description": "Operations added by this extension"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Extension Declaration",
+            "description": "An extension that augments a capability. Mirroring UCP's extension model."
+        }
+    }
+}

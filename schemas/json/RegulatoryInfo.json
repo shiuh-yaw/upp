@@ -1,0 +1,36 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/RegulatoryInfo",
+    "definitions": {
+        "RegulatoryInfo": {
+            "properties": {
+                "jurisdictions": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array",
+                    "description": "Where regulated"
+                },
+                "regulator": {
+                    "type": "string",
+                    "description": "Regulatory body"
+                },
+                "license_type": {
+                    "type": "string",
+                    "description": "License type"
+                },
+                "compliant": {
+                    "type": "boolean",
+                    "description": "Self-attestation"
+                },
+                "compliance_url": {
+                    "type": "string",
+                    "description": "Compliance documentation"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Regulatory Info"
+        }
+    }
+}

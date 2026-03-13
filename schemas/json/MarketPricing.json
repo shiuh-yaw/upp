@@ -1,0 +1,86 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/MarketPricing",
+    "definitions": {
+        "MarketPricing": {
+            "properties": {
+                "last_price": {
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "type": "object",
+                    "description": "Last traded prices per outcome  outcome_id -\u003e price string"
+                },
+                "best_bid": {
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "type": "object",
+                    "description": "Best bid/ask per outcome  outcome_id -\u003e best bid price"
+                },
+                "best_ask": {
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "type": "object",
+                    "description": "outcome_id -\u003e best ask price"
+                },
+                "mid_price": {
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "type": "object",
+                    "description": "Mid price (average of best bid and ask)"
+                },
+                "spread": {
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "type": "object",
+                    "description": "Spread  outcome_id -\u003e bid-ask spread"
+                },
+                "tick_size": {
+                    "type": "string",
+                    "description": "Minimum price increment, e.g. \"0.01\""
+                },
+                "currency": {
+                    "type": "string",
+                    "description": "Settlement currency (USD, USDC, etc.)"
+                },
+                "min_order_size": {
+                    "type": "integer",
+                    "description": "Minimum contracts per order"
+                },
+                "max_order_size": {
+                    "type": "integer",
+                    "description": "Maximum contracts per order (0 = unlimited)"
+                },
+                "updated_at": {
+                    "$ref": "#/definitions/upp.v1.Timestamp",
+                    "additionalProperties": true,
+                    "description": "When pricing was last updated"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "─── Pricing ─────────────────────────────────────────────────",
+            "description": "─── Pricing ─────────────────────────────────────────────────  Current pricing snapshot for a market."
+        },
+        "upp.v1.Timestamp": {
+            "properties": {
+                "seconds": {
+                    "type": "string",
+                    "description": "Unix epoch seconds"
+                },
+                "nanos": {
+                    "type": "integer",
+                    "description": "Sub-second nanoseconds [0, 999999999]"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "─── Temporal ────────────────────────────────────────────────",
+            "description": "─── Temporal ────────────────────────────────────────────────  High-precision timestamp for trading events. Always UTC. Nanosecond precision for orderbook/trade events."
+        }
+    }
+}

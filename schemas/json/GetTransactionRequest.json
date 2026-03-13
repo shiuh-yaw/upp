@@ -1,0 +1,19 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/GetTransactionRequest",
+    "definitions": {
+        "GetTransactionRequest": {
+            "properties": {
+                "transaction_id": {
+                    "type": "string"
+                },
+                "provider": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Get Transaction Request"
+        }
+    }
+}

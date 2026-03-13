@@ -1,0 +1,202 @@
+// Copyright 2026 Universal Prediction Protocol Authors
+// SPDX-License-Identifier: Apache-2.0
+//
+// settlement.proto — Funding instruments and settlement handlers.
+// Maps to UCP's Payment Instruments + Payment Handlers.
+//
+// UPP separates "what users fund with" (instruments) from
+// "how settlement is processed" (handlers), mirroring UCP's
+// decoupled payment architecture.
+
+syntax = "proto3";
+
+package upp.v1;
+
+import "upp/v1/common.proto";
+
+option java_package = "dev.upp.v1";
+option go_package = "github.com/universal-prediction-protocol/upp/gen/go/upp/v1";
+
+// ─── Funding Instruments ─────────────────────────────────────
+
+// What users use to fund their trading accounts.
+// Equivalent to UCP's "Payment Instrument".
+message FundingInstrument {
+  string id                      = 1;
+  FundingInstrumentType type     = 2;
+  string label                   = 3;  // Human-readable, e.g. "USD Balance"
+  string currency                = 4;  // Currency code
+  string available_balance       = 5;  // Currently available
+  bool   is_default              = 6;  // User's default instrument
+
+  // Limits
+  string min_deposit             = 7;
+  string max_deposit             = 8;
+  string min_withdrawal          = 9;
+  string max_withdrawal          = 10;
+
+  // Processing
+  string deposit_processing_time = 11;  // "instant", "1-3 business days"
+  string withdrawal_processing_time = 12;
+
+  map<string, string> metadata   = 20;
+}
+
+enum FundingInstrumentType {
+  FUNDING_INSTRUMENT_TYPE_UNSPECIFIED = 0;
+  FUNDING_INSTRUMENT_TYPE_USD_BALANCE = 1;  // Custodial USD (Kalshi)
+  FUNDING_INSTRUMENT_TYPE_USDC        = 2;  // USDC stablecoin (Polymarket)
+  FUNDING_INSTRUMENT_TYPE_USDT        = 3;  // USDT stablecoin (Opinion)
+  FUNDING_INSTRUMENT_TYPE_CRYPTO_WALLET = 4; // Non-custodial crypto wallet
+  FUNDING_INSTRUMENT_TYPE_ACH         = 5;  // ACH bank transfer
+  FUNDING_INSTRUMENT_TYPE_WIRE        = 6;  // Wire transfer
+  FUNDING_INSTRUMENT_TYPE_CARD        = 7;  // Credit/debit card (via PSP)
+}
+
+// ─── Settlement Handlers ─────────────────────────────────────
+
+// How positions are settled after market resolution.
+// Equivalent to UCP's "Payment Handler".
+message SettlementHandler {
+  string id                    = 1;
+  SettlementHandlerType type   = 2;
+  string label                 = 3;
+  string description           = 4;
+
+  // Supported currencies
+  repeated string currencies   = 5;
+
+  // Processing
+  string settlement_time       = 6;  // "instant", "T+1", etc.
+  string fee_rate              = 7;  // Settlement fee as decimal
+
+  // Compliance
+  string jurisdiction          = 8;
+  string regulator             = 9;
+}
+
+enum SettlementHandlerType {
+  SETTLEMENT_HANDLER_TYPE_UNSPECIFIED = 0;
+  SETTLEMENT_HANDLER_TYPE_CUSTODIAL_USD = 1;  // Centralized USD clearing (Kalshi)
+  SETTLEMENT_HANDLER_TYPE_ONCHAIN_CTF  = 2;   // Conditional Token Framework on Polygon
+  SETTLEMENT_HANDLER_TYPE_ONCHAIN_BNB  = 3;   // Smart contract on BNB Chain
+  SETTLEMENT_HANDLER_TYPE_HYBRID       = 4;   // Off-chain matching, on-chain settlement
+  SETTLEMENT_HANDLER_TYPE_ESCROW       = 5;   // Third-party escrow
+}
+
+// ─── Transactions ────────────────────────────────────────────
+
+// A deposit or withdrawal transaction.
+message SettlementTransaction {
+  string id                    = 1;
+  SettlementTransactionType type = 2;
+  string amount                = 3;
+  string currency              = 4;
+  string instrument_id         = 5;  // Which funding instrument
+  string handler_id            = 6;  // Which settlement handler
+
+  SettlementTransactionStatus status = 7;
+
+  // On-chain details (if applicable)
+  string tx_hash               = 8;  // Blockchain transaction hash
+  string chain_id              = 9;  // Chain identifier
+
+  Timestamp initiated_at       = 10;
+  Timestamp completed_at       = 11;
+  string failure_reason        = 12;
+
+  map<string, string> metadata = 20;
+}
+
+enum SettlementTransactionType {
+  SETTLEMENT_TRANSACTION_TYPE_UNSPECIFIED = 0;
+  SETTLEMENT_TRANSACTION_TYPE_DEPOSIT    = 1;
+  SETTLEMENT_TRANSACTION_TYPE_WITHDRAWAL = 2;
+  SETTLEMENT_TRANSACTION_TYPE_PAYOUT     = 3;  // Market resolution payout
+  SETTLEMENT_TRANSACTION_TYPE_FEE        = 4;  // Fee deduction
+  SETTLEMENT_TRANSACTION_TYPE_REFUND     = 5;  // Voided market refund
+}
+
+enum SettlementTransactionStatus {
+  SETTLEMENT_TRANSACTION_STATUS_UNSPECIFIED = 0;
+  SETTLEMENT_TRANSACTION_STATUS_PENDING    = 1;
+  SETTLEMENT_TRANSACTION_STATUS_PROCESSING = 2;
+  SETTLEMENT_TRANSACTION_STATUS_COMPLETED  = 3;
+  SETTLEMENT_TRANSACTION_STATUS_FAILED     = 4;
+  SETTLEMENT_TRANSACTION_STATUS_CANCELLED  = 5;
+}
+
+// ─── Settlement Service ──────────────────────────────────────
+
+// SettlementService — Funding and settlement operations.
+// Maps to UCP's Payment capabilities.
+service SettlementService {
+  // List available funding instruments for the user.
+  rpc ListFundingInstruments(ListFundingInstrumentsRequest) returns (ListFundingInstrumentsResponse);
+
+  // List settlement handlers supported by a provider.
+  rpc ListSettlementHandlers(ListSettlementHandlersRequest) returns (ListSettlementHandlersResponse);
+
+  // Initiate a deposit.
+  rpc Deposit(DepositRequest) returns (SettlementTransaction);
+
+  // Initiate a withdrawal.
+  rpc Withdraw(WithdrawRequest) returns (SettlementTransaction);
+
+  // Get transaction status.
+  rpc GetTransaction(GetTransactionRequest) returns (SettlementTransaction);
+
+  // List transaction history.
+  rpc ListTransactions(ListTransactionsRequest) returns (ListTransactionsResponse);
+}
+
+// ─── Request/Response Messages ───────────────────────────────
+
+message ListFundingInstrumentsRequest {
+  string provider = 1;
+}
+
+message ListFundingInstrumentsResponse {
+  repeated FundingInstrument instruments = 1;
+}
+
+message ListSettlementHandlersRequest {
+  string provider = 1;
+}
+
+message ListSettlementHandlersResponse {
+  repeated SettlementHandler handlers = 1;
+}
+
+message DepositRequest {
+  string provider      = 1;
+  string instrument_id = 2;  // Which funding instrument to use
+  string amount        = 3;
+  string currency      = 4;
+}
+
+message WithdrawRequest {
+  string provider      = 1;
+  string instrument_id = 2;
+  string amount        = 3;
+  string currency      = 4;
+  string destination   = 5;  // Destination address/account
+}
+
+message GetTransactionRequest {
+  string transaction_id = 1;
+  string provider       = 2;
+}
+
+message ListTransactionsRequest {
+  string provider                     = 1;
+  SettlementTransactionType type      = 2;
+  SettlementTransactionStatus status  = 3;
+  TimeRange time_range                = 4;
+  PaginationRequest pagination        = 10;
+}
+
+message ListTransactionsResponse {
+  repeated SettlementTransaction transactions = 1;
+  PaginationResponse pagination               = 2;
+}

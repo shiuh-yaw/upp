@@ -1,0 +1,25 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/GetMarketRequest",
+    "definitions": {
+        "GetMarketRequest": {
+            "properties": {
+                "universal_id": {
+                    "type": "string",
+                    "description": "Provide either universal_id or provider + native_id  Full UPP ID: \"upp:kalshi.com:KXBTC-26MAR14-100K\""
+                },
+                "provider": {
+                    "type": "string",
+                    "description": "Provider domain"
+                },
+                "native_id": {
+                    "type": "string",
+                    "description": "Provider's native ID"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Get Market Request"
+        }
+    }
+}

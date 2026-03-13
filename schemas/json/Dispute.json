@@ -1,0 +1,82 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/Dispute",
+    "definitions": {
+        "Dispute": {
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "filer_id": {
+                    "type": "string",
+                    "description": "Who filed the dispute (anonymized)"
+                },
+                "reason": {
+                    "type": "string",
+                    "description": "Dispute reason"
+                },
+                "evidence_url": {
+                    "type": "string",
+                    "description": "Supporting evidence"
+                },
+                "status": {
+                    "enum": [
+                        "DISPUTE_STATUS_UNSPECIFIED",
+                        0,
+                        "DISPUTE_STATUS_FILED",
+                        1,
+                        "DISPUTE_STATUS_UNDER_REVIEW",
+                        2,
+                        "DISPUTE_STATUS_UPHELD",
+                        3,
+                        "DISPUTE_STATUS_OVERTURNED",
+                        4,
+                        "DISPUTE_STATUS_DISMISSED",
+                        5
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "integer"
+                        }
+                    ],
+                    "title": "Dispute Status"
+                },
+                "ruling": {
+                    "type": "string",
+                    "description": "Outcome of dispute review"
+                },
+                "filed_at": {
+                    "$ref": "#/definitions/upp.v1.Timestamp",
+                    "additionalProperties": true
+                },
+                "resolved_at": {
+                    "$ref": "#/definitions/upp.v1.Timestamp",
+                    "additionalProperties": true
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Dispute",
+            "description": "An individual dispute filed against a resolution."
+        },
+        "upp.v1.Timestamp": {
+            "properties": {
+                "seconds": {
+                    "type": "string",
+                    "description": "Unix epoch seconds"
+                },
+                "nanos": {
+                    "type": "integer",
+                    "description": "Sub-second nanoseconds [0, 999999999]"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "─── Temporal ────────────────────────────────────────────────",
+            "description": "─── Temporal ────────────────────────────────────────────────  High-precision timestamp for trading events. Always UTC. Nanosecond precision for orderbook/trade events."
+        }
+    }
+}

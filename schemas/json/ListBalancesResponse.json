@@ -1,0 +1,75 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/ListBalancesResponse",
+    "definitions": {
+        "ListBalancesResponse": {
+            "properties": {
+                "balances": {
+                    "items": {
+                        "$ref": "#/definitions/upp.v1.Balance"
+                    },
+                    "type": "array"
+                },
+                "total_available": {
+                    "type": "string",
+                    "description": "Sum across all providers (USD equivalent)"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "List Balances Response"
+        },
+        "upp.v1.Balance": {
+            "properties": {
+                "provider": {
+                    "type": "string",
+                    "description": "Provider domain"
+                },
+                "instrument_type": {
+                    "type": "string",
+                    "description": "\"usd_balance\", \"usdc_wallet\", etc."
+                },
+                "available": {
+                    "type": "string",
+                    "description": "Available for trading"
+                },
+                "reserved": {
+                    "type": "string",
+                    "description": "Locked in open orders"
+                },
+                "total": {
+                    "type": "string",
+                    "description": "available + reserved"
+                },
+                "currency": {
+                    "type": "string",
+                    "description": "Currency code"
+                },
+                "updated_at": {
+                    "$ref": "#/definitions/upp.v1.Timestamp",
+                    "additionalProperties": true
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "─── Balance ─────────────────────────────────────────────────",
+            "description": "─── Balance ─────────────────────────────────────────────────  Account balance for a specific funding instrument."
+        },
+        "upp.v1.Timestamp": {
+            "properties": {
+                "seconds": {
+                    "type": "string",
+                    "description": "Unix epoch seconds"
+                },
+                "nanos": {
+                    "type": "integer",
+                    "description": "Sub-second nanoseconds [0, 999999999]"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "─── Temporal ────────────────────────────────────────────────",
+            "description": "─── Temporal ────────────────────────────────────────────────  High-precision timestamp for trading events. Always UTC. Nanosecond precision for orderbook/trade events."
+        }
+    }
+}

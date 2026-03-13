@@ -1,0 +1,21 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/RestConfig",
+    "definitions": {
+        "RestConfig": {
+            "properties": {
+                "base_url": {
+                    "type": "string",
+                    "description": "e.g. \"https://api.kalshi.com/upp/v1\""
+                },
+                "openapi_spec_url": {
+                    "type": "string",
+                    "description": "URL to OpenAPI 3.1 spec"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Rest Config"
+        }
+    }
+}

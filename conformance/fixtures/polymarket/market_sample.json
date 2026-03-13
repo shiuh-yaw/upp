@@ -1,0 +1,68 @@
+{
+  "_comment": "Golden fixture: Polymarket market response transformed to UPP format. Normalized from Gamma + CLOB APIs.",
+  "_captured_at": "2026-03-11T00:00:00Z",
+  "_raw_source": "GET https://gamma-api.polymarket.com/markets/{condition_id}",
+
+  "id": {
+    "provider": "polymarket.com",
+    "native_id": "0x1234567890abcdef1234567890abcdef12345678",
+    "full_id": "upp:polymarket.com:0x1234567890abcdef1234567890abcdef12345678"
+  },
+  "event": {
+    "id": "btc-100k-march-2026",
+    "title": "Bitcoin to reach $100K by March 14?",
+    "description": "This market resolves to 'Yes' if Bitcoin reaches $100,000 USD at any point before March 14, 2026 11:59 PM ET.",
+    "category": "crypto",
+    "tags": ["bitcoin", "btc", "crypto", "price-prediction"],
+    "image_url": "https://polymarket-upload.s3.us-east-2.amazonaws.com/bitcoin.png"
+  },
+  "market_type": "binary",
+  "outcomes": [
+    { "id": "yes", "label": "Yes", "token_id": "71321045679021436529743110122" },
+    { "id": "no", "label": "No", "token_id": "71321045679021436529743110123" }
+  ],
+  "pricing": {
+    "last_price": { "yes": "0.65", "no": "0.35" },
+    "best_bid": { "yes": "0.64", "no": "0.34" },
+    "best_ask": { "yes": "0.66", "no": "0.36" },
+    "mid_price": { "yes": "0.65", "no": "0.35" },
+    "spread": { "yes": "0.02", "no": "0.02" },
+    "tick_size": "0.01",
+    "currency": "USDC",
+    "min_order_size": 1,
+    "max_order_size": 0,
+    "updated_at": "2026-03-11T10:30:00Z"
+  },
+  "volume": {
+    "total_volume": "5800000",
+    "volume_24h": "230000",
+    "open_interest": "1850000",
+    "num_traders": 12500,
+    "updated_at": "2026-03-11T10:30:00Z"
+  },
+  "lifecycle": {
+    "status": "open",
+    "created_at": "2026-01-15T00:00:00Z",
+    "closes_at": "2026-03-14T23:59:59Z",
+    "resolution_source": "UMA Optimistic Oracle"
+  },
+  "rules": {
+    "allowed_order_types": ["limit"],
+    "allowed_tif": ["GTC", "GTD", "FOK"],
+    "allows_short_selling": true,
+    "allows_partial_fill": true,
+    "maker_fee_rate": "0.00",
+    "taker_fee_rate": "0.00",
+    "max_position_size": 0
+  },
+  "regulatory": {
+    "jurisdiction": "GLOBAL",
+    "compliant": false,
+    "eligible_regions": ["GLOBAL"],
+    "restricted_regions": ["US"],
+    "regulator": "none",
+    "license_type": "none",
+    "contract_type": "binary_option",
+    "required_kyc": "none"
+  }
+}

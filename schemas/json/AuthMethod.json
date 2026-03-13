@@ -1,0 +1,47 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/AuthMethod",
+    "definitions": {
+        "AuthMethod": {
+            "properties": {
+                "type": {
+                    "enum": [
+                        "AUTH_METHOD_TYPE_UNSPECIFIED",
+                        0,
+                        "AUTH_METHOD_TYPE_API_KEY",
+                        1,
+                        "AUTH_METHOD_TYPE_API_KEY_RSA",
+                        2,
+                        "AUTH_METHOD_TYPE_WALLET_SIG",
+                        3,
+                        "AUTH_METHOD_TYPE_OAUTH2",
+                        4,
+                        "AUTH_METHOD_TYPE_MCP_TOKEN",
+                        5,
+                        "AUTH_METHOD_TYPE_JWT",
+                        6
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "integer"
+                        }
+                    ],
+                    "title": "Auth Method Type"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "docs_url": {
+                    "type": "string",
+                    "description": "Documentation for this auth method"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Auth Method"
+        }
+    }
+}

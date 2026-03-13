@@ -1,0 +1,20 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/GetRelatedMarketsRequest",
+    "definitions": {
+        "GetRelatedMarketsRequest": {
+            "properties": {
+                "universal_id": {
+                    "type": "string"
+                },
+                "limit": {
+                    "type": "integer",
+                    "description": "Max related markets to return (default 10)"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Get Related Markets Request"
+        }
+    }
+}

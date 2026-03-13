@@ -1,0 +1,97 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/OrderBook",
+    "definitions": {
+        "OrderBook": {
+            "properties": {
+                "market_id": {
+                    "$ref": "#/definitions/upp.v1.UniversalMarketId",
+                    "additionalProperties": true
+                },
+                "outcome_id": {
+                    "type": "string",
+                    "description": "Which outcome's book"
+                },
+                "bids": {
+                    "items": {
+                        "$ref": "#/definitions/upp.v1.OrderBookLevel"
+                    },
+                    "type": "array",
+                    "description": "Buy side, sorted price descending"
+                },
+                "asks": {
+                    "items": {
+                        "$ref": "#/definitions/upp.v1.OrderBookLevel"
+                    },
+                    "type": "array",
+                    "description": "Sell side, sorted price ascending"
+                },
+                "timestamp": {
+                    "$ref": "#/definitions/upp.v1.Timestamp",
+                    "additionalProperties": true,
+                    "description": "Snapshot timestamp"
+                },
+                "asks_computed": {
+                    "type": "boolean",
+                    "description": "Note: Kalshi only returns bids. UPP adapters must compute asks by inverting the opposing outcome's bids: ask_price = 1 - bid_price  True if asks were computed, not native"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "─── OrderBook ───────────────────────────────────────────────",
+            "description": "─── OrderBook ───────────────────────────────────────────────  Orderbook snapshot for a specific outcome."
+        },
+        "upp.v1.OrderBookLevel": {
+            "properties": {
+                "price": {
+                    "type": "string",
+                    "description": "Price at this level (decimal string)"
+                },
+                "quantity": {
+                    "type": "string",
+                    "description": "Number of contracts at this level"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Order Book Level",
+            "description": "A single price level in the orderbook."
+        },
+        "upp.v1.Timestamp": {
+            "properties": {
+                "seconds": {
+                    "type": "string",
+                    "description": "Unix epoch seconds"
+                },
+                "nanos": {
+                    "type": "integer",
+                    "description": "Sub-second nanoseconds [0, 999999999]"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "─── Temporal ────────────────────────────────────────────────",
+            "description": "─── Temporal ────────────────────────────────────────────────  High-precision timestamp for trading events. Always UTC. Nanosecond precision for orderbook/trade events."
+        },
+        "upp.v1.UniversalMarketId": {
+            "properties": {
+                "provider": {
+                    "type": "string",
+                    "description": "Provider domain, e.g. \"kalshi.com\""
+                },
+                "native_id": {
+                    "type": "string",
+                    "description": "Provider's native market ID"
+                },
+                "full_id": {
+                    "type": "string",
+                    "description": "Computed: \"upp:{provider}:{native_id}\""
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "─── Identity ────────────────────────────────────────────────",
+            "description": "─── Identity ────────────────────────────────────────────────  Universal Market Identifier. Format: \"upp:{provider}:{native_id}\" Enables cross-provider market matching and portfolio aggregation."
+        }
+    }
+}

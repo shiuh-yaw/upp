@@ -1,0 +1,21 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/CancelAllOrdersRequest",
+    "definitions": {
+        "CancelAllOrdersRequest": {
+            "properties": {
+                "provider": {
+                    "type": "string",
+                    "description": "Required: which provider"
+                },
+                "market_id": {
+                    "type": "string",
+                    "description": "Optional: only cancel orders in this market"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Cancel All Orders Request"
+        }
+    }
+}

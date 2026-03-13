@@ -1,0 +1,88 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/MarketLifecycle",
+    "definitions": {
+        "MarketLifecycle": {
+            "properties": {
+                "status": {
+                    "enum": [
+                        "MARKET_STATUS_UNSPECIFIED",
+                        0,
+                        "MARKET_STATUS_PENDING",
+                        1,
+                        "MARKET_STATUS_OPEN",
+                        2,
+                        "MARKET_STATUS_HALTED",
+                        3,
+                        "MARKET_STATUS_CLOSED",
+                        4,
+                        "MARKET_STATUS_RESOLVED",
+                        5,
+                        "MARKET_STATUS_DISPUTED",
+                        6,
+                        "MARKET_STATUS_VOIDED",
+                        7
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "integer"
+                        }
+                    ],
+                    "title": "Market Status"
+                },
+                "created_at": {
+                    "$ref": "#/definitions/upp.v1.Timestamp",
+                    "additionalProperties": true,
+                    "description": "When market was created"
+                },
+                "opens_at": {
+                    "$ref": "#/definitions/upp.v1.Timestamp",
+                    "additionalProperties": true,
+                    "description": "When trading opens (if scheduled)"
+                },
+                "closes_at": {
+                    "$ref": "#/definitions/upp.v1.Timestamp",
+                    "additionalProperties": true,
+                    "description": "When trading closes"
+                },
+                "resolved_at": {
+                    "$ref": "#/definitions/upp.v1.Timestamp",
+                    "additionalProperties": true,
+                    "description": "When market was resolved (if resolved)"
+                },
+                "expires_at": {
+                    "$ref": "#/definitions/upp.v1.Timestamp",
+                    "additionalProperties": true,
+                    "description": "Hard expiry date"
+                },
+                "resolution_source": {
+                    "type": "string",
+                    "description": "Description of resolution mechanism"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "─── Lifecycle ───────────────────────────────────────────────",
+            "description": "─── Lifecycle ───────────────────────────────────────────────  Market status and key dates."
+        },
+        "upp.v1.Timestamp": {
+            "properties": {
+                "seconds": {
+                    "type": "string",
+                    "description": "Unix epoch seconds"
+                },
+                "nanos": {
+                    "type": "integer",
+                    "description": "Sub-second nanoseconds [0, 999999999]"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "─── Temporal ────────────────────────────────────────────────",
+            "description": "─── Temporal ────────────────────────────────────────────────  High-precision timestamp for trading events. Always UTC. Nanosecond precision for orderbook/trade events."
+        }
+    }
+}
