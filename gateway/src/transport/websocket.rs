@@ -161,6 +161,33 @@ impl WebSocketManager {
         self.subscriber_counts.read().await.values().sum()
     }
 
+    /// Get a snapshot of the latest published prices across all channels.
+    /// Returns map of market_id -> map of outcome_id -> price_string.
+    /// Used by the price indexer to ingest current prices.
+    pub async fn get_price_snapshot(&self) -> HashMap<String, HashMap<String, String>> {
+        let keys: Vec<String> = {
+            let channels = self.channels.read().await;
+            channels.keys()
+                .filter(|k| k.starts_with("prices:"))
+                .cloned()
+                .collect()
+        };
+
+        let mut snapshot = HashMap::new();
+        for key in keys {
+            let market_id = key.strip_prefix("prices:").unwrap_or(&key).to_string();
+            let (provider_id, native_id) = parse_market_id(&market_id);
+
+            if let Some(adapter) = self.registry.get(&provider_id) {
+                if let Ok(market) = adapter.get_market(&native_id).await {
+                    snapshot.insert(market_id, market.pricing.last_price.clone());
+                }
+            }
+        }
+
+        snapshot
+    }
+
     /// Start a background price polling task for subscribed markets.
     /// This polls providers at a fixed interval and fans out price updates.
     pub fn start_price_poller(self: &Arc<Self>, interval_ms: u64) -> tokio::task::JoinHandle<()> {

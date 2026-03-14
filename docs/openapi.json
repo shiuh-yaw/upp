@@ -1090,6 +1090,203 @@
           }
         }
       }
+    },
+    "/upp/v1/arbitrage": {
+      "get": {
+        "summary": "List arbitrage opportunities",
+        "description": "Returns active cross-provider arbitrage opportunities sorted by net profit",
+        "operationId": "listArbitrageOpportunities",
+        "tags": ["Arbitrage"],
+        "parameters": [
+          { "name": "min_spread", "in": "query", "schema": { "type": "number" }, "description": "Minimum spread percentage to include" },
+          { "name": "min_confidence", "in": "query", "schema": { "type": "number" }, "description": "Minimum confidence score (0-1)" },
+          { "name": "provider", "in": "query", "schema": { "type": "string" }, "description": "Filter by provider (bid or ask side)" },
+          { "name": "limit", "in": "query", "schema": { "type": "integer", "default": 50 }, "description": "Max results to return" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Active arbitrage opportunities",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ArbitrageListResponse" } } }
+          }
+        }
+      }
+    },
+    "/upp/v1/arbitrage/summary": {
+      "get": {
+        "summary": "Arbitrage summary statistics",
+        "description": "Returns aggregate statistics about arbitrage scanning activity",
+        "operationId": "getArbitrageSummary",
+        "tags": ["Arbitrage"],
+        "responses": {
+          "200": {
+            "description": "Arbitrage summary",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ArbitrageSummary" } } }
+          }
+        }
+      }
+    },
+    "/upp/v1/arbitrage/history": {
+      "get": {
+        "summary": "Recent arbitrage history",
+        "description": "Returns recently detected arbitrage opportunities (ring buffer)",
+        "operationId": "getArbitrageHistory",
+        "tags": ["Arbitrage"],
+        "parameters": [
+          { "name": "limit", "in": "query", "schema": { "type": "integer", "default": 100 } },
+          { "name": "min_spread", "in": "query", "schema": { "type": "number" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Historical arbitrage alerts",
+            "content": { "application/json": { "schema": { "type": "object" } } }
+          }
+        }
+      }
+    },
+    "/upp/v1/markets/{marketId}/candles": {
+      "get": {
+        "summary": "Get OHLCV candlestick data",
+        "description": "Returns candlestick (OHLCV) price history for a market outcome at the specified resolution",
+        "operationId": "getCandles",
+        "tags": ["Price History"],
+        "parameters": [
+          { "name": "marketId", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "outcome_id", "in": "query", "schema": { "type": "string", "default": "yes" } },
+          { "name": "resolution", "in": "query", "schema": { "type": "string", "enum": ["1m", "5m", "1h", "1d"], "default": "5m" } },
+          { "name": "from", "in": "query", "schema": { "type": "integer" }, "description": "Start time (unix epoch seconds)" },
+          { "name": "to", "in": "query", "schema": { "type": "integer" }, "description": "End time (unix epoch seconds)" },
+          { "name": "limit", "in": "query", "schema": { "type": "integer", "default": 100, "maximum": 1000 } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Candlestick data",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CandleResponse" } } }
+          }
+        }
+      }
+    },
+    "/upp/v1/markets/{marketId}/candles/latest": {
+      "get": {
+        "summary": "Get latest (current) candle",
+        "description": "Returns the current incomplete candle for a market outcome",
+        "operationId": "getLatestCandle",
+        "tags": ["Price History"],
+        "parameters": [
+          { "name": "marketId", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "outcome_id", "in": "query", "schema": { "type": "string", "default": "yes" } },
+          { "name": "resolution", "in": "query", "schema": { "type": "string", "enum": ["1m", "5m", "1h", "1d"], "default": "1m" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Latest candle",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Candle" } } }
+          }
+        }
+      }
+    },
+    "/upp/v1/price-index/stats": {
+      "get": {
+        "summary": "Price indexer statistics",
+        "description": "Returns statistics about the price indexer including ticks ingested and markets tracked",
+        "operationId": "getPriceIndexStats",
+        "tags": ["Price History"],
+        "responses": {
+          "200": {
+            "description": "Indexer stats",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/PriceIndexStats" } } }
+          }
+        }
+      }
+    },
+    "/upp/v1/portfolio/analytics": {
+      "get": {
+        "summary": "Full portfolio analytics",
+        "description": "Returns comprehensive portfolio analytics including P&L, risk scoring, exposure analysis, provider breakdown, and top winners/losers",
+        "operationId": "getPortfolioAnalytics",
+        "tags": ["Portfolio"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "provider", "in": "query", "schema": { "type": "string" }, "description": "Filter to a specific provider" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Portfolio analytics",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/PortfolioAnalytics" } } }
+          }
+        }
+      }
+    },
+    "/upp/v1/orders/route": {
+      "post": {
+        "summary": "Compute optimal order routing",
+        "description": "Analyzes liquidity across all providers and returns an optimal routing plan (dry run, no orders placed)",
+        "operationId": "computeRoute",
+        "tags": ["Smart Routing"],
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/RouteRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Routing plan",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/RoutingPlan" } } }
+          }
+        }
+      }
+    },
+    "/upp/v1/orders/route/execute": {
+      "post": {
+        "summary": "Execute smart order routing",
+        "description": "Computes the optimal route and executes orders to each provider in priority order",
+        "operationId": "executeRoute",
+        "tags": ["Smart Routing"],
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/ExecuteRouteRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Execution results",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ExecutionResponse" } } }
+          }
+        }
+      }
+    },
+    "/upp/v1/orders/route/stats": {
+      "get": {
+        "summary": "Smart router statistics",
+        "description": "Returns statistics about smart order routing activity",
+        "operationId": "getRouterStats",
+        "tags": ["Smart Routing"],
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Router stats",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/RouterStats" } } }
+          }
+        }
+      }
+    },
+    "/upp/v1/ws": {
+      "get": {
+        "summary": "WebSocket connection",
+        "description": "Upgrade to WebSocket for real-time streaming. Supports JSON-RPC methods: subscribe_prices, subscribe_orderbook, subscribe_arbitrage, unsubscribe, get_market, ping",
+        "operationId": "wsConnect",
+        "tags": ["WebSocket"],
+        "responses": {
+          "101": { "description": "Switching Protocols — WebSocket connection established" }
+        }
+      }
     }
   },
   "components": {
@@ -1419,18 +1616,235 @@
       "McpTool": {
         "type": "object",
         "properties": {
-          "name": {
-            "type": "string"
-          },
-          "description": {
-            "type": "string"
-          },
-          "inputSchema": {
-            "type": "object"
-          }
+          "name": { "type": "string" },
+          "description": { "type": "string" },
+          "inputSchema": { "type": "object" }
         },
         "required": ["name", "description", "inputSchema"]
+      },
+      "ArbitrageAlert": {
+        "type": "object",
+        "properties": {
+          "alert_id": { "type": "string" },
+          "market_id": { "type": "string" },
+          "outcome_id": { "type": "string" },
+          "bid_provider": { "type": "string" },
+          "bid_price": { "type": "number" },
+          "ask_provider": { "type": "string" },
+          "ask_price": { "type": "number" },
+          "spread": { "type": "number" },
+          "spread_pct": { "type": "number" },
+          "net_profit_per_contract": { "type": "number" },
+          "estimated_total_profit": { "type": "number" },
+          "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+          "detected_at": { "type": "string", "format": "date-time" },
+          "active": { "type": "boolean" },
+          "consecutive_detections": { "type": "integer" }
+        }
+      },
+      "ArbitrageListResponse": {
+        "type": "object",
+        "properties": {
+          "opportunities": { "type": "array", "items": { "$ref": "#/components/schemas/ArbitrageAlert" } },
+          "total": { "type": "integer" },
+          "scanner": { "type": "object" }
+        }
+      },
+      "ArbitrageSummary": {
+        "type": "object",
+        "properties": {
+          "active_opportunities": { "type": "integer" },
+          "total_scans": { "type": "integer" },
+          "total_detected": { "type": "integer" },
+          "best_opportunity": { "$ref": "#/components/schemas/ArbitrageAlert" }
+        }
+      },
+      "Candle": {
+        "type": "object",
+        "properties": {
+          "open": { "type": "number" },
+          "high": { "type": "number" },
+          "low": { "type": "number" },
+          "close": { "type": "number" },
+          "volume": { "type": "integer" },
+          "timestamp": { "type": "integer", "description": "Period start as unix epoch seconds" },
+          "period_seconds": { "type": "integer" }
+        }
+      },
+      "CandleResponse": {
+        "type": "object",
+        "properties": {
+          "market_id": { "type": "string" },
+          "outcome_id": { "type": "string" },
+          "resolution": { "type": "string" },
+          "candles": { "type": "array", "items": { "$ref": "#/components/schemas/Candle" } },
+          "count": { "type": "integer" }
+        }
+      },
+      "PriceIndexStats": {
+        "type": "object",
+        "properties": {
+          "ticks_ingested": { "type": "integer" },
+          "markets_tracked": { "type": "integer" },
+          "total_series": { "type": "integer" }
+        }
+      },
+      "PortfolioAnalytics": {
+        "type": "object",
+        "properties": {
+          "total_value": { "type": "number" },
+          "total_cost_basis": { "type": "number" },
+          "total_unrealized_pnl": { "type": "number" },
+          "total_realized_pnl": { "type": "number" },
+          "total_pnl": { "type": "number" },
+          "return_pct": { "type": "number" },
+          "position_count": { "type": "integer" },
+          "open_position_count": { "type": "integer" },
+          "win_rate": { "type": "number" },
+          "risk_score": { "$ref": "#/components/schemas/RiskScore" },
+          "exposure": { "$ref": "#/components/schemas/ExposureAnalysis" },
+          "provider_breakdown": { "type": "array", "items": { "$ref": "#/components/schemas/ProviderBreakdown" } },
+          "top_winners": { "type": "array", "items": { "type": "object" } },
+          "top_losers": { "type": "array", "items": { "type": "object" } },
+          "computed_at": { "type": "string", "format": "date-time" }
+        }
+      },
+      "RiskScore": {
+        "type": "object",
+        "properties": {
+          "overall": { "type": "number", "minimum": 0, "maximum": 100 },
+          "concentration": { "type": "number" },
+          "provider": { "type": "number" },
+          "category": { "type": "number" },
+          "liquidity": { "type": "number" },
+          "correlation": { "type": "number" },
+          "label": { "type": "string", "enum": ["none", "low", "moderate", "high", "critical"] }
+        }
+      },
+      "ExposureAnalysis": {
+        "type": "object",
+        "properties": {
+          "total_exposure": { "type": "number" },
+          "net_exposure": { "type": "number" },
+          "long_exposure": { "type": "number" },
+          "short_exposure": { "type": "number" },
+          "max_single_position_pct": { "type": "number" },
+          "provider_heatmap": { "type": "array", "items": { "type": "object" } },
+          "category_heatmap": { "type": "array", "items": { "type": "object" } }
+        }
+      },
+      "ProviderBreakdown": {
+        "type": "object",
+        "properties": {
+          "provider": { "type": "string" },
+          "value": { "type": "number" },
+          "pnl": { "type": "number" },
+          "position_count": { "type": "integer" },
+          "percentage": { "type": "number" }
+        }
+      },
+      "RouteRequest": {
+        "type": "object",
+        "properties": {
+          "market_native_id": { "type": "string" },
+          "outcome_id": { "type": "string" },
+          "side": { "type": "string", "enum": ["buy", "sell"] },
+          "quantity": { "type": "integer" },
+          "strategy": { "type": "string", "enum": ["best_price", "split_optimal", "direct"], "default": "split_optimal" },
+          "preferred_provider": { "type": "string" }
+        },
+        "required": ["market_native_id", "outcome_id", "side", "quantity"]
+      },
+      "ExecuteRouteRequest": {
+        "type": "object",
+        "properties": {
+          "market_native_id": { "type": "string" },
+          "outcome_id": { "type": "string" },
+          "side": { "type": "string", "enum": ["buy", "sell"] },
+          "quantity": { "type": "integer" },
+          "order_type": { "type": "string", "enum": ["limit", "market"], "default": "limit" },
+          "tif": { "type": "string", "enum": ["GTC", "GTD", "FOK", "IOC"], "default": "GTC" },
+          "strategy": { "type": "string", "enum": ["best_price", "split_optimal", "direct"] },
+          "preferred_provider": { "type": "string" }
+        },
+        "required": ["market_native_id", "outcome_id", "side", "quantity"]
+      },
+      "RoutingPlan": {
+        "type": "object",
+        "properties": {
+          "market_native_id": { "type": "string" },
+          "outcome_id": { "type": "string" },
+          "side": { "type": "string" },
+          "total_quantity": { "type": "integer" },
+          "legs": { "type": "array", "items": { "$ref": "#/components/schemas/RoutingLeg" } },
+          "estimated_total_cost": { "type": "number" },
+          "estimated_avg_price": { "type": "number" },
+          "estimated_fees": { "type": "number" },
+          "naive_cost": { "type": "number" },
+          "savings": { "type": "number" },
+          "savings_pct": { "type": "number" },
+          "providers_considered": { "type": "integer" },
+          "computed_at": { "type": "string", "format": "date-time" }
+        }
+      },
+      "RoutingLeg": {
+        "type": "object",
+        "properties": {
+          "provider": { "type": "string" },
+          "price": { "type": "number" },
+          "quantity": { "type": "integer" },
+          "estimated_cost": { "type": "number" },
+          "estimated_fee": { "type": "number" },
+          "fill_probability": { "type": "number", "minimum": 0, "maximum": 1 },
+          "priority": { "type": "integer" }
+        }
+      },
+      "ExecutionResponse": {
+        "type": "object",
+        "properties": {
+          "plan": { "$ref": "#/components/schemas/RoutingPlan" },
+          "execution": { "type": "array", "items": { "$ref": "#/components/schemas/ExecutionResult" } },
+          "success_count": { "type": "integer" },
+          "total_legs": { "type": "integer" }
+        }
+      },
+      "ExecutionResult": {
+        "type": "object",
+        "properties": {
+          "provider": { "type": "string" },
+          "quantity": { "type": "integer" },
+          "price": { "type": "number" },
+          "status": { "type": "string", "enum": ["placed", "failed"] },
+          "order_id": { "type": "string" },
+          "error": { "type": "string" }
+        }
+      },
+      "RouterStats": {
+        "type": "object",
+        "properties": {
+          "routes_computed": { "type": "integer" },
+          "orders_routed": { "type": "integer" }
+        }
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
       }
     }
-  }
+  },
+  "tags": [
+    { "name": "Infrastructure", "description": "Health checks, metrics, and configuration" },
+    { "name": "Discovery", "description": "Provider discovery, capability negotiation, and manifests" },
+    { "name": "Markets", "description": "Market listing, search, orderbooks, and categories" },
+    { "name": "Trading", "description": "Order placement, management, and trade history" },
+    { "name": "Portfolio", "description": "Positions, balances, analytics, and risk scoring" },
+    { "name": "Arbitrage", "description": "Cross-provider arbitrage detection and monitoring" },
+    { "name": "Price History", "description": "OHLCV candlestick data and time-series price indexing" },
+    { "name": "Smart Routing", "description": "Optimal cross-provider order routing" },
+    { "name": "MCP", "description": "Model Context Protocol and A2A agent integration" },
+    { "name": "WebSocket", "description": "Real-time streaming via WebSocket JSON-RPC" }
+  ]
 }

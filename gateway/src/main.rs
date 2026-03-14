@@ -30,9 +30,14 @@ mod transport;
 use crate::core::{config::GatewayConfig, registry::ProviderRegistry, cache::MarketCache, storage::StorageBackend};
 use crate::core::storage;
 use crate::core::hardening::{CircuitBreakerRegistry, CircuitBreakerConfig, ConfigValidator};
+use crate::core::arbitrage::ArbitrageScanner;
+use crate::core::price_index::PriceIndex;
+use crate::core::smart_router::SmartRouter;
 use crate::core::types::*;
 use crate::adapters::MarketFilter;
 use crate::transport::websocket::WebSocketManager;
+use crate::transport::live_feed::LiveFeedManager;
+use crate::core::historical::IngestionPipeline;
 use crate::transport::grpc::GrpcState;
 
 // ─── Error Helpers ──────────────────────────────────────────
@@ -62,7 +67,7 @@ fn bad_request(msg: &str) -> (StatusCode, Json<serde_json::Value>) {
 
 // ─── Shared Application State ───────────────────────────────
 
-use crate::middleware::auth::AuthState;
+use crate::middleware::auth::{AuthState, ApiKeyManager};
 use crate::middleware::rate_limit::{RateLimitState, extract_client_key, classify_endpoint};
 use std::sync::atomic::{AtomicU64, Ordering};
 
@@ -98,6 +103,12 @@ pub struct AppState {
     pub metrics: Arc<Metrics>,
     pub circuit_breakers: Arc<CircuitBreakerRegistry>,
     pub storage: Arc<dyn StorageBackend>,
+    pub arbitrage_scanner: Arc<ArbitrageScanner>,
+    pub price_index: Arc<PriceIndex>,
+    pub smart_router: Arc<SmartRouter>,
+    pub live_feed: Arc<LiveFeedManager>,
+    pub ingestion: Arc<IngestionPipeline>,
+    pub api_keys: Arc<ApiKeyManager>,
 }
 
 // ─── Main ───────────────────────────────────────────────────
@@ -157,17 +168,63 @@ async fn main() -> Result<()> {
     // Initialize persistent storage (in-memory by default, Redis if configured)
     let storage = storage::create_storage(config.redis_url.as_deref()).await?;
 
+    // Arbitrage scanner — 0.5% min spread, 2% estimated fee per side
+    let arbitrage_scanner = Arc::new(ArbitrageScanner::new(0.5, 0.02));
+    info!("Arbitrage scanner initialized (min spread: 0.5%, fee estimate: 2%)");
+
+    // Price indexer — time-series candle aggregation from WebSocket feed
+    let price_index = Arc::new(PriceIndex::new());
+    info!("Price indexer initialized (resolutions: 1m, 5m, 1h, 1d)");
+
+    // Smart order router — cross-provider optimal routing
+    let smart_router = Arc::new(SmartRouter::new(0.02));
+    info!("Smart order router initialized (default fee rate: 2%)");
+
+    // Live feed manager — persistent WebSocket connections to providers
+    let live_feed = crate::transport::live_feed::start_live_feeds(ws_manager.clone());
+    info!("Live feed manager started (providers: kalshi, polymarket, opinion)");
+
+    // Historical data ingestion pipeline — mock data sources for dev
+    let ingestion = crate::core::historical::create_dev_pipeline(price_index.clone());
+    crate::core::historical::start_ingestion_pipeline(ingestion.clone(), 60);
+    info!("Historical ingestion pipeline started (interval: 60 min)");
+
+    // API key manager — in-memory key store for dev mode
+    let api_keys = Arc::new(ApiKeyManager::new());
+    info!("API key manager initialized");
+
     let state = AppState {
         registry: registry.clone(),
         cache: cache.clone(),
-        ws_manager,
+        ws_manager: ws_manager.clone(),
         config: config.clone(),
         rate_limiter,
         auth,
         metrics,
         circuit_breakers,
         storage,
+        arbitrage_scanner: arbitrage_scanner.clone(),
+        price_index: price_index.clone(),
+        smart_router: smart_router.clone(),
+        live_feed: live_feed.clone(),
+        ingestion: ingestion.clone(),
+        api_keys: api_keys.clone(),
     };
+
+    // Start the background arbitrage scanner (every 5 seconds)
+    crate::core::arbitrage::start_arbitrage_scanner(
+        arbitrage_scanner,
+        registry.clone(),
+        ws_manager.clone(),
+        5000,
+    );
+
+    // Start the price indexer (polls every 5 seconds, ingests into candle series)
+    crate::core::price_index::start_price_indexer(
+        price_index,
+        ws_manager.clone(),
+        5000,
+    );
 
     // Start gRPC server on port 50051 (background task)
     let grpc_state = GrpcState {
@@ -224,6 +281,14 @@ fn build_router(state: AppState) -> Router {
         .route("/upp/v1/markets/:market_id/orderbook", get(handlers::markets::get_orderbook))
         .route("/upp/v1/markets/:market_id/orderbook/merged", get(handlers::markets::get_merged_orderbook))
         .route("/upp/v1/markets/categories", get(handlers::markets::list_categories))
+        // Arbitrage endpoints
+        .route("/upp/v1/arbitrage", get(handlers::arbitrage::list_opportunities))
+        .route("/upp/v1/arbitrage/summary", get(handlers::arbitrage::get_summary))
+        .route("/upp/v1/arbitrage/history", get(handlers::arbitrage::get_history))
+        // Price history / candlestick endpoints
+        .route("/upp/v1/markets/:market_id/candles", get(handlers::price_history::get_candles))
+        .route("/upp/v1/markets/:market_id/candles/latest", get(handlers::price_history::get_latest_candle))
+        .route("/upp/v1/price-index/stats", get(handlers::price_history::get_stats))
         .route("/upp/v1/resolutions/:market_id", get(handlers::resolution::get_resolution))
         .route("/upp/v1/resolutions", get(handlers::resolution::list_resolutions))
         .route("/upp/v1/settlement/instruments", get(handlers::settlement::list_instruments))
@@ -233,7 +298,18 @@ fn build_router(state: AppState) -> Router {
         .route("/upp/v1/mcp/tools", get(handlers::mcp::list_tools))
         .route("/upp/v1/mcp/execute", post(handlers::mcp::execute_tool))
         .route("/upp/v1/mcp/schema", get(handlers::mcp::get_schema))
-        .route("/.well-known/agent.json", get(handlers::mcp::get_agent_card));
+        .route("/.well-known/agent.json", get(handlers::mcp::get_agent_card))
+        // Live feed status
+        .route("/upp/v1/feeds/status", get(handlers::live_feed::feed_status))
+        .route("/upp/v1/feeds/stats", get(handlers::live_feed::feed_stats))
+        // Backtesting
+        .route("/upp/v1/backtest/strategies", get(handlers::backtest::list_strategies))
+        .route("/upp/v1/backtest/run", post(handlers::backtest::run_backtest))
+        .route("/upp/v1/backtest/compare", post(handlers::backtest::compare_strategies))
+        // Historical ingestion
+        .route("/upp/v1/ingestion/stats", get(handlers::ingestion::stats))
+        .route("/upp/v1/ingestion/ingest", post(handlers::ingestion::ingest_market))
+        .route("/upp/v1/ingestion/ingest-recent", post(handlers::ingestion::ingest_recent));
 
     // Auth-required routes — trading & portfolio
     let protected = Router::new()
@@ -247,6 +323,18 @@ fn build_router(state: AppState) -> Router {
         .route("/upp/v1/portfolio/positions", get(handlers::portfolio::list_positions))
         .route("/upp/v1/portfolio/summary", get(handlers::portfolio::get_summary))
         .route("/upp/v1/portfolio/balances", get(handlers::portfolio::list_balances))
+        // Portfolio analytics
+        .route("/upp/v1/portfolio/analytics", get(handlers::portfolio::get_analytics))
+        // Smart order routing
+        .route("/upp/v1/orders/route", post(handlers::smart_routing::compute_route))
+        .route("/upp/v1/orders/route/execute", post(handlers::smart_routing::execute_route))
+        .route("/upp/v1/orders/route/stats", get(handlers::smart_routing::get_stats))
+        // Live feed subscription management
+        .route("/upp/v1/feeds/subscribe", post(handlers::live_feed::subscribe_markets))
+        // API key management
+        .route("/upp/v1/auth/keys", post(handlers::auth_mgmt::create_key))
+        .route("/upp/v1/auth/keys", get(handlers::auth_mgmt::list_keys))
+        .route("/upp/v1/auth/keys/revoke", post(handlers::auth_mgmt::revoke_key))
         .layer(axum::middleware::from_fn_with_state(
             state.clone(),
             middleware_auth_check,
@@ -257,7 +345,8 @@ fn build_router(state: AppState) -> Router {
         .route("/health", get(handlers::health::health))
         .route("/ready", get(handlers::health::ready))
         .route("/metrics", get(handlers::health::metrics_handler))
-        .route("/upp/v1/ws", get(handlers::websocket::ws_upgrade));
+        .route("/upp/v1/ws", get(handlers::websocket::ws_upgrade))
+        .route("/dashboard", get(handlers::dashboard::serve_dashboard));
 
     Router::new()
         .merge(public)
@@ -921,9 +1010,9 @@ mod handlers {
                 match adapter.cancel_all_orders(body.market_id.as_deref()).await {
                     Ok(cancelled) => {
                         // Update all cancelled orders in storage
-                        for order in &cancelled {
-                            if let Err(e) = state.storage.update_order_status(&order.id, "cancelled").await {
-                                warn!("Failed to update order {} status in storage: {}", order.id, e);
+                        for order_id in &cancelled {
+                            if let Err(e) = state.storage.update_order_status(order_id, "cancelled").await {
+                                warn!("Failed to update order {} status in storage: {}", order_id, e);
                             }
                         }
 
@@ -1133,6 +1222,318 @@ mod handlers {
             }
 
             Json(serde_json::json!({ "balances": all_balances }))
+        }
+
+        /// GET /upp/v1/portfolio/analytics — Full portfolio analytics with risk scoring
+        pub async fn get_analytics(
+            State(state): State<AppState>,
+            Query(params): Query<PortfolioParams>,
+        ) -> impl IntoResponse {
+            let provider_ids: Vec<String> = if let Some(ref pid) = params.provider {
+                vec![pid.clone()]
+            } else {
+                state.registry.provider_ids()
+            };
+
+            let mut all_positions = Vec::new();
+            let mut all_trades = Vec::new();
+            let market_map = std::collections::HashMap::new();
+
+            for pid in &provider_ids {
+                if let Some(adapter) = state.registry.get(pid) {
+                    if let Ok(positions) = adapter.get_positions().await {
+                        all_positions.extend(positions);
+                    }
+                    let trade_filter = crate::adapters::TradeFilter::default();
+                    if let Ok(trades) = adapter.get_trade_history(trade_filter).await {
+                        all_trades.extend(trades);
+                    }
+                }
+            }
+
+            let analytics = crate::core::portfolio::compute_analytics(
+                &all_positions,
+                &all_trades,
+                &market_map,
+            );
+
+            Json(serde_json::to_value(&analytics).unwrap_or_default())
+        }
+    }
+
+    // ── Arbitrage ────────────────────────────────────────────
+    pub mod arbitrage {
+        use super::super::*;
+
+        #[derive(Debug, Deserialize, Default)]
+        pub struct ArbitrageParams {
+            pub min_spread: Option<f64>,
+            pub min_confidence: Option<f64>,
+            pub provider: Option<String>,
+            pub limit: Option<usize>,
+        }
+
+        /// GET /upp/v1/arbitrage — List active arbitrage opportunities
+        pub async fn list_opportunities(
+            State(state): State<AppState>,
+            Query(params): Query<ArbitrageParams>,
+        ) -> impl IntoResponse {
+            let mut alerts = state.arbitrage_scanner.get_active_alerts();
+
+            // Filter by min spread
+            if let Some(min_spread) = params.min_spread {
+                alerts.retain(|a| a.spread_pct >= min_spread);
+            }
+
+            // Filter by min confidence
+            if let Some(min_conf) = params.min_confidence {
+                alerts.retain(|a| a.confidence >= min_conf);
+            }
+
+            // Filter by provider (either bid or ask provider)
+            if let Some(ref provider) = params.provider {
+                alerts.retain(|a| &a.bid_provider == provider || &a.ask_provider == provider);
+            }
+
+            // Sort by net profit descending
+            alerts.sort_by(|a, b| b.net_profit_per_contract
+                .partial_cmp(&a.net_profit_per_contract)
+                .unwrap_or(std::cmp::Ordering::Equal));
+
+            // Apply limit
+            let limit = params.limit.unwrap_or(50);
+            alerts.truncate(limit);
+
+            Json(serde_json::json!({
+                "opportunities": alerts,
+                "total": alerts.len(),
+                "scanner": {
+                    "scans_total": state.arbitrage_scanner.scans_total.load(Ordering::Relaxed),
+                    "total_detected": state.arbitrage_scanner.opportunities_detected.load(Ordering::Relaxed),
+                },
+            }))
+        }
+
+        /// GET /upp/v1/arbitrage/summary — Get summary statistics
+        pub async fn get_summary(
+            State(state): State<AppState>,
+        ) -> impl IntoResponse {
+            let summary = state.arbitrage_scanner.get_summary().await;
+            Json(serde_json::to_value(&summary).unwrap_or_default())
+        }
+
+        /// GET /upp/v1/arbitrage/history — Get recent historical alerts
+        pub async fn get_history(
+            State(state): State<AppState>,
+            Query(params): Query<ArbitrageParams>,
+        ) -> impl IntoResponse {
+            let limit = params.limit.unwrap_or(100);
+            let mut history = state.arbitrage_scanner.get_history(limit).await;
+
+            // Filter by min spread
+            if let Some(min_spread) = params.min_spread {
+                history.retain(|a| a.spread_pct >= min_spread);
+            }
+
+            Json(serde_json::json!({
+                "history": history,
+                "total": history.len(),
+            }))
+        }
+    }
+
+    // ── Price History / Candlesticks ────────────────────────
+    pub mod price_history {
+        use super::super::*;
+
+        #[derive(Debug, Deserialize, Default)]
+        pub struct CandleParams {
+            pub outcome_id: Option<String>,
+            pub resolution: Option<String>,
+            pub from: Option<i64>,
+            pub to: Option<i64>,
+            pub limit: Option<usize>,
+        }
+
+        /// GET /upp/v1/markets/:market_id/candles — Get OHLCV candlestick data
+        pub async fn get_candles(
+            State(state): State<AppState>,
+            Path(market_id): Path<String>,
+            Query(params): Query<CandleParams>,
+        ) -> impl IntoResponse {
+            let outcome_id = params.outcome_id.as_deref().unwrap_or("yes");
+            let resolution = params.resolution.as_deref()
+                .and_then(crate::core::price_index::Resolution::parse)
+                .unwrap_or(crate::core::price_index::Resolution::FiveMinute);
+            let limit = params.limit.unwrap_or(100).min(1000);
+
+            let candles = state.price_index.query_candles(
+                &market_id,
+                outcome_id,
+                resolution,
+                params.from,
+                params.to,
+                limit,
+            );
+
+            Json(serde_json::json!({
+                "market_id": market_id,
+                "outcome_id": outcome_id,
+                "resolution": resolution,
+                "candles": candles,
+                "count": candles.len(),
+            }))
+        }
+
+        /// GET /upp/v1/markets/:market_id/candles/latest — Get the current (incomplete) candle
+        pub async fn get_latest_candle(
+            State(state): State<AppState>,
+            Path(market_id): Path<String>,
+            Query(params): Query<CandleParams>,
+        ) -> impl IntoResponse {
+            let outcome_id = params.outcome_id.as_deref().unwrap_or("yes");
+            let resolution = params.resolution.as_deref()
+                .and_then(crate::core::price_index::Resolution::parse)
+                .unwrap_or(crate::core::price_index::Resolution::OneMinute);
+
+            let candle = state.price_index.latest_candle(&market_id, outcome_id, resolution);
+
+            match candle {
+                Some(c) => Json(serde_json::to_value(&c).unwrap_or_default()).into_response(),
+                None => not_found("No candle data for this market").into_response(),
+            }
+        }
+
+        /// GET /upp/v1/price-index/stats — Get price indexer statistics
+        pub async fn get_stats(
+            State(state): State<AppState>,
+        ) -> impl IntoResponse {
+            let stats = state.price_index.stats();
+            Json(serde_json::to_value(&stats).unwrap_or_default())
+        }
+    }
+
+    // ── Smart Order Routing ─────────────────────────────────
+    pub mod smart_routing {
+        use super::super::*;
+
+        #[derive(Debug, Deserialize)]
+        pub struct RouteRequest {
+            pub market_native_id: String,
+            pub outcome_id: String,
+            pub side: String,
+            pub quantity: i64,
+            pub strategy: Option<String>,
+            pub preferred_provider: Option<String>,
+        }
+
+        #[derive(Debug, Deserialize)]
+        pub struct ExecuteRequest {
+            pub market_native_id: String,
+            pub outcome_id: String,
+            pub side: String,
+            pub quantity: i64,
+            pub order_type: Option<String>,
+            pub tif: Option<String>,
+            pub strategy: Option<String>,
+            pub preferred_provider: Option<String>,
+        }
+
+        /// POST /upp/v1/orders/route — Compute optimal routing plan (dry run)
+        pub async fn compute_route(
+            State(state): State<AppState>,
+            Json(body): Json<RouteRequest>,
+        ) -> impl IntoResponse {
+            let side = match body.side.to_lowercase().as_str() {
+                "buy" => Side::Buy,
+                "sell" => Side::Sell,
+                _ => return bad_request("Invalid side: must be 'buy' or 'sell'").into_response(),
+            };
+
+            let strategy = body.strategy.as_deref()
+                .and_then(crate::core::smart_router::RoutingStrategy::parse)
+                .unwrap_or(crate::core::smart_router::RoutingStrategy::SplitOptimal);
+
+            match state.smart_router.compute_route(
+                &state.registry,
+                &body.market_native_id,
+                &body.outcome_id,
+                side,
+                body.quantity,
+                strategy,
+                body.preferred_provider.as_deref(),
+            ).await {
+                Ok(plan) => Json(serde_json::to_value(&plan).unwrap_or_default()).into_response(),
+                Err(e) => internal_error(&e).into_response(),
+            }
+        }
+
+        /// POST /upp/v1/orders/route/execute — Compute and execute the routing plan
+        pub async fn execute_route(
+            State(state): State<AppState>,
+            Json(body): Json<ExecuteRequest>,
+        ) -> impl IntoResponse {
+            let side = match body.side.to_lowercase().as_str() {
+                "buy" => Side::Buy,
+                "sell" => Side::Sell,
+                _ => return bad_request("Invalid side").into_response(),
+            };
+
+            let order_type = match body.order_type.as_deref().unwrap_or("limit") {
+                "limit" => OrderType::Limit,
+                "market" => OrderType::Market,
+                _ => return bad_request("Invalid order_type").into_response(),
+            };
+
+            let tif = match body.tif.as_deref().unwrap_or("GTC") {
+                "GTC" => TimeInForce::Gtc,
+                "GTD" => TimeInForce::Gtd,
+                "FOK" => TimeInForce::Fok,
+                "IOC" => TimeInForce::Ioc,
+                _ => return bad_request("Invalid tif").into_response(),
+            };
+
+            let strategy = body.strategy.as_deref()
+                .and_then(crate::core::smart_router::RoutingStrategy::parse)
+                .unwrap_or(crate::core::smart_router::RoutingStrategy::SplitOptimal);
+
+            // First compute the plan
+            let plan = match state.smart_router.compute_route(
+                &state.registry,
+                &body.market_native_id,
+                &body.outcome_id,
+                side,
+                body.quantity,
+                strategy,
+                body.preferred_provider.as_deref(),
+            ).await {
+                Ok(p) => p,
+                Err(e) => return internal_error(&e).into_response(),
+            };
+
+            // Then execute it
+            let results = state.smart_router.execute_plan(
+                &state.registry,
+                &plan,
+                side,
+                order_type,
+                tif,
+            ).await;
+
+            Json(serde_json::json!({
+                "plan": plan,
+                "execution": results,
+                "success_count": results.iter().filter(|r| r.status == "placed").count(),
+                "total_legs": results.len(),
+            })).into_response()
+        }
+
+        /// GET /upp/v1/orders/route/stats — Get smart router statistics
+        pub async fn get_stats(
+            State(state): State<AppState>,
+        ) -> impl IntoResponse {
+            let stats = state.smart_router.stats();
+            Json(serde_json::to_value(&stats).unwrap_or_default())
         }
     }
 
@@ -1421,6 +1822,46 @@ mod handlers {
 
                     (result, Some(tasks))
                 }
+                "subscribe_arbitrage" => {
+                    // Subscribe to arbitrage alerts — optionally filter by market IDs
+                    let market_ids = params.get("market_ids")
+                        .and_then(|v| v.as_array())
+                        .map(|arr| arr.iter().filter_map(|v| v.as_str().map(String::from)).collect::<Vec<_>>())
+                        .unwrap_or_default();
+
+                    // If no market_ids specified, subscribe to a global "arbitrage:*" channel
+                    let subscribe_ids = if market_ids.is_empty() {
+                        vec!["*".to_string()]
+                    } else {
+                        market_ids.clone()
+                    };
+
+                    // Track subscriptions
+                    {
+                        let mut subs = subscriptions.lock().await;
+                        let arb_subs = subs.entry("arbitrage".to_string()).or_insert_with(HashSet::new);
+                        for id in &subscribe_ids {
+                            arb_subs.insert(id.clone());
+                        }
+                    }
+
+                    // Spawn fan-out tasks
+                    let tasks = spawn_subscription_tasks(
+                        state,
+                        "arbitrage",
+                        &subscribe_ids,
+                        tx_queue.clone(),
+                    ).await;
+
+                    let result = serde_json::json!({
+                        "subscribed": subscribe_ids,
+                        "channel": "arbitrage",
+                        "filter": if market_ids.is_empty() { "all" } else { "filtered" },
+                        "status": "active"
+                    });
+
+                    (result, Some(tasks))
+                }
                 "unsubscribe" => {
                     let channel = params.get("channel").and_then(|v| v.as_str()).unwrap_or("");
                     let market_ids = params.get("market_ids")
@@ -1472,7 +1913,7 @@ mod handlers {
                 _ => {
                     let result = serde_json::json!({
                         "error": format!("Unknown method: {}", method),
-                        "available_methods": ["subscribe_prices", "subscribe_orderbook", "unsubscribe", "get_market", "ping"]
+                        "available_methods": ["subscribe_prices", "subscribe_orderbook", "subscribe_arbitrage", "unsubscribe", "get_market", "ping"]
                     });
 
                     (result, None)
@@ -1581,6 +2022,24 @@ mod handlers {
             let stored_orders = state.storage.order_count().await.unwrap_or(0);
             let stored_trades = state.storage.trade_count().await.unwrap_or(0);
 
+            // Arbitrage metrics
+            let arb_summary = state.arbitrage_scanner.get_summary().await;
+            let arb_active = arb_summary.active_opportunities;
+            let arb_scans = arb_summary.total_scans;
+            let arb_detected = arb_summary.total_detected;
+
+            // Price index metrics
+            let pi_stats = state.price_index.stats();
+
+            // Router metrics
+            let router_stats = state.smart_router.stats();
+
+            // Live feed metrics
+            let feed_stats = state.live_feed.stats();
+
+            // Ingestion pipeline metrics
+            let ingestion_stats = state.ingestion.stats();
+
             format!(
                 "# HELP upp_requests_total Total requests received\n\
                  # TYPE upp_requests_total counter\n\
@@ -1611,9 +2070,60 @@ mod handlers {
                  upp_storage_orders_total {}\n\
                  # HELP upp_storage_trades_total Total trades in persistent storage\n\
                  # TYPE upp_storage_trades_total gauge\n\
-                 upp_storage_trades_total {}\n",
+                 upp_storage_trades_total {}\n\
+                 # HELP upp_arbitrage_scans_total Total arbitrage scans performed\n\
+                 # TYPE upp_arbitrage_scans_total counter\n\
+                 upp_arbitrage_scans_total {}\n\
+                 # HELP upp_arbitrage_active Currently active arbitrage opportunities\n\
+                 # TYPE upp_arbitrage_active gauge\n\
+                 upp_arbitrage_active {}\n\
+                 # HELP upp_arbitrage_detected_total Total arbitrage opportunities detected\n\
+                 # TYPE upp_arbitrage_detected_total counter\n\
+                 upp_arbitrage_detected_total {}\n\
+                 # HELP upp_price_index_ticks_total Total price ticks ingested\n\
+                 # TYPE upp_price_index_ticks_total counter\n\
+                 upp_price_index_ticks_total {}\n\
+                 # HELP upp_price_index_markets Markets tracked by price indexer\n\
+                 # TYPE upp_price_index_markets gauge\n\
+                 upp_price_index_markets {}\n\
+                 # HELP upp_router_routes_computed Total routing plans computed\n\
+                 # TYPE upp_router_routes_computed counter\n\
+                 upp_router_routes_computed {}\n\
+                 # HELP upp_router_orders_routed Total orders routed via smart router\n\
+                 # TYPE upp_router_orders_routed counter\n\
+                 upp_router_orders_routed {}\n\
+                 # HELP upp_live_feed_messages_total Total messages received from live feeds\n\
+                 # TYPE upp_live_feed_messages_total counter\n\
+                 upp_live_feed_messages_total {}\n\
+                 # HELP upp_live_feed_reconnects_total Total provider reconnections\n\
+                 # TYPE upp_live_feed_reconnects_total counter\n\
+                 upp_live_feed_reconnects_total {}\n\
+                 # HELP upp_live_feed_providers Registered live feed providers\n\
+                 # TYPE upp_live_feed_providers gauge\n\
+                 upp_live_feed_providers {}\n\
+                 # HELP upp_ingestion_ticks_total Total historical ticks ingested\n\
+                 # TYPE upp_ingestion_ticks_total counter\n\
+                 upp_ingestion_ticks_total {}\n\
+                 # HELP upp_ingestion_markets_processed Markets processed by ingestion pipeline\n\
+                 # TYPE upp_ingestion_markets_processed counter\n\
+                 upp_ingestion_markets_processed {}\n\
+                 # HELP upp_api_keys_total Total API keys created\n\
+                 # TYPE upp_api_keys_total gauge\n\
+                 upp_api_keys_total {}\n\
+                 # HELP upp_api_keys_active Active (non-revoked) API keys\n\
+                 # TYPE upp_api_keys_active gauge\n\
+                 upp_api_keys_active {}\n",
                 total, ok, err, rl, ws, ws_channels, ws_subs, rl_clients,
                 stored_orders, stored_trades,
+                arb_scans, arb_active, arb_detected,
+                pi_stats.ticks_ingested, pi_stats.markets_tracked,
+                router_stats.routes_computed, router_stats.orders_routed,
+                feed_stats.messages_received_total, feed_stats.reconnects_total,
+                feed_stats.providers_registered,
+                ingestion_stats.ticks_ingested,
+                ingestion_stats.markets_processed,
+                state.api_keys.count(),
+                state.api_keys.active_count(),
             )
         }
     }
@@ -1715,6 +2225,336 @@ mod handlers {
 
             let card = crate::core::mcp::generate_agent_card(&gateway_url);
             Json(card)
+        }
+    }
+
+    // ── Live Feed ──────────────────────────────────────────────
+    pub mod live_feed {
+        use super::super::*;
+
+        /// GET /upp/v1/feeds/status — Get status of all provider WebSocket connections.
+        pub async fn feed_status(
+            State(state): State<AppState>,
+        ) -> impl IntoResponse {
+            let connections = state.live_feed.status().await;
+            Json(serde_json::json!({
+                "connections": connections,
+            }))
+        }
+
+        /// GET /upp/v1/feeds/stats — Get global live feed statistics.
+        pub async fn feed_stats(
+            State(state): State<AppState>,
+        ) -> impl IntoResponse {
+            let stats = state.live_feed.stats();
+            Json(serde_json::json!(stats))
+        }
+
+        /// POST /upp/v1/feeds/subscribe — Subscribe to live feed markets.
+        pub async fn subscribe_markets(
+            State(state): State<AppState>,
+            Json(body): Json<serde_json::Value>,
+        ) -> impl IntoResponse {
+            let provider_id = body.get("provider_id")
+                .and_then(|v| v.as_str())
+                .unwrap_or("");
+            let market_ids: Vec<String> = body.get("market_ids")
+                .and_then(|v| v.as_array())
+                .map(|arr| arr.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+                .unwrap_or_default();
+
+            if provider_id.is_empty() || market_ids.is_empty() {
+                return (StatusCode::BAD_REQUEST, Json(upp_error("BAD_REQUEST", "provider_id and market_ids required"))).into_response();
+            }
+
+            state.live_feed.subscribe_markets(provider_id, market_ids.clone()).await;
+
+            Json(serde_json::json!({
+                "status": "subscribed",
+                "provider_id": provider_id,
+                "market_ids": market_ids,
+            })).into_response()
+        }
+    }
+
+    // ── Dashboard ──────────────────────────────────────────────
+    pub mod dashboard {
+        use axum::response::{Html, IntoResponse};
+
+        /// GET /dashboard — Serve the monitoring dashboard.
+        pub async fn serve_dashboard() -> impl IntoResponse {
+            Html(include_str!("../static/dashboard.html"))
+        }
+    }
+
+    // ── Auth Key Management ─────────────────────────────────────
+    pub mod auth_mgmt {
+        use super::super::*;
+        use crate::middleware::auth::CreateApiKeyRequest;
+
+        /// POST /upp/v1/auth/keys — Create a new API key.
+        pub async fn create_key(
+            State(state): State<AppState>,
+            Json(body): Json<serde_json::Value>,
+        ) -> impl IntoResponse {
+            let client_name = body.get("client_name")
+                .and_then(|v| v.as_str())
+                .unwrap_or("unnamed")
+                .to_string();
+
+            let tier = body.get("tier").and_then(|v| v.as_str()).and_then(|t| {
+                match t {
+                    "free" => Some(crate::middleware::auth::ClientTier::Free),
+                    "standard" => Some(crate::middleware::auth::ClientTier::Standard),
+                    "pro" => Some(crate::middleware::auth::ClientTier::Pro),
+                    "enterprise" => Some(crate::middleware::auth::ClientTier::Enterprise),
+                    _ => None,
+                }
+            });
+
+            let providers = body.get("providers")
+                .and_then(|v| v.as_array())
+                .map(|arr| arr.iter().filter_map(|v| v.as_str().map(String::from)).collect());
+
+            let label = body.get("label").and_then(|v| v.as_str()).map(String::from);
+            let expires_in_days = body.get("expires_in_days").and_then(|v| v.as_u64()).map(|d| d as u32);
+
+            let req = CreateApiKeyRequest {
+                client_name,
+                tier,
+                providers,
+                label,
+                expires_in_days,
+            };
+
+            let response = state.api_keys.create_key(req);
+            (StatusCode::CREATED, Json(serde_json::json!({
+                "key": response.key,
+                "key_prefix": response.key_prefix,
+                "client_id": response.client_id,
+                "created_at": response.created_at,
+                "expires_at": response.expires_at,
+                "warning": "Store this key securely — it will not be shown again."
+            })))
+        }
+
+        /// GET /upp/v1/auth/keys — List all API keys (redacted).
+        pub async fn list_keys(
+            State(state): State<AppState>,
+        ) -> impl IntoResponse {
+            let keys = state.api_keys.list_keys();
+            Json(serde_json::json!({
+                "keys": keys,
+                "total": keys.len(),
+                "active": state.api_keys.active_count(),
+            }))
+        }
+
+        /// POST /upp/v1/auth/keys/revoke — Revoke an API key by prefix.
+        pub async fn revoke_key(
+            State(state): State<AppState>,
+            Json(body): Json<serde_json::Value>,
+        ) -> impl IntoResponse {
+            let prefix = body.get("key_prefix")
+                .and_then(|v| v.as_str())
+                .unwrap_or("");
+
+            if prefix.is_empty() {
+                return (StatusCode::BAD_REQUEST, Json(serde_json::json!({
+                    "error": "key_prefix is required"
+                }))).into_response();
+            }
+
+            let revoked = state.api_keys.revoke_by_prefix(prefix);
+
+            if revoked {
+                Json(serde_json::json!({
+                    "status": "revoked",
+                    "key_prefix": prefix,
+                })).into_response()
+            } else {
+                (StatusCode::NOT_FOUND, Json(serde_json::json!({
+                    "error": "Key not found",
+                    "key_prefix": prefix,
+                }))).into_response()
+            }
+        }
+    }
+
+    // ── Backtesting ────────────────────────────────────────────
+    pub mod backtest {
+        use super::super::*;
+        use crate::core::backtest as bt;
+        use std::collections::HashMap;
+
+        /// GET /upp/v1/backtest/strategies — List available strategies.
+        pub async fn list_strategies() -> impl IntoResponse {
+            let strategies = bt::available_strategies();
+            Json(serde_json::json!({
+                "strategies": strategies,
+            }))
+        }
+
+        /// POST /upp/v1/backtest/run — Run a backtest.
+        pub async fn run_backtest(
+            State(state): State<AppState>,
+            Json(body): Json<serde_json::Value>,
+        ) -> impl IntoResponse {
+            let strategy_name = body.get("strategy").and_then(|v| v.as_str()).unwrap_or("");
+            let market_id = body.get("market_id").and_then(|v| v.as_str()).unwrap_or("");
+            let outcome_id = body.get("outcome_id").and_then(|v| v.as_str()).unwrap_or("yes");
+            let resolution_str = body.get("resolution").and_then(|v| v.as_str()).unwrap_or("1m");
+
+            if strategy_name.is_empty() || market_id.is_empty() {
+                return (StatusCode::BAD_REQUEST, Json(upp_error("BAD_REQUEST", "strategy and market_id required"))).into_response();
+            }
+
+            let resolution = match crate::core::price_index::Resolution::parse(resolution_str) {
+                Some(r) => r,
+                None => return (StatusCode::BAD_REQUEST, Json(upp_error("BAD_REQUEST", "Invalid resolution. Use: 1m, 5m, 1h, 1d"))).into_response(),
+            };
+
+            // Parse strategy parameters
+            let params: HashMap<String, f64> = body.get("params")
+                .and_then(|v| v.as_object())
+                .map(|obj| {
+                    obj.iter()
+                        .filter_map(|(k, v)| v.as_f64().map(|f| (k.clone(), f)))
+                        .collect()
+                })
+                .unwrap_or_default();
+
+            let mut strategy = match bt::create_strategy(strategy_name, &params) {
+                Some(s) => s,
+                None => return (StatusCode::BAD_REQUEST, Json(upp_error("BAD_REQUEST", &format!("Unknown strategy: {}", strategy_name)))).into_response(),
+            };
+
+            // Backtest config from request body
+            let config = bt::BacktestConfig {
+                initial_capital: body.get("initial_capital").and_then(|v| v.as_f64()).unwrap_or(10_000.0),
+                fee_rate: body.get("fee_rate").and_then(|v| v.as_f64()).unwrap_or(0.02),
+                slippage_rate: body.get("slippage_rate").and_then(|v| v.as_f64()).unwrap_or(0.005),
+                max_position: body.get("max_position").and_then(|v| v.as_i64()).unwrap_or(1000),
+                risk_free_rate: body.get("risk_free_rate").and_then(|v| v.as_f64()).unwrap_or(0.05),
+            };
+
+            match bt::run_backtest_from_index(strategy.as_mut(), &state.price_index, market_id, outcome_id, resolution, &config) {
+                Some(result) => Json(serde_json::json!(result)).into_response(),
+                None => (StatusCode::NOT_FOUND, Json(upp_error("NOT_FOUND", "Insufficient candle data for backtest (need >= 2 candles)"))).into_response(),
+            }
+        }
+
+        /// POST /upp/v1/backtest/compare — Compare multiple strategies on the same data.
+        pub async fn compare_strategies(
+            State(state): State<AppState>,
+            Json(body): Json<serde_json::Value>,
+        ) -> impl IntoResponse {
+            let market_id = body.get("market_id").and_then(|v| v.as_str()).unwrap_or("");
+            let outcome_id = body.get("outcome_id").and_then(|v| v.as_str()).unwrap_or("yes");
+            let resolution_str = body.get("resolution").and_then(|v| v.as_str()).unwrap_or("1m");
+            let strategy_names: Vec<String> = body.get("strategies")
+                .and_then(|v| v.as_array())
+                .map(|arr| arr.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+                .unwrap_or_default();
+
+            if market_id.is_empty() || strategy_names.is_empty() {
+                return (StatusCode::BAD_REQUEST, Json(upp_error("BAD_REQUEST", "market_id and strategies array required"))).into_response();
+            }
+
+            let resolution = match crate::core::price_index::Resolution::parse(resolution_str) {
+                Some(r) => r,
+                None => return (StatusCode::BAD_REQUEST, Json(upp_error("BAD_REQUEST", "Invalid resolution"))).into_response(),
+            };
+
+            let config = bt::BacktestConfig {
+                initial_capital: body.get("initial_capital").and_then(|v| v.as_f64()).unwrap_or(10_000.0),
+                fee_rate: body.get("fee_rate").and_then(|v| v.as_f64()).unwrap_or(0.02),
+                slippage_rate: body.get("slippage_rate").and_then(|v| v.as_f64()).unwrap_or(0.005),
+                max_position: body.get("max_position").and_then(|v| v.as_i64()).unwrap_or(1000),
+                risk_free_rate: body.get("risk_free_rate").and_then(|v| v.as_f64()).unwrap_or(0.05),
+            };
+
+            let mut results = Vec::new();
+            for name in &strategy_names {
+                if let Some(mut strategy) = bt::create_strategy(name, &HashMap::new()) {
+                    if let Some(result) = bt::run_backtest_from_index(strategy.as_mut(), &state.price_index, market_id, outcome_id, resolution, &config) {
+                        results.push(result.metrics);
+                    }
+                }
+            }
+
+            if results.is_empty() {
+                return (StatusCode::NOT_FOUND, Json(upp_error("NOT_FOUND", "No valid results — check strategies and candle data availability"))).into_response();
+            }
+
+            // Sort by total return descending
+            results.sort_by(|a, b| b.total_return_pct.partial_cmp(&a.total_return_pct).unwrap_or(std::cmp::Ordering::Equal));
+
+            Json(serde_json::json!({
+                "market_id": market_id,
+                "outcome_id": outcome_id,
+                "resolution": resolution_str,
+                "results": results,
+                "best_strategy": results.first().map(|r| &r.strategy_name),
+            })).into_response()
+        }
+    }
+
+    // ── Historical Ingestion ──────────────────────────────────
+    pub mod ingestion {
+        use super::super::*;
+
+        /// GET /upp/v1/ingestion/stats — Get ingestion pipeline stats.
+        pub async fn stats(
+            State(state): State<AppState>,
+        ) -> impl IntoResponse {
+            let s = state.ingestion.stats();
+            Json(serde_json::json!(s))
+        }
+
+        /// POST /upp/v1/ingestion/ingest — Ingest historical data for a specific market.
+        pub async fn ingest_market(
+            State(state): State<AppState>,
+            Json(body): Json<serde_json::Value>,
+        ) -> impl IntoResponse {
+            let provider_id = body.get("provider_id").and_then(|v| v.as_str()).unwrap_or("");
+            let market_id = body.get("market_id").and_then(|v| v.as_str()).unwrap_or("");
+            let hours_back = body.get("hours_back").and_then(|v| v.as_u64()).unwrap_or(24);
+
+            if provider_id.is_empty() || market_id.is_empty() {
+                return (StatusCode::BAD_REQUEST, Json(upp_error("BAD_REQUEST", "provider_id and market_id required"))).into_response();
+            }
+
+            let to = chrono::Utc::now();
+            let from = to - chrono::Duration::hours(hours_back as i64);
+
+            match state.ingestion.ingest_market(provider_id, market_id, from, to).await {
+                Ok(count) => Json(serde_json::json!({
+                    "status": "ok",
+                    "ticks_ingested": count,
+                    "provider_id": provider_id,
+                    "market_id": market_id,
+                    "hours_back": hours_back,
+                })).into_response(),
+                Err(e) => (StatusCode::INTERNAL_SERVER_ERROR, Json(upp_error("INGESTION_ERROR", &e.to_string()))).into_response(),
+            }
+        }
+
+        /// POST /upp/v1/ingestion/ingest-recent — Bulk-ingest recent data from all providers.
+        pub async fn ingest_recent(
+            State(state): State<AppState>,
+            Json(body): Json<serde_json::Value>,
+        ) -> impl IntoResponse {
+            let hours_back = body.get("hours_back").and_then(|v| v.as_u64()).unwrap_or(1);
+
+            match state.ingestion.ingest_all_recent(hours_back).await {
+                Ok(count) => Json(serde_json::json!({
+                    "status": "ok",
+                    "ticks_ingested": count,
+                    "hours_back": hours_back,
+                })).into_response(),
+                Err(e) => (StatusCode::INTERNAL_SERVER_ERROR, Json(upp_error("INGESTION_ERROR", &e.to_string()))).into_response(),
+            }
         }
     }
 }

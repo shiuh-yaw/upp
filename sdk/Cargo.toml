@@ -1,0 +1,29 @@
+[package]
+name = "upp-sdk"
+version = "0.1.0"
+edition = "2021"
+authors = ["UPP Team"]
+description = "Typed Rust client library for the UPP Gateway REST API"
+license = "Apache-2.0"
+repository = "https://github.com/upp/sdk-rust"
+keywords = ["upp", "gateway", "api", "client", "sdk"]
+categories = ["api-bindings", "network-programming"]
+
+[dependencies]
+reqwest = { version = "0.11", features = ["json", "rustls-tls"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+tokio = { version = "1", features = ["full"] }
+thiserror = "1.0"
+url = "2.5"
+
+[dev-dependencies]
+tokio-test = "0.4"
+
+[[example]]
+name = "basic_usage"
+path = "examples/basic_usage.rs"
+
+[lib]
+name = "upp_sdk"
+path = "src/lib.rs"
