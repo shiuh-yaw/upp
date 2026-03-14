@@ -2,6 +2,15 @@
 name = "upp-cli"
 version = "0.1.0"
 edition = "2021"
+authors = ["UPP Team"]
+description = "CLI for the Universal Prediction Protocol — query markets, manage orders, run backtests, and administer API keys"
+license = "Apache-2.0"
+repository = "https://github.com/universal-prediction-protocol/upp"
+homepage = "https://github.com/universal-prediction-protocol/upp"
+readme = "../README.md"
+keywords = ["prediction-market", "trading", "cli", "polymarket", "kalshi"]
+categories = ["command-line-utilities"]
+rust-version = "1.70"
 
 [[bin]]
 name = "upp"

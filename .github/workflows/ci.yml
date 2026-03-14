@@ -1,0 +1,241 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+    tags: ['v*']
+  pull_request:
+    branches: [main]
+
+env:
+  CARGO_TERM_COLOR: always
+  RUSTFLAGS: "-Dwarnings"
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  check:
+    name: Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo check --workspace
+
+  test:
+    name: Test Suite
+    runs-on: ubuntu-latest
+    services:
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - name: Run tests
+        run: cargo test --workspace --verbose
+        env:
+          UPP_REDIS_URL: redis://localhost:6379
+      - name: Run tests (release)
+        run: cargo test --workspace --release
+        env:
+          UPP_REDIS_URL: redis://localhost:6379
+
+  fmt:
+    name: Rustfmt
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt
+      - run: cargo fmt --all -- --check
+
+  clippy:
+    name: Clippy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo clippy --workspace --all-targets -- -D warnings
+
+  doc:
+    name: Documentation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - name: Check docs build
+        run: cargo doc --workspace --no-deps
+        env:
+          RUSTDOCFLAGS: "-Dwarnings"
+
+  publish-check:
+    name: Publish Dry Run
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - name: Check SDK publishable
+        run: cargo publish --dry-run -p upp-sdk
+      - name: Check CLI publishable
+        run: cargo publish --dry-run -p upp-cli
+
+  bench:
+    name: Benchmarks
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - name: Run benchmarks
+        run: cargo bench --package upp-gateway -- --output-format bencher | tee bench-output.txt
+      - name: Upload benchmark results
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-results
+          path: bench-output.txt
+
+  docker:
+    name: Docker Build & Push
+    runs-on: ubuntu-latest
+    needs: [check, test, clippy]
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Container Registry
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=sha
+            type=ref,event=branch
+            type=semver,pattern={{version}}
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            BUILD_DATE=${{ github.event.head_commit.timestamp }}
+            VCS_REF=${{ github.sha }}
+            VERSION=${{ github.ref_name }}
+
+  docker-integration:
+    name: Docker Integration Tests
+    runs-on: ubuntu-latest
+    needs: [docker]
+    if: github.event_name == 'push'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Start services
+        run: docker compose up -d gateway redis
+        env:
+          GIT_SHA: ${{ github.sha }}
+
+      - name: Wait for gateway
+        run: |
+          for i in $(seq 1 30); do
+            if curl -sf http://localhost:8080/health > /dev/null 2>&1; then
+              echo "Gateway is up!"
+              break
+            fi
+            echo "Waiting for gateway... ($i/30)"
+            sleep 2
+          done
+
+      - name: Smoke test — health
+        run: |
+          STATUS=$(curl -sf http://localhost:8080/health | jq -r '.status')
+          [ "$STATUS" = "ok" ] || [ "$STATUS" = "healthy" ] && echo "Health: OK" || (echo "Health check failed: $STATUS" && exit 1)
+
+      - name: Smoke test — providers
+        run: |
+          PROVIDERS=$(curl -sf http://localhost:8080/upp/v1/discovery/providers | jq '.providers | length')
+          [ "$PROVIDERS" -ge 1 ] && echo "Providers: $PROVIDERS" || (echo "No providers found" && exit 1)
+
+      - name: Smoke test — markets
+        run: |
+          curl -sf http://localhost:8080/upp/v1/markets?limit=5 | jq '.markets | length'
+
+      - name: Smoke test — OpenAPI spec
+        run: |
+          STATUS=$(curl -sf -o /dev/null -w '%{http_code}' http://localhost:8080/openapi.json)
+          [ "$STATUS" = "200" ] && echo "OpenAPI spec: OK" || (echo "OpenAPI spec failed: $STATUS" && exit 1)
+
+      - name: Smoke test — metrics
+        run: |
+          curl -sf http://localhost:8080/metrics | head -5
+
+      - name: Collect logs on failure
+        if: failure()
+        run: docker compose logs gateway
+
+      - name: Tear down
+        if: always()
+        run: docker compose down -v
+
+  # Release — triggered by version tags (e.g. v0.1.0)
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    needs: [check, test, clippy, fmt, doc]
+    if: startsWith(github.ref, 'refs/tags/v')
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Build release binaries
+        run: cargo build --release --workspace
+
+      - name: Create tarball
+        run: |
+          mkdir -p dist
+          cp target/release/upp-gateway dist/
+          cp target/release/upp dist/
+          tar czf upp-${{ github.ref_name }}-linux-amd64.tar.gz -C dist .
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: upp-${{ github.ref_name }}-linux-amd64.tar.gz
+          generate_release_notes: true

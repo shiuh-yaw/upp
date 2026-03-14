@@ -1,0 +1,46 @@
+# UPP Gateway — Production Environment Configuration
+# Strict limits, authentication required, optimized cache TTLs
+
+environment = "prod"
+log_format = "json"                 # JSON structured logs for log aggregation
+
+# Strict rate limits for production
+rate_limit_light_burst = 200
+rate_limit_light_rps = 100.0
+
+rate_limit_standard_burst = 50
+rate_limit_standard_rps = 20.0
+
+rate_limit_heavy_burst = 20
+rate_limit_heavy_rps = 5.0
+
+rate_limit_ws_burst = 10
+rate_limit_ws_rps = 2.0
+
+# Authentication required in production
+auth_required = true
+# jwt_secret must be set via environment variable or secrets management
+
+# Restricted CORS for production (update with actual production domain)
+cors_origins = [
+    "https://example.com",
+    "https://app.example.com",
+    "https://www.example.com",
+]
+
+# Strict connection limits
+max_connections = 5000
+
+# Longer graceful shutdown timeout for production stability
+graceful_shutdown_timeout_secs = 60
+
+# Optimized cache TTLs for production (shorter for freshness)
+market_cache_ttl_seconds = 180      # 3 minutes
+orderbook_cache_ttl_ms = 250        # 250ms
+
+# TLS configuration (paths set via environment variables)
+# tls_cert_path = set via UPP_TLS_CERT_PATH
+# tls_key_path = set via UPP_TLS_KEY_PATH
+
+# Redis for distributed state sharing in production (required)
+# redis_url = set via UPP_REDIS_URL (should use managed Redis with TLS)

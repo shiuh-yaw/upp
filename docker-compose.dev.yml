@@ -1,0 +1,51 @@
+# UPP Development Override — Hot Reload with cargo-watch
+#
+# Usage:
+#   docker compose -f docker-compose.yml -f docker-compose.dev.yml up gateway redis
+#
+# This overrides the production multi-stage Dockerfile with a simple dev image
+# that includes cargo-watch for automatic recompilation on source changes.
+
+version: '3.9'
+
+services:
+  gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: upp-gateway-dev
+    ports:
+      - "8080:8080"
+      - "50051:50051"
+    volumes:
+      # Mount entire source tree for cargo-watch
+      - .:/app
+      # Mount target for faster rebuilds (persisted between runs)
+      - gateway-cargo-target:/app/target
+      # Exclude node_modules from sync
+      - /app/node_modules
+      - /app/docs
+    working_dir: /app
+    environment:
+      - UPP_HOST=0.0.0.0
+      - UPP_PORT=8080
+      - UPP_REDIS_URL=redis://redis:6379
+      - UPP_LOG_LEVEL=debug
+      - RUST_LOG=upp_gateway=debug,tower_http=debug
+      - RUST_BACKTRACE=1
+    env_file:
+      - .env
+    depends_on:
+      redis:
+        condition: service_healthy
+    # Allow graceful shutdown and re-entry
+    stdin_open: true
+    tty: true
+    restart: on-failure:5
+    labels:
+      - "com.upp.service=gateway-dev"
+      - "com.upp.description=Development gateway with hot reload"
+
+volumes:
+  gateway-cargo-target:
+    driver: local

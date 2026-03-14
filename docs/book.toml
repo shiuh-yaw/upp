@@ -1,0 +1,13 @@
+[book]
+authors = ["UPP Team"]
+language = "en"
+src = "src"
+title = "UPP — Universal Prediction Protocol"
+
+[build]
+build-dir = "../docs-build"
+
+[output.html]
+default-theme = "navy"
+preferred-dark-theme = "navy"
+git-repository-url = "https://github.com/universal-prediction-protocol/upp"

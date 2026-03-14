@@ -1,22 +1,31 @@
-# UPP — Local Development Stack
+# UPP — Local Development Stack with Enhanced Monitoring & Debugging
 #
 # Quick start:
 #   docker compose up -d redis    # Redis only (run gateway natively)
 #   docker compose up              # everything
-#   docker compose --profile monitoring up  # + Prometheus & Grafana
+#   docker compose --profile monitoring up  # + Prometheus, Grafana & Jaeger
+#   docker compose --profile debug up      # + Redis Commander for Redis UI
+#   docker compose --profile monitoring --profile debug up  # All services
 #
 # For fastest iteration:
 #   docker compose up -d redis
 #   cd gateway && cargo run
 
+networks:
+  upp-net:
+    driver: bridge
+
 services:
   # ── Redis — shared state, pub/sub, rate limiting ──────────
   redis:
     image: redis:7-alpine
+    container_name: upp-redis
     ports:
       - "6379:6379"
     volumes:
       - redis-data:/data
+    networks:
+      - upp-net
     command: >
       redis-server
         --appendonly yes
@@ -28,14 +37,26 @@ services:
       timeout: 3s
       retries: 5
     restart: unless-stopped
+    labels:
+      - "com.upp.service=redis"
+      - "com.upp.description=Redis cache and pub/sub"
 
   # ── UPP Gateway ───────────────────────────────────────────
   gateway:
     build:
       context: .
-      dockerfile: gateway/Dockerfile
+      dockerfile: Dockerfile
+      args:
+        FEATURES: "default"
+        BUILD_DATE: "2026-03-14T00:00:00Z"
+        VCS_REF: "${GIT_SHA:-main}"
+        VERSION: "0.1.0"
+    container_name: upp-gateway
     ports:
       - "8080:8080"
+      - "50051:50051"
+    networks:
+      - upp-net
     environment:
       - UPP_HOST=0.0.0.0
       - UPP_PORT=8080
@@ -43,18 +64,35 @@ services:
       - UPP_LOG_LEVEL=info
       - UPP_CACHE_TTL_SECS=30
       - RUST_LOG=upp_gateway=info,tower_http=debug
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
     env_file:
-      - .env
+      - path: .env
+        required: false
     depends_on:
       redis:
         condition: service_healthy
     restart: unless-stopped
+    mem_limit: 512m
+    cpus: "1.0"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        labels: "service=upp-gateway"
+    labels:
+      - "com.upp.service=gateway"
+      - "com.upp.description=UPP Gateway with gRPC and REST API"
+      - "com.upp.version=0.1.0"
 
   # ── Mock Server (for trading/portfolio testing) ───────────
   mock-server:
     image: python:3.12-slim
+    container_name: upp-mock-server
     ports:
       - "8081:8081"
+    networks:
+      - upp-net
     volumes:
       - ./tools:/app
     working_dir: /app
@@ -62,26 +100,102 @@ services:
     profiles:
       - mock
     restart: unless-stopped
+    labels:
+      - "com.upp.service=mock-server"
+      - "com.upp.description=Mock trading and portfolio server"
+
+  # ── Jaeger (distributed tracing) ───────────────────────────
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: upp-jaeger
+    ports:
+      - "16686:16686"  # UI
+      - "4317:4317"    # OTLP gRPC receiver
+      - "4318:4318"    # OTLP HTTP receiver
+    networks:
+      - upp-net
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+    profiles:
+      - monitoring
+    restart: unless-stopped
+    labels:
+      - "com.upp.service=jaeger"
+      - "com.upp.description=Distributed tracing with Jaeger"
+
+  # ── Redis Commander (Redis UI for debugging) ───────────────
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: upp-redis-commander
+    ports:
+      - "8082:8081"
+    networks:
+      - upp-net
+    environment:
+      - REDIS_HOSTS=local:redis:6379
+    depends_on:
+      - redis
+    profiles:
+      - debug
+    restart: unless-stopped
+    labels:
+      - "com.upp.service=redis-commander"
+      - "com.upp.description=Redis UI for debugging"
 
   # ── Prometheus (metrics collection) ───────────────────────
   prometheus:
     image: prom/prometheus:latest
+    container_name: upp-prometheus
     ports:
       - "9090:9090"
+    networks:
+      - upp-net
     volumes:
       - ./config/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./config/prometheus-rules.yml:/etc/prometheus/prometheus-rules.yml
+      - prometheus-data:/prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--storage.tsdb.retention.time=15d"
     profiles:
       - monitoring
+    restart: unless-stopped
+    labels:
+      - "com.upp.service=prometheus"
+      - "com.upp.description=Prometheus metrics collection"
 
   # ── Grafana (dashboards) ──────────────────────────────────
   grafana:
     image: grafana/grafana:latest
+    container_name: upp-grafana
     ports:
       - "3000:3000"
+    networks:
+      - upp-net
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_INSTALL_PLUGINS=grafana-piechart-panel
+      - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./config/grafana/provisioning/datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml
+      - ./config/grafana/provisioning/dashboards.yml:/etc/grafana/provisioning/dashboards/dashboards.yml
+      - ./config/grafana/dashboards:/var/lib/grafana/dashboards
+    depends_on:
+      - prometheus
     profiles:
       - monitoring
+    restart: unless-stopped
+    labels:
+      - "com.upp.service=grafana"
+      - "com.upp.description=Grafana dashboards"
 
 volumes:
   redis-data:
+    driver: local
+  prometheus-data:
+    driver: local
+  grafana-data:
+    driver: local

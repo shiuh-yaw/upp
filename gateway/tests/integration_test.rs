@@ -399,6 +399,8 @@ mod rate_limiting {
             tiers,
             cleanup_interval_secs: 60,
             bucket_expiry_secs: 300,
+            redis_url: None,
+            use_sliding_window: false,
         }
     }
 
@@ -408,18 +410,18 @@ mod rate_limiting {
         let state = RateLimitState::new(config);
 
         for _ in 0..100 {
-            let (allowed, _, _, _) = state.check("light-client", RateLimitTier::Light);
-            assert!(allowed);
+            let result = state.check("light-client", RateLimitTier::Light);
+            assert!(result.allowed);
         }
 
         for _ in 0..10 {
             let _ = state.check("heavy-client", RateLimitTier::Heavy);
         }
-        let (allowed, _, _, _) = state.check("heavy-client", RateLimitTier::Heavy);
-        assert!(!allowed, "Heavy tier should be rate limited after 10 requests");
+        let result = state.check("heavy-client", RateLimitTier::Heavy);
+        assert!(!result.allowed, "Heavy tier should be rate limited after 10 requests");
 
-        let (allowed, _, _, _) = state.check("other-heavy", RateLimitTier::Heavy);
-        assert!(allowed, "Different client should not be rate limited");
+        let result = state.check("other-heavy", RateLimitTier::Heavy);
+        assert!(result.allowed, "Different client should not be rate limited");
     }
 
     #[test]
@@ -437,11 +439,11 @@ mod rate_limiting {
         let config = make_config((2, 1.0), (2, 1.0), (1, 1.0), (1, 1.0));
         let state = RateLimitState::new(config);
         let _ = state.check("retry-client", RateLimitTier::Heavy);
-        let (allowed, remaining, _limit, retry_after) = state.check("retry-client", RateLimitTier::Heavy);
+        let result = state.check("retry-client", RateLimitTier::Heavy);
 
-        assert!(!allowed);
-        assert_eq!(remaining, 0);
-        assert!(retry_after > 0.0);
+        assert!(!result.allowed);
+        assert_eq!(result.remaining, 0);
+        assert!(result.retry_after > 0.0);
     }
 }
 
@@ -477,7 +479,7 @@ mod live_feed_tests {
 
     #[test]
     fn test_parse_kalshi_orderbook_message() {
-        let msg = r#"{"type":"orderbook_snapshot","msg":{"market_ticker":"PRES-2028","yes":[[55,200]],"no":[[45,200]]}}"#;
+        let _msg = r#"{"type":"orderbook_snapshot","msg":{"market_ticker":"PRES-2028","yes":[[55,200]],"no":[[45,200]]}}"#;
         // We can't call parse_kalshi_message directly (it's private),
         // but we can test through the module's tests
     }

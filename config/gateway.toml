@@ -1,0 +1,54 @@
+# UPP Gateway — Base Configuration
+# This file contains default settings shared across all environments.
+# Environment-specific overrides are in gateway.{env}.toml
+
+# Environment and core settings
+environment = "dev"
+host = "0.0.0.0"
+port = 8080
+grpc_port = 50051
+
+# Logging
+log_format = "json"  # Options: json, pretty
+
+# Cache settings (in seconds/milliseconds)
+market_cache_ttl_seconds = 300      # 5 minutes
+orderbook_cache_ttl_ms = 500        # 500ms
+
+# Rate limiting — Light tier (health, metrics, .well-known)
+# Used for low-resource endpoints
+rate_limit_light_burst = 200
+rate_limit_light_rps = 100.0
+
+# Rate limiting — Standard tier (markets, search, discovery)
+# Used for typical REST endpoints
+rate_limit_standard_burst = 50
+rate_limit_standard_rps = 20.0
+
+# Rate limiting — Heavy tier (compute-intensive operations)
+# Used for complex queries and operations
+rate_limit_heavy_burst = 20
+rate_limit_heavy_rps = 5.0
+
+# Rate limiting — WebSocket tier
+# Used for persistent WebSocket connections
+rate_limit_ws_burst = 10
+rate_limit_ws_rps = 2.0
+
+# Authentication & Authorization
+auth_required = false              # Require API keys for requests
+# jwt_secret = "your-secret"       # JWT signing secret (set in .env or secrets)
+
+# CORS configuration
+cors_origins = ["*"]               # Allowed origins for CORS requests
+
+# Connection management
+max_connections = 10000            # Maximum concurrent connections
+graceful_shutdown_timeout_secs = 30 # Seconds to wait for graceful shutdown
+
+# Optional TLS/SSL configuration
+# tls_cert_path = "/path/to/cert.pem"
+# tls_key_path = "/path/to/key.pem"
+
+# Redis for multi-node state sharing
+# redis_url = "redis://localhost:6379"

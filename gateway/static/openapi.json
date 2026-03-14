@@ -1,0 +1,288 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "UPP Gateway API",
+    "description": "Universal Prediction Protocol — unified REST API for prediction market aggregation, trading, arbitrage detection, and real-time data streaming across Kalshi, Polymarket, and Opinion.",
+    "version": "0.1.0",
+    "contact": { "name": "UPP Team", "url": "https://github.com/universal-prediction-protocol/upp" },
+    "license": { "name": "Apache-2.0", "url": "https://www.apache.org/licenses/LICENSE-2.0" }
+  },
+  "servers": [
+    { "url": "http://localhost:8080", "description": "Local development" },
+    { "url": "https://api.upp.dev", "description": "Staging" }
+  ],
+  "tags": [
+    { "name": "Discovery", "description": "Provider discovery and health checks" },
+    { "name": "Markets", "description": "Market listing, search, and orderbooks" },
+    { "name": "Arbitrage", "description": "Cross-provider arbitrage detection" },
+    { "name": "Price History", "description": "Candlestick data and price indices" },
+    { "name": "Trading", "description": "Order management (auth required)" },
+    { "name": "Portfolio", "description": "Position and balance tracking (auth required)" },
+    { "name": "Smart Routing", "description": "Cross-provider order routing (auth required)" },
+    { "name": "Feeds", "description": "Real-time WebSocket feed management" },
+    { "name": "Backtesting", "description": "Strategy backtesting engine" },
+    { "name": "MCP", "description": "Model Context Protocol / A2A integration" },
+    { "name": "Auth", "description": "API key management (auth required)" },
+    { "name": "Infrastructure", "description": "Health, readiness, metrics" }
+  ],
+  "paths": {
+    "/upp/v1/discovery/providers": {
+      "get": { "tags": ["Discovery"], "summary": "List all registered prediction providers", "operationId": "listProviders", "responses": { "200": { "description": "Provider list" } } }
+    },
+    "/upp/v1/discovery/manifest/{provider}": {
+      "get": { "tags": ["Discovery"], "summary": "Get provider manifest", "operationId": "getManifest", "parameters": [{ "name": "provider", "in": "path", "required": true, "schema": { "type": "string" } }], "responses": { "200": { "description": "Provider manifest" } } }
+    },
+    "/upp/v1/discovery/health": {
+      "get": { "tags": ["Discovery"], "summary": "Health check all providers", "operationId": "healthCheckAll", "responses": { "200": { "description": "Health status for all providers" } } }
+    },
+    "/upp/v1/discovery/health/{provider}": {
+      "get": { "tags": ["Discovery"], "summary": "Health check a single provider", "operationId": "healthCheck", "parameters": [{ "name": "provider", "in": "path", "required": true, "schema": { "type": "string" } }], "responses": { "200": { "description": "Provider health status" } } }
+    },
+    "/upp/v1/discovery/negotiate": {
+      "post": { "tags": ["Discovery"], "summary": "Negotiate transport and auth capabilities", "operationId": "negotiate", "responses": { "200": { "description": "Negotiation result" } } }
+    },
+    "/upp/v1/markets": {
+      "get": { "tags": ["Markets"], "summary": "List all markets across providers", "operationId": "listMarkets", "parameters": [{ "name": "provider", "in": "query", "schema": { "type": "string" } }, { "name": "status", "in": "query", "schema": { "type": "string", "enum": ["open", "closed", "settled"] } }, { "name": "category", "in": "query", "schema": { "type": "string" } }, { "name": "limit", "in": "query", "schema": { "type": "integer", "default": 50 } }, { "name": "cursor", "in": "query", "schema": { "type": "string" } }], "responses": { "200": { "description": "Market list" } } }
+    },
+    "/upp/v1/markets/search": {
+      "get": { "tags": ["Markets"], "summary": "Search markets by keyword", "operationId": "searchMarkets", "parameters": [{ "name": "q", "in": "query", "required": true, "schema": { "type": "string" } }, { "name": "provider", "in": "query", "schema": { "type": "string" } }, { "name": "limit", "in": "query", "schema": { "type": "integer", "default": 20 } }], "responses": { "200": { "description": "Search results" } } }
+    },
+    "/upp/v1/markets/{market_id}": {
+      "get": { "tags": ["Markets"], "summary": "Get market details", "operationId": "getMarket", "parameters": [{ "name": "market_id", "in": "path", "required": true, "schema": { "type": "string" } }], "responses": { "200": { "description": "Market details" }, "404": { "description": "Market not found" } } }
+    },
+    "/upp/v1/markets/{market_id}/orderbook": {
+      "get": { "tags": ["Markets"], "summary": "Get orderbook for a market", "operationId": "getOrderbook", "parameters": [{ "name": "market_id", "in": "path", "required": true, "schema": { "type": "string" } }], "responses": { "200": { "description": "Orderbook data" } } }
+    },
+    "/upp/v1/markets/{market_id}/orderbook/merged": {
+      "get": { "tags": ["Markets"], "summary": "Get merged orderbook across providers", "operationId": "getMergedOrderbook", "parameters": [{ "name": "market_id", "in": "path", "required": true, "schema": { "type": "string" } }], "responses": { "200": { "description": "Merged orderbook" } } }
+    },
+    "/upp/v1/markets/categories": {
+      "get": { "tags": ["Markets"], "summary": "List all market categories", "operationId": "listCategories", "responses": { "200": { "description": "Category list" } } }
+    },
+    "/upp/v1/arbitrage": {
+      "get": { "tags": ["Arbitrage"], "summary": "List current arbitrage opportunities", "operationId": "listArbitrage", "responses": { "200": { "description": "Arbitrage opportunities" } } }
+    },
+    "/upp/v1/arbitrage/summary": {
+      "get": { "tags": ["Arbitrage"], "summary": "Arbitrage summary statistics", "operationId": "arbitrageSummary", "responses": { "200": { "description": "Summary stats" } } }
+    },
+    "/upp/v1/arbitrage/history": {
+      "get": { "tags": ["Arbitrage"], "summary": "Historical arbitrage data", "operationId": "arbitrageHistory", "parameters": [{ "name": "limit", "in": "query", "schema": { "type": "integer", "default": 100 } }], "responses": { "200": { "description": "Historical arbitrage data" } } }
+    },
+    "/upp/v1/markets/{market_id}/candles": {
+      "get": { "tags": ["Price History"], "summary": "Get candlestick data", "operationId": "getCandles", "parameters": [{ "name": "market_id", "in": "path", "required": true, "schema": { "type": "string" } }, { "name": "outcome", "in": "query", "schema": { "type": "string" } }, { "name": "resolution", "in": "query", "schema": { "type": "string", "enum": ["1m", "5m", "1h", "1d"], "default": "1h" } }, { "name": "limit", "in": "query", "schema": { "type": "integer", "default": 100 } }, { "name": "start", "in": "query", "schema": { "type": "integer", "format": "int64" } }, { "name": "end", "in": "query", "schema": { "type": "integer", "format": "int64" } }], "responses": { "200": { "description": "Candlestick data" } } }
+    },
+    "/upp/v1/markets/{market_id}/candles/latest": {
+      "get": { "tags": ["Price History"], "summary": "Get latest candle", "operationId": "getLatestCandle", "parameters": [{ "name": "market_id", "in": "path", "required": true, "schema": { "type": "string" } }, { "name": "outcome", "in": "query", "schema": { "type": "string" } }, { "name": "resolution", "in": "query", "schema": { "type": "string", "default": "1h" } }], "responses": { "200": { "description": "Latest candle" } } }
+    },
+    "/upp/v1/price-index/stats": {
+      "get": { "tags": ["Price History"], "summary": "Price index statistics", "operationId": "priceIndexStats", "responses": { "200": { "description": "Price index stats" } } }
+    },
+    "/upp/v1/resolutions": {
+      "get": { "tags": ["Price History"], "summary": "List available resolutions", "operationId": "listResolutions", "responses": { "200": { "description": "Resolution list" } } }
+    },
+    "/upp/v1/resolutions/{market_id}": {
+      "get": { "tags": ["Price History"], "summary": "Get resolutions for a market", "operationId": "getResolution", "parameters": [{ "name": "market_id", "in": "path", "required": true, "schema": { "type": "string" } }], "responses": { "200": { "description": "Resolution info" } } }
+    },
+    "/upp/v1/orders": {
+      "get": { "tags": ["Trading"], "summary": "List orders", "operationId": "listOrders", "security": [{ "ApiKeyAuth": [] }], "parameters": [{ "name": "provider", "in": "query", "schema": { "type": "string" } }, { "name": "status", "in": "query", "schema": { "type": "string" } }, { "name": "limit", "in": "query", "schema": { "type": "integer", "default": 50 } }], "responses": { "200": { "description": "Order list" }, "401": { "description": "Unauthorized" } } },
+      "post": { "tags": ["Trading"], "summary": "Create a new order", "operationId": "createOrder", "security": [{ "ApiKeyAuth": [] }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CreateOrderRequest" } } } }, "responses": { "201": { "description": "Order created" }, "400": { "description": "Invalid request" }, "401": { "description": "Unauthorized" } } }
+    },
+    "/upp/v1/orders/{order_id}": {
+      "get": { "tags": ["Trading"], "summary": "Get order details", "operationId": "getOrder", "security": [{ "ApiKeyAuth": [] }], "parameters": [{ "name": "order_id", "in": "path", "required": true, "schema": { "type": "string" } }], "responses": { "200": { "description": "Order details" }, "404": { "description": "Not found" } } },
+      "delete": { "tags": ["Trading"], "summary": "Cancel an order", "operationId": "cancelOrder", "security": [{ "ApiKeyAuth": [] }], "parameters": [{ "name": "order_id", "in": "path", "required": true, "schema": { "type": "string" } }], "responses": { "200": { "description": "Order cancelled" }, "404": { "description": "Not found" } } }
+    },
+    "/upp/v1/orders/cancel-all": {
+      "post": { "tags": ["Trading"], "summary": "Cancel all open orders", "operationId": "cancelAllOrders", "security": [{ "ApiKeyAuth": [] }], "responses": { "200": { "description": "All orders cancelled" } } }
+    },
+    "/upp/v1/orders/estimate": {
+      "post": { "tags": ["Trading"], "summary": "Estimate order cost without placing", "operationId": "estimateOrder", "security": [{ "ApiKeyAuth": [] }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CreateOrderRequest" } } } }, "responses": { "200": { "description": "Estimated cost and fees" } } }
+    },
+    "/upp/v1/trades": {
+      "get": { "tags": ["Trading"], "summary": "List trade executions", "operationId": "listTrades", "security": [{ "ApiKeyAuth": [] }], "parameters": [{ "name": "limit", "in": "query", "schema": { "type": "integer", "default": 50 } }], "responses": { "200": { "description": "Trade list" } } }
+    },
+    "/upp/v1/portfolio/positions": {
+      "get": { "tags": ["Portfolio"], "summary": "List open positions", "operationId": "listPositions", "security": [{ "ApiKeyAuth": [] }], "responses": { "200": { "description": "Position list" } } }
+    },
+    "/upp/v1/portfolio/summary": {
+      "get": { "tags": ["Portfolio"], "summary": "Portfolio summary", "operationId": "portfolioSummary", "security": [{ "ApiKeyAuth": [] }], "responses": { "200": { "description": "Portfolio summary with P&L" } } }
+    },
+    "/upp/v1/portfolio/balances": {
+      "get": { "tags": ["Portfolio"], "summary": "Account balances", "operationId": "listBalances", "security": [{ "ApiKeyAuth": [] }], "responses": { "200": { "description": "Balance breakdown" } } }
+    },
+    "/upp/v1/portfolio/analytics": {
+      "get": { "tags": ["Portfolio"], "summary": "Portfolio analytics", "operationId": "portfolioAnalytics", "security": [{ "ApiKeyAuth": [] }], "responses": { "200": { "description": "Analytics with Sharpe ratio, win rate, etc." } } }
+    },
+    "/upp/v1/orders/route": {
+      "post": { "tags": ["Smart Routing"], "summary": "Compute optimal route across providers", "operationId": "computeRoute", "security": [{ "ApiKeyAuth": [] }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/RouteRequest" } } } }, "responses": { "200": { "description": "Computed route" } } }
+    },
+    "/upp/v1/orders/route/execute": {
+      "post": { "tags": ["Smart Routing"], "summary": "Execute a computed route", "operationId": "executeRoute", "security": [{ "ApiKeyAuth": [] }], "responses": { "200": { "description": "Route execution result" } } }
+    },
+    "/upp/v1/orders/route/stats": {
+      "get": { "tags": ["Smart Routing"], "summary": "Routing statistics", "operationId": "routeStats", "security": [{ "ApiKeyAuth": [] }], "responses": { "200": { "description": "Route stats" } } }
+    },
+    "/upp/v1/feeds/status": {
+      "get": { "tags": ["Feeds"], "summary": "Live feed connection status", "operationId": "feedStatus", "responses": { "200": { "description": "Connection status per provider" } } }
+    },
+    "/upp/v1/feeds/stats": {
+      "get": { "tags": ["Feeds"], "summary": "Live feed statistics", "operationId": "feedStats", "responses": { "200": { "description": "Feed stats" } } }
+    },
+    "/upp/v1/feeds/subscribe": {
+      "post": { "tags": ["Feeds"], "summary": "Subscribe to market feeds", "operationId": "subscribeFeed", "security": [{ "ApiKeyAuth": [] }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "properties": { "provider_id": { "type": "string" }, "market_ids": { "type": "array", "items": { "type": "string" } } } } } } }, "responses": { "200": { "description": "Subscription confirmed" } } }
+    },
+    "/upp/v1/backtest/strategies": {
+      "get": { "tags": ["Backtesting"], "summary": "List available strategies", "operationId": "listStrategies", "responses": { "200": { "description": "Strategy list" } } }
+    },
+    "/upp/v1/backtest/run": {
+      "post": { "tags": ["Backtesting"], "summary": "Run a backtest", "operationId": "runBacktest", "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/RunBacktestRequest" } } } }, "responses": { "200": { "description": "Backtest results" } } }
+    },
+    "/upp/v1/backtest/compare": {
+      "post": { "tags": ["Backtesting"], "summary": "Compare multiple strategies", "operationId": "compareStrategies", "responses": { "200": { "description": "Comparison results" } } }
+    },
+    "/upp/v1/mcp/tools": {
+      "get": { "tags": ["MCP"], "summary": "List available MCP tools", "operationId": "listMcpTools", "responses": { "200": { "description": "MCP tool list" } } }
+    },
+    "/upp/v1/mcp/execute": {
+      "post": { "tags": ["MCP"], "summary": "Execute an MCP tool", "operationId": "executeMcpTool", "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "properties": { "tool": { "type": "string" }, "params": { "type": "object" } }, "required": ["tool"] } } } }, "responses": { "200": { "description": "Tool result" } } }
+    },
+    "/upp/v1/mcp/schema": {
+      "get": { "tags": ["MCP"], "summary": "Get MCP OpenAPI schema", "operationId": "mcpSchema", "responses": { "200": { "description": "MCP schema" } } }
+    },
+    "/upp/v1/auth/keys": {
+      "get": { "tags": ["Auth"], "summary": "List API keys", "operationId": "listKeys", "security": [{ "ApiKeyAuth": [] }], "responses": { "200": { "description": "Key list" } } },
+      "post": { "tags": ["Auth"], "summary": "Create API key", "operationId": "createKey", "security": [{ "ApiKeyAuth": [] }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CreateKeyRequest" } } } }, "responses": { "201": { "description": "Key created" } } }
+    },
+    "/upp/v1/auth/keys/revoke": {
+      "post": { "tags": ["Auth"], "summary": "Revoke an API key", "operationId": "revokeKey", "security": [{ "ApiKeyAuth": [] }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "properties": { "key_id": { "type": "string" } }, "required": ["key_id"] } } } }, "responses": { "200": { "description": "Key revoked" } } }
+    },
+    "/upp/v1/ingestion/stats": {
+      "get": { "tags": ["Infrastructure"], "summary": "Ingestion pipeline statistics", "operationId": "ingestionStats", "responses": { "200": { "description": "Ingestion stats" } } }
+    },
+    "/upp/v1/settlement/instruments": {
+      "get": { "tags": ["Infrastructure"], "summary": "List settlement instruments", "operationId": "listInstruments", "responses": { "200": { "description": "Instrument list" } } }
+    },
+    "/upp/v1/settlement/handlers": {
+      "get": { "tags": ["Infrastructure"], "summary": "List settlement handlers", "operationId": "listHandlers", "responses": { "200": { "description": "Handler list" } } }
+    },
+    "/upp/v1/ws": {
+      "get": { "tags": ["Feeds"], "summary": "WebSocket upgrade for real-time data", "operationId": "wsUpgrade", "description": "Upgrade to WebSocket for streaming market data.", "responses": { "101": { "description": "Switching Protocols" } } }
+    },
+    "/health": {
+      "get": { "tags": ["Infrastructure"], "summary": "Health check", "operationId": "healthCheck", "responses": { "200": { "description": "Gateway is healthy" } } }
+    },
+    "/ready": {
+      "get": { "tags": ["Infrastructure"], "summary": "Readiness check", "operationId": "readyCheck", "responses": { "200": { "description": "Gateway is ready" } } }
+    },
+    "/metrics": {
+      "get": { "tags": ["Infrastructure"], "summary": "Prometheus metrics", "operationId": "metrics", "responses": { "200": { "description": "Prometheus text format metrics" } } }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "ApiKeyAuth": { "type": "apiKey", "in": "header", "name": "X-API-Key", "description": "API key for authenticated endpoints" },
+      "BearerAuth": { "type": "http", "scheme": "bearer", "bearerFormat": "JWT" }
+    },
+    "schemas": {
+      "Market": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "provider": { "type": "string" },
+          "status": { "type": "string", "enum": ["open", "closed", "settled"] },
+          "price": { "type": "number", "format": "double" },
+          "volume": { "type": "number", "format": "double" },
+          "outcomes": { "type": "array", "items": { "$ref": "#/components/schemas/Outcome" } },
+          "created_at": { "type": "string", "format": "date-time" }
+        }
+      },
+      "Outcome": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "price": { "type": "number", "format": "double" }
+        }
+      },
+      "OrderbookLevel": {
+        "type": "object",
+        "properties": {
+          "price": { "type": "number", "format": "double" },
+          "quantity": { "type": "number", "format": "double" }
+        }
+      },
+      "Candle": {
+        "type": "object",
+        "properties": {
+          "timestamp": { "type": "integer", "format": "int64" },
+          "open": { "type": "number", "format": "double" },
+          "high": { "type": "number", "format": "double" },
+          "low": { "type": "number", "format": "double" },
+          "close": { "type": "number", "format": "double" },
+          "volume": { "type": "number", "format": "double" }
+        }
+      },
+      "CreateOrderRequest": {
+        "type": "object",
+        "required": ["market_id", "side", "price", "quantity"],
+        "properties": {
+          "market_id": { "type": "string" },
+          "side": { "type": "string", "enum": ["buy", "sell"] },
+          "price": { "type": "number", "format": "double" },
+          "quantity": { "type": "number", "format": "double" },
+          "order_type": { "type": "string", "enum": ["limit", "market"], "default": "limit" }
+        }
+      },
+      "RouteRequest": {
+        "type": "object",
+        "required": ["market_id", "side", "quantity"],
+        "properties": {
+          "market_id": { "type": "string" },
+          "side": { "type": "string", "enum": ["buy", "sell"] },
+          "quantity": { "type": "number", "format": "double" }
+        }
+      },
+      "RunBacktestRequest": {
+        "type": "object",
+        "required": ["strategy", "market_id"],
+        "properties": {
+          "strategy": { "type": "string" },
+          "market_id": { "type": "string" },
+          "params": { "type": "object" }
+        }
+      },
+      "CreateKeyRequest": {
+        "type": "object",
+        "required": ["client_name"],
+        "properties": {
+          "client_name": { "type": "string" },
+          "tier": { "type": "string", "enum": ["free", "standard", "pro", "enterprise"], "default": "free" },
+          "providers": { "type": "array", "items": { "type": "string" } },
+          "label": { "type": "string" },
+          "expires_in_days": { "type": "integer" }
+        }
+      },
+      "HealthResponse": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "string" },
+          "version": { "type": "string" },
+          "uptime": { "type": "string" }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": { "type": "string" },
+              "message": { "type": "string" },
+              "request_id": { "type": "string" }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -17,6 +17,8 @@ use axum::http::{header, HeaderMap};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::sync::Arc;
+use tracing::{info, warn};
+use base64::Engine;
 
 // ─── Auth Config ────────────────────────────────────────────
 
@@ -31,6 +33,12 @@ pub struct AuthConfig {
     pub jwt_secret: Option<String>,
     /// Public endpoints that never require auth (glob patterns).
     pub public_paths: Vec<String>,
+    /// IP allowlist (optional). If set, only these IPs can authenticate.
+    pub ip_allowlist: Option<Vec<String>>,
+    /// IP blocklist (optional). IPs in this list are always rejected.
+    pub ip_blocklist: Option<Vec<String>>,
+    /// JWT public key for RS256 validation (base64-encoded, optional).
+    pub jwt_public_key: Option<String>,
 }
 
 impl Default for AuthConfig {
@@ -47,6 +55,9 @@ impl Default for AuthConfig {
                 "/upp/v1/discovery/*".to_string(),
                 "/upp/v1/markets*".to_string(),
             ],
+            ip_allowlist: None,
+            ip_blocklist: None,
+            jwt_public_key: None,
         }
     }
 }
@@ -68,6 +79,19 @@ pub enum ClientTier {
     Standard,
     Pro,
     Enterprise,
+}
+
+impl ClientTier {
+    /// Get rate limit multiplier for this tier.
+    /// Used to override base rate limits per tier.
+    pub fn rate_limit_multiplier(&self) -> f64 {
+        match self {
+            ClientTier::Free => 0.5,      // Free gets 50% of base
+            ClientTier::Standard => 1.0,  // Standard gets 100% of base
+            ClientTier::Pro => 2.0,       // Pro gets 200% of base
+            ClientTier::Enterprise => 10.0, // Enterprise gets 1000% of base
+        }
+    }
 }
 
 // ─── Auth Result ────────────────────────────────────────────
@@ -103,6 +127,13 @@ impl AuthState {
     /// Create a dev-mode auth state that allows everything.
     pub fn dev_mode() -> Self {
         Self::new(AuthConfig::default())
+    }
+
+    /// Create a production-ready auth state with auth required and strict config.
+    pub fn production(config: AuthConfig) -> Self {
+        let mut prod_config = config;
+        prod_config.required = true;
+        Self::new(prod_config)
     }
 
     /// Authenticate a request based on its headers and path.
@@ -187,6 +218,124 @@ impl AuthState {
     pub fn can_access_provider(&self, client: &ClientInfo, provider_id: &str) -> bool {
         // Empty providers list means access to all
         client.providers.is_empty() || client.providers.contains(&provider_id.to_string())
+    }
+
+    /// Check if a path requires authentication.
+    pub fn require_auth_for_path(&self, path: &str) -> bool {
+        !self.is_public_path(path)
+    }
+
+    /// Validate HMAC-SHA256 request signature for trading endpoints.
+    /// Expects X-Signature header with format: base64(HMAC-SHA256(secret, payload))
+    pub fn validate_request_signature(&self, secret: &str, payload: &[u8], signature: &str) -> bool {
+        use sha2::Sha256;
+        use hmac::{Hmac, Mac};
+
+        type HmacSha256 = Hmac<Sha256>;
+
+        let mut mac = match HmacSha256::new_from_slice(secret.as_bytes()) {
+            Ok(m) => m,
+            Err(_) => return false,
+        };
+
+        mac.update(payload);
+        let expected = mac.finalize();
+        let expected_b64 = base64::engine::general_purpose::STANDARD.encode(expected.into_bytes());
+
+        expected_b64 == signature
+    }
+
+    /// Validate RS256 JWT token with a public key.
+    pub fn validate_rs256_token(&self, token: &str) -> Option<ClientInfo> {
+        let public_key = match &self.config.jwt_public_key {
+            Some(key_b64) => {
+                let key_bytes = match base64::engine::general_purpose::STANDARD.decode(key_b64) {
+                    Ok(bytes) => bytes,
+                    Err(_) => {
+                        warn!("Failed to decode JWT public key");
+                        return None;
+                    }
+                };
+                match jsonwebtoken::DecodingKey::from_rsa_pem(&key_bytes) {
+                    Ok(key) => key,
+                    Err(e) => {
+                        warn!("Failed to load RSA public key: {}", e);
+                        return None;
+                    }
+                }
+            }
+            None => {
+                warn!("RS256 validation requested but no public key configured");
+                return None;
+            }
+        };
+
+        let validation = jsonwebtoken::Validation::new(jsonwebtoken::Algorithm::RS256);
+
+        match jsonwebtoken::decode::<JwtClaims>(token, &public_key, &validation) {
+            Ok(data) => {
+                let claims = data.claims;
+                Some(ClientInfo {
+                    client_id: claims.sub,
+                    name: claims.name.unwrap_or_else(|| "JWT User".to_string()),
+                    tier: claims.tier.unwrap_or(ClientTier::Standard),
+                    providers: claims.providers.unwrap_or_default(),
+                })
+            }
+            Err(e) => {
+                warn!("RS256 token validation failed: {}", e);
+                None
+            }
+        }
+    }
+
+    /// Check if an IP is allowed to authenticate.
+    /// Returns true if:
+    /// - No allowlist is configured, OR
+    /// - The IP is in the allowlist.
+    pub fn is_ip_allowed(&self, ip: &str) -> bool {
+        if let Some(ref allowlist) = self.config.ip_allowlist {
+            return allowlist.iter().any(|allowed| {
+                allowed == ip || (allowed.ends_with('*') && ip.starts_with(&allowed[..allowed.len() - 1]))
+            });
+        }
+        true
+    }
+
+    /// Check if an IP is blocked.
+    pub fn is_ip_blocked(&self, ip: &str) -> bool {
+        if let Some(ref blocklist) = self.config.ip_blocklist {
+            return blocklist.iter().any(|blocked| {
+                blocked == ip || (blocked.ends_with('*') && ip.starts_with(&blocked[..blocked.len() - 1]))
+            });
+        }
+        false
+    }
+
+    /// Extract client IP from headers (X-Forwarded-For > X-Real-IP fallback).
+    fn extract_client_ip(&self, headers: &HeaderMap) -> Option<String> {
+        // Try X-Forwarded-For first (take first IP)
+        if let Some(xff) = headers.get("X-Forwarded-For").and_then(|v| v.to_str().ok()) {
+            if let Some(first_ip) = xff.split(',').next() {
+                return Some(first_ip.trim().to_string());
+            }
+        }
+
+        // Fallback to X-Real-IP
+        if let Some(real_ip) = headers.get("X-Real-IP").and_then(|v| v.to_str().ok()) {
+            return Some(real_ip.to_string());
+        }
+
+        None
+    }
+
+    /// Log an authentication attempt (audit log).
+    fn audit_log(&self, client_id: &str, ip: &str, path: &str, success: bool) {
+        if success {
+            info!(client_id = %client_id, ip = %ip, path = %path, "Auth attempt succeeded");
+        } else {
+            warn!(client_id = %client_id, ip = %ip, path = %path, "Auth attempt failed");
+        }
     }
 }
 

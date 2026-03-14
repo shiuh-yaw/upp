@@ -1,0 +1,55 @@
+# Build artifacts
+target/
+*.rlib
+*.so
+*.dylib
+
+# Version control
+.git/
+.gitignore
+.gitattributes
+
+# Documentation
+*.md
+docs/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+.circleci/
+
+# Node modules (if any JavaScript/TypeScript dependencies)
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Temporary files
+*.tmp
+*.log
+.cache/
+
+# Test artifacts
+coverage/
+.coverage
+junit.xml
+
+# Docker artifacts
+.dockerignore
+Dockerfile*
+docker-compose*.yml
+
+# Cargo
+.cargo/

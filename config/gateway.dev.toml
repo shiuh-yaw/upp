@@ -1,0 +1,31 @@
+# UPP Gateway — Development Environment Configuration
+# Overrides for local development: verbose logging, relaxed rate limits, no auth
+
+environment = "dev"
+log_format = "pretty"               # Pretty-printed logs for readability
+
+# Relaxed rate limits for development
+rate_limit_light_burst = 1000
+rate_limit_light_rps = 1000.0
+
+rate_limit_standard_burst = 500
+rate_limit_standard_rps = 100.0
+
+rate_limit_heavy_burst = 100
+rate_limit_heavy_rps = 50.0
+
+rate_limit_ws_burst = 50
+rate_limit_ws_rps = 25.0
+
+# No authentication required in dev
+auth_required = false
+
+# Allow all origins in dev
+cors_origins = ["*"]
+
+# Shorter graceful shutdown in dev
+graceful_shutdown_timeout_secs = 10
+
+# Larger cache TTLs for dev stability
+market_cache_ttl_seconds = 600      # 10 minutes
+orderbook_cache_ttl_ms = 1000       # 1 second

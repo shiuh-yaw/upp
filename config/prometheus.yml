@@ -1,15 +1,67 @@
 # Prometheus config for UPP Gateway
 #
-# Scrapes the gateway's /metrics endpoint for Prometheus-format counters.
+# Comprehensive metrics collection and recording rules for monitoring.
 # Start with: docker compose --profile monitoring up
 
 global:
-  scrape_interval: 15s
-  evaluation_interval: 15s
+  scrape_interval: 10s
+  evaluation_interval: 10s
+  external_labels:
+    environment: "development"
+    cluster: "upp-local"
+
+# Alerting configuration (optional)
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: []
+
+# Recording rules for common queries and alerts
+rule_files:
+  - "/etc/prometheus/prometheus-rules.yml"
 
 scrape_configs:
+  # UPP Gateway metrics
   - job_name: "upp-gateway"
     static_configs:
       - targets: ["gateway:8080"]
+        labels:
+          instance: "gateway-primary"
+          service: "upp-gateway"
     metrics_path: /metrics
-    scrape_interval: 5s
+    scrape_interval: 10s
+    scrape_timeout: 5s
+    scheme: http
+
+    # Relabel configurations for better organization
+    metric_relabel_configs:
+      # Extract method and path labels from request_duration_seconds
+      - source_labels: [__name__]
+        regex: "request_duration_seconds.*"
+        action: keep
+
+      # Add service label to all metrics
+      - target_label: service
+        replacement: "upp-gateway"
+
+  # Redis metrics (if using redis_exporter)
+  - job_name: "redis"
+    static_configs:
+      - targets: ["redis:6379"]
+        labels:
+          instance: "redis-primary"
+          service: "cache"
+    scrape_interval: 15s
+    metrics_path: /metrics
+    scheme: http
+
+  # Jaeger metrics (if enabled)
+  - job_name: "jaeger"
+    static_configs:
+      - targets: ["jaeger:14269"]
+        labels:
+          instance: "jaeger-primary"
+          service: "tracing"
+    scrape_interval: 15s
+    metrics_path: /metrics
+    scheme: http

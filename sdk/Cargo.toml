@@ -3,11 +3,14 @@ name = "upp-sdk"
 version = "0.1.0"
 edition = "2021"
 authors = ["UPP Team"]
-description = "Typed Rust client library for the UPP Gateway REST API"
+description = "Typed Rust client library for the UPP Gateway REST API — prediction market aggregation, trading, and real-time data"
 license = "Apache-2.0"
-repository = "https://github.com/upp/sdk-rust"
-keywords = ["upp", "gateway", "api", "client", "sdk"]
+repository = "https://github.com/universal-prediction-protocol/upp"
+homepage = "https://github.com/universal-prediction-protocol/upp"
+readme = "../README.md"
+keywords = ["prediction-market", "trading", "api-client", "polymarket", "kalshi"]
 categories = ["api-bindings", "network-programming"]
+rust-version = "1.70"
 
 [dependencies]
 reqwest = { version = "0.11", features = ["json", "rustls-tls"] }
@@ -16,9 +19,13 @@ serde_json = "1.0"
 tokio = { version = "1", features = ["full"] }
 thiserror = "1.0"
 url = "2.5"
+tokio-tungstenite = { version = "0.24", features = ["native-tls"] }
+futures-util = "0.3"
 
 [dev-dependencies]
 tokio-test = "0.4"
+axum = "0.7"
+serde_json = "1.0"
 
 [[example]]
 name = "basic_usage"

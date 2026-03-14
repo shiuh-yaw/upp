@@ -1,4 +1,5 @@
-/// Error types for the UPP SDK
+//! Error types for the UPP SDK
+
 use thiserror::Error;
 
 /// Result type for UPP SDK operations
@@ -21,7 +22,12 @@ pub enum UppSdkError {
 
     /// API returned an error response
     #[error("API error: status={status}, body={body}")]
-    ApiError { status: u16, body: String },
+    ApiError {
+        /// HTTP status code returned by the API
+        status: u16,
+        /// Response body text
+        body: String,
+    },
 
     /// Request validation failed
     #[error("Validation error: {0}")]

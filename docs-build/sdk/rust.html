@@ -1,0 +1,896 @@
+<!DOCTYPE HTML>
+<html lang="en" class="navy sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Rust Client - UPP — Universal Prediction Protocol</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="../favicon-8114d1fc.png">
+        <link rel="stylesheet" href="../css/variables-8adf115d.css">
+        <link rel="stylesheet" href="../css/general-2459343d.css">
+        <link rel="stylesheet" href="../css/chrome-ae938929.css">
+        <link rel="stylesheet" href="../css/print-9e4910d8.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../fonts/fonts-9644e21d.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="mdbook-highlight-css" href="../highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="../tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../ayu-highlight-3fdfc3ac.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "navy";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "../searchindex-544c3cec.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc-12789008.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="mdbook-body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('navy')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="mdbook-sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("mdbook-sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="mdbook-sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="mdbook-page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="mdbook-menu-bar-hover-placeholder"></div>
+                <div id="mdbook-menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="mdbook-sidebar-toggle" class="icon-button" for="mdbook-sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="mdbook-sidebar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></span>
+                        </label>
+                        <button id="mdbook-theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="mdbook-theme-list">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M371.3 367.1c27.3-3.9 51.9-19.4 67.2-42.9L600.2 74.1c12.6-19.5 9.4-45.3-7.6-61.2S549.7-4.4 531.1 9.6L294.4 187.2c-24 18-38.2 46.1-38.4 76.1L371.3 367.1zm-19.6 25.4l-116-104.4C175.9 290.3 128 339.6 128 400c0 3.9 .2 7.8 .6 11.6c1.8 17.5-10.2 36.4-27.8 36.4H96c-17.7 0-32 14.3-32 32s14.3 32 32 32H240c61.9 0 112-50.1 112-112c0-2.5-.1-5-.2-7.5z"/></svg></span>
+                        </button>
+                        <ul id="mdbook-theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-ayu">Ayu</button></li>
+                        </ul>
+                        <button id="mdbook-search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="mdbook-searchbar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z"/></svg></span>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">UPP — Universal Prediction Protocol</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
+                        </a>
+                        <a href="https://github.com/universal-prediction-protocol/upp" title="Git repository" aria-label="Git repository">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg></span>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="mdbook-search-wrapper" class="hidden">
+                    <form id="mdbook-searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="mdbook-searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="mdbook-searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <span class=fa-svg id="fa-spin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/></svg></span>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="mdbook-searchresults-outer" class="searchresults-outer hidden">
+                        <div id="mdbook-searchresults-header" class="searchresults-header"></div>
+                        <ul id="mdbook-searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('mdbook-sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('mdbook-sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#mdbook-sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="mdbook-content" class="content">
+                    <main>
+                        <h1 id="rust-client-guide"><a class="header" href="#rust-client-guide">Rust Client Guide</a></h1>
+<p>Complete reference for the UPP Rust SDK with examples for every feature.</p>
+<h2 id="client-creation"><a class="header" href="#client-creation">Client Creation</a></h2>
+<h3 id="basic-setup"><a class="header" href="#basic-setup">Basic Setup</a></h3>
+<pre class="playground"><code class="language-rust">use upp_sdk::Client;
+
+#[tokio::main]
+async fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
+    let client = Client::new(
+        "http://localhost:8080",
+        "your_api_key"
+    );
+
+    // Use client...
+    Ok(())
+}</code></pre>
+<h3 id="advanced-configuration"><a class="header" href="#advanced-configuration">Advanced Configuration</a></h3>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use upp_sdk::ClientBuilder;
+use std::time::Duration;
+
+let client = ClientBuilder::new()
+    .base_url("http://localhost:8080")
+    .api_key("your_api_key")
+    .timeout(Duration::from_secs(30))
+    .connect_timeout(Duration::from_secs(10))
+    .max_retries(3)
+    .cache_size(1000)
+    .enable_compression(true)
+    .build()?;
+<span class="boring">}</span></code></pre>
+<h2 id="markets-api"><a class="header" href="#markets-api">Markets API</a></h2>
+<h3 id="list-markets"><a class="header" href="#list-markets">List Markets</a></h3>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Get 10 Polymarket markets
+let markets = client.markets()
+    .provider("polymarket")
+    .limit(10)
+    .fetch()
+    .await?;
+
+for market in markets {
+    println!(
+        "{}: {} (Liquidity: {})",
+        market.id, market.title, market.liquidity
+    );
+}
+<span class="boring">}</span></code></pre>
+<h3 id="with-filters"><a class="header" href="#with-filters">With Filters</a></h3>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let markets = client.markets()
+    .provider("kalshi")
+    .category("politics")
+    .status("active")
+    .limit(20)
+    .offset(10)
+    .fetch()
+    .await?;
+<span class="boring">}</span></code></pre>
+<h3 id="search-markets"><a class="header" href="#search-markets">Search Markets</a></h3>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let results = client.markets()
+    .search("ethereum")
+    .limit(10)
+    .fetch()
+    .await?;
+
+for result in results {
+    println!("{}: {} (score: {})",
+        result.market_id,
+        result.title,
+        result.relevance_score
+    );
+}
+<span class="boring">}</span></code></pre>
+<h3 id="get-single-market"><a class="header" href="#get-single-market">Get Single Market</a></h3>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let market = client.market("0x1234...abcd")
+    .fetch()
+    .await?;
+
+println!("{}", market.title);
+for outcome in market.outcomes {
+    println!("  {} @ {}", outcome.name, outcome.price);
+}
+<span class="boring">}</span></code></pre>
+<h3 id="pagination"><a class="header" href="#pagination">Pagination</a></h3>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let mut all_markets = Vec::new();
+let mut offset = 0;
+let limit = 100;
+
+loop {
+    let page = client.markets()
+        .provider("polymarket")
+        .limit(limit)
+        .offset(offset)
+        .fetch()
+        .await?;
+
+    let page_len = page.len();
+    all_markets.extend(page);
+
+    if page_len &lt; limit {
+        break;  // Last page
+    }
+
+    offset += limit;
+}
+
+println!("Total markets: {}", all_markets.len());
+<span class="boring">}</span></code></pre>
+<h2 id="orders-api"><a class="header" href="#orders-api">Orders API</a></h2>
+<h3 id="list-orders"><a class="header" href="#list-orders">List Orders</a></h3>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let orders = client.orders()
+    .provider("polymarket")
+    .status("open")
+    .fetch()
+    .await?;
+
+for order in orders {
+    println!(
+        "Order {}: {} {} shares @ {}",
+        order.id, order.side, order.quantity, order.price
+    );
+}
+<span class="boring">}</span></code></pre>
+<h3 id="get-order-details"><a class="header" href="#get-order-details">Get Order Details</a></h3>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let order = client.order("order_12345")
+    .fetch()
+    .await?;
+
+println!("Order {}: {} / {}",
+    order.id, order.filled, order.quantity
+);
+<span class="boring">}</span></code></pre>
+<h3 id="place-order"><a class="header" href="#place-order">Place Order</a></h3>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use upp_sdk::OrderRequest;
+
+let order = client.orders()
+    .place(OrderRequest {
+        provider: "polymarket".to_string(),
+        market_id: "0x1234...abcd".to_string(),
+        side: "BUY".to_string(),
+        outcome: "Yes".to_string(),
+        price: 0.72,
+        quantity: 100.0,
+    })
+    .await?;
+
+println!("Order placed: {}", order.id);
+<span class="boring">}</span></code></pre>
+<h3 id="with-validation"><a class="header" href="#with-validation">With Validation</a></h3>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use upp_sdk::OrderRequest;
+
+let order_req = OrderRequest {
+    provider: "polymarket".to_string(),
+    market_id: "0x1234...abcd".to_string(),
+    side: "BUY".to_string(),
+    outcome: "Yes".to_string(),
+    price: 0.72,
+    quantity: 100.0,
+};
+
+// Validate before submitting
+if order_req.price &lt; 0.0 || order_req.price &gt; 1.0 {
+    eprintln!("Invalid price: must be between 0 and 1");
+} else if order_req.quantity &lt;= 0.0 {
+    eprintln!("Invalid quantity: must be &gt; 0");
+} else {
+    let order = client.orders().place(order_req).await?;
+    println!("Order placed: {}", order.id);
+}
+<span class="boring">}</span></code></pre>
+<h3 id="cancel-order"><a class="header" href="#cancel-order">Cancel Order</a></h3>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>client.order("order_12345")
+    .cancel()
+    .await?;
+
+println!("Order cancelled");
+<span class="boring">}</span></code></pre>
+<h2 id="portfolio-api"><a class="header" href="#portfolio-api">Portfolio API</a></h2>
+<h3 id="get-portfolio-summary"><a class="header" href="#get-portfolio-summary">Get Portfolio Summary</a></h3>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let portfolio = client.portfolio()
+    .fetch()
+    .await?;
+
+println!("Balance: ${}", portfolio.cash_balance);
+println!("Total Value: ${}", portfolio.total_value);
+println!("Total P&amp;L: ${} ({:.1}%)",
+    portfolio.total_pnl,
+    portfolio.total_pnl_percent * 100.0
+);
+
+for position in portfolio.positions {
+    println!(
+        "  {} @ {} (P&amp;L: ${}, {:.1}%)",
+        position.outcome,
+        position.current_price,
+        position.pnl,
+        position.pnl_percent * 100.0
+    );
+}
+<span class="boring">}</span></code></pre>
+<h3 id="get-positions"><a class="header" href="#get-positions">Get Positions</a></h3>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let positions = client.positions()
+    .provider("polymarket")
+    .fetch()
+    .await?;
+
+// Group by outcome
+use std::collections::HashMap;
+let mut by_outcome: HashMap&lt;String, Vec&lt;_&gt;&gt; = HashMap::new();
+
+for position in positions {
+    by_outcome.entry(position.outcome.clone())
+        .or_default()
+        .push(position);
+}
+
+for (outcome, positions) in by_outcome {
+    let total_qty: f64 = positions.iter().map(|p| p.quantity).sum();
+    println!("{}: {} shares", outcome, total_qty);
+}
+<span class="boring">}</span></code></pre>
+<h2 id="arbitrage-api"><a class="header" href="#arbitrage-api">Arbitrage API</a></h2>
+<h3 id="find-opportunities"><a class="header" href="#find-opportunities">Find Opportunities</a></h3>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let opportunities = client.arbitrage()
+    .min_spread(0.05)  // 5% minimum
+    .limit(20)
+    .fetch()
+    .await?;
+
+for opp in opportunities {
+    println!(
+        "{}: Buy @ {} on {}, Sell @ {} on {} ({}% spread)",
+        opp.outcome,
+        opp.buy_exchange.price,
+        opp.buy_exchange.provider,
+        opp.sell_exchange.price,
+        opp.sell_exchange.provider,
+        opp.spread_percent * 100.0
+    );
+    println!("  Max volume: {}, Potential profit: ${}",
+        opp.max_volume, opp.potential_profit
+    );
+}
+<span class="boring">}</span></code></pre>
+<h2 id="backtest-api"><a class="header" href="#backtest-api">Backtest API</a></h2>
+<h3 id="run-backtest"><a class="header" href="#run-backtest">Run Backtest</a></h3>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use upp_sdk::{BacktestRequest, BacktestTrade};
+
+let backtest = client.backtest(BacktestRequest {
+    market_id: "0x1234...abcd".to_string(),
+    provider: "polymarket".to_string(),
+    start_date: "2025-09-01".to_string(),
+    end_date: "2026-03-14".to_string(),
+    initial_balance: 10000.0,
+    trades: vec![
+        BacktestTrade {
+            date: "2025-10-01".to_string(),
+            side: "BUY".to_string(),
+            outcome: "Yes".to_string(),
+            quantity: 1000.0,
+            price: 0.50,
+        },
+        BacktestTrade {
+            date: "2026-01-15".to_string(),
+            side: "SELL".to_string(),
+            outcome: "Yes".to_string(),
+            quantity: 1000.0,
+            price: 0.72,
+        },
+    ],
+}).await?;
+
+println!("Initial: ${}", backtest.initial_balance);
+println!("Final: ${}", backtest.final_balance);
+println!("P&amp;L: ${} ({:.1}%)",
+    backtest.total_pnl,
+    backtest.total_pnl_percent * 100.0
+);
+println!("Sharpe Ratio: {}", backtest.sharpe_ratio);
+println!("Max Drawdown: {:.1}%", backtest.max_drawdown_percent * 100.0);
+<span class="boring">}</span></code></pre>
+<h2 id="websocket-subscriptions"><a class="header" href="#websocket-subscriptions">WebSocket Subscriptions</a></h2>
+<h3 id="subscribe-to-markets"><a class="header" href="#subscribe-to-markets">Subscribe to Markets</a></h3>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use futures::StreamExt;
+
+let mut stream = client.markets()
+    .stream("polymarket")
+    .interval(Duration::from_secs(5))
+    .subscribe()
+    .await?;
+
+while let Some(update) = stream.next().await {
+    match update {
+        Ok(market) =&gt; {
+            println!("{}: {} outcomes", market.id, market.outcomes.len());
+            for outcome in market.outcomes {
+                println!("  {} @ {}", outcome.name, outcome.price);
+            }
+        }
+        Err(e) =&gt; {
+            eprintln!("Stream error: {}", e);
+            break;
+        }
+    }
+}
+<span class="boring">}</span></code></pre>
+<h3 id="subscribe-to-orders"><a class="header" href="#subscribe-to-orders">Subscribe to Orders</a></h3>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use futures::StreamExt;
+
+let mut stream = client.orders()
+    .stream()
+    .subscribe()
+    .await?;
+
+while let Some(result) = stream.next().await {
+    match result {
+        Ok(order) =&gt; {
+            println!("Order update: {}", order.id);
+            println!("  Status: {}", order.status);
+            println!("  Filled: {} / {}", order.filled, order.quantity);
+        }
+        Err(e) =&gt; {
+            eprintln!("Stream error: {}", e);
+        }
+    }
+}
+<span class="boring">}</span></code></pre>
+<h3 id="subscribe-to-portfolio"><a class="header" href="#subscribe-to-portfolio">Subscribe to Portfolio</a></h3>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use futures::StreamExt;
+
+let mut stream = client.portfolio()
+    .stream()
+    .subscribe()
+    .await?;
+
+while let Some(result) = stream.next().await {
+    match result {
+        Ok(update) =&gt; {
+            println!("Portfolio update");
+            println!("  Balance: ${}", update.cash_balance);
+            println!("  Total P&amp;L: ${}", update.total_pnl);
+        }
+        Err(e) =&gt; {
+            eprintln!("Stream error: {}", e);
+        }
+    }
+}
+<span class="boring">}</span></code></pre>
+<h2 id="error-handling"><a class="header" href="#error-handling">Error Handling</a></h2>
+<h3 id="pattern-matching"><a class="header" href="#pattern-matching">Pattern Matching</a></h3>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use upp_sdk::ClientError;
+
+match client.markets().fetch().await {
+    Ok(markets) =&gt; {
+        println!("Got {} markets", markets.len());
+    }
+    Err(ClientError::InvalidProvider { provider }) =&gt; {
+        eprintln!("Provider not supported: {}", provider);
+    }
+    Err(ClientError::Unauthorized) =&gt; {
+        eprintln!("Invalid API key");
+    }
+    Err(ClientError::RateLimited { retry_after }) =&gt; {
+        eprintln!("Rate limited, retry after {}s", retry_after.as_secs());
+    }
+    Err(ClientError::NotFound { resource }) =&gt; {
+        eprintln!("Resource not found: {}", resource);
+    }
+    Err(ClientError::Network { source }) =&gt; {
+        eprintln!("Network error: {}", source);
+    }
+    Err(ClientError::Timeout) =&gt; {
+        eprintln!("Request timed out");
+    }
+    Err(e) =&gt; {
+        eprintln!("Unexpected error: {}", e);
+    }
+}
+<span class="boring">}</span></code></pre>
+<h3 id="retry-logic"><a class="header" href="#retry-logic">Retry Logic</a></h3>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use tokio::time::sleep;
+use std::time::Duration;
+
+async fn fetch_with_retry(
+    client: &amp;upp_sdk::Client,
+    max_retries: u32,
+) -&gt; Result&lt;Vec&lt;Market&gt;, Box&lt;dyn std::error::Error&gt;&gt; {
+    let mut retries = 0;
+
+    loop {
+        match client.markets().provider("polymarket").fetch().await {
+            Ok(markets) =&gt; return Ok(markets),
+            Err(ClientError::RateLimited { retry_after }) =&gt; {
+                if retries &lt; max_retries {
+                    sleep(retry_after).await;
+                    retries += 1;
+                } else {
+                    return Err("Max retries exceeded".into());
+                }
+            }
+            Err(e) =&gt; return Err(Box::new(e)),
+        }
+    }
+}
+<span class="boring">}</span></code></pre>
+<h2 id="advanced-patterns"><a class="header" href="#advanced-patterns">Advanced Patterns</a></h2>
+<h3 id="connection-pooling"><a class="header" href="#connection-pooling">Connection Pooling</a></h3>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use std::sync::Arc;
+
+// Create client once, share across threads
+let client = Arc::new(Client::new("http://localhost:8080", "api_key"));
+
+let handles: Vec&lt;_&gt; = (0..10)
+    .map(|i| {
+        let c = Arc::clone(&amp;client);
+        tokio::spawn(async move {
+            let markets = c.markets()
+                .provider("polymarket")
+                .fetch()
+                .await
+                .unwrap();
+            println!("Thread {}: {} markets", i, markets.len());
+        })
+    })
+    .collect();
+
+futures::future::join_all(handles).await;
+<span class="boring">}</span></code></pre>
+<h3 id="caching"><a class="header" href="#caching">Caching</a></h3>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use std::collections::HashMap;
+use tokio::sync::RwLock;
+
+struct CachedClient {
+    client: upp_sdk::Client,
+    cache: RwLock&lt;HashMap&lt;String, Vec&lt;Market&gt;&gt;&gt;,
+}
+
+impl CachedClient {
+    async fn get_markets(&amp;self, provider: &amp;str) -&gt; Result&lt;Vec&lt;Market&gt;&gt; {
+        // Check cache
+        if let Ok(cache) = self.cache.read().await.get(provider) {
+            return Ok(cache.clone());
+        }
+
+        // Fetch from API
+        let markets = self.client.markets()
+            .provider(provider)
+            .fetch()
+            .await?;
+
+        // Store in cache
+        self.cache.write().await.insert(
+            provider.to_string(),
+            markets.clone(),
+        );
+
+        Ok(markets)
+    }
+}
+<span class="boring">}</span></code></pre>
+<h3 id="batch-operations"><a class="header" href="#batch-operations">Batch Operations</a></h3>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Fetch markets from all providers in parallel
+async fn fetch_all_providers(
+    client: &amp;upp_sdk::Client,
+) -&gt; Result&lt;HashMap&lt;String, Vec&lt;Market&gt;&gt;&gt; {
+    let providers = vec!["polymarket", "kalshi", "opinion_trade"];
+
+    let futures: Vec&lt;_&gt; = providers.iter()
+        .map(|p| {
+            client.markets()
+                .provider(p)
+                .limit(10)
+                .fetch()
+        })
+        .collect();
+
+    let results = futures::future::try_join_all(futures).await?;
+
+    let mut markets = HashMap::new();
+    for (provider, market_list) in providers.iter().zip(results) {
+        markets.insert(provider.to_string(), market_list);
+    }
+
+    Ok(markets)
+}
+<span class="boring">}</span></code></pre>
+<h2 id="testing"><a class="header" href="#testing">Testing</a></h2>
+<h3 id="mock-client"><a class="header" href="#mock-client">Mock Client</a></h3>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[cfg(test)]
+mod tests {
+    use upp_sdk::MockClient;
+
+    #[tokio::test]
+    async fn test_markets() {
+        let client = MockClient::new()
+            .with_markets(vec![
+                Market {
+                    id: "test_market".into(),
+                    title: "Test Market".into(),
+                    ..Default::default()
+                }
+            ]);
+
+        let markets = client.markets()
+            .fetch()
+            .await
+            .unwrap();
+
+        assert_eq!(markets.len(), 1);
+        assert_eq!(markets[0].id, "test_market");
+    }
+}
+<span class="boring">}</span></code></pre>
+<h3 id="integration-tests"><a class="header" href="#integration-tests">Integration Tests</a></h3>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[cfg(test)]
+mod tests {
+    use upp_sdk::Client;
+
+    #[tokio::test]
+    #[ignore]  // Run with: cargo test -- --include-ignored
+    async fn test_real_api() {
+        let client = Client::new(
+            "http://localhost:8080",
+            &amp;std::env::var("UPP_API_KEY").unwrap()
+        );
+
+        let markets = client.markets()
+            .provider("polymarket")
+            .limit(1)
+            .fetch()
+            .await
+            .unwrap();
+
+        assert!(!markets.is_empty());
+    }
+}
+<span class="boring">}</span></code></pre>
+<h2 id="performance-tips"><a class="header" href="#performance-tips">Performance Tips</a></h2>
+<ol>
+<li><strong>Reuse client</strong> — Create once, share across requests</li>
+<li><strong>Use connection pooling</strong> — Default enabled, adjust pool size if needed</li>
+<li><strong>Enable caching</strong> — SDK caches responses by default</li>
+<li><strong>Batch operations</strong> — Use parallel requests with <code>futures::join_all()</code></li>
+<li><strong>Stream data</strong> — Use WebSocket subscriptions instead of polling</li>
+<li><strong>Set timeouts</strong> — Catch stuck requests early</li>
+<li><strong>Handle backpressure</strong> — Don’t spawn unlimited concurrent tasks</li>
+</ol>
+<h2 id="troubleshooting"><a class="header" href="#troubleshooting">Troubleshooting</a></h2>
+<h3 id="connection-refused"><a class="header" href="#connection-refused">Connection Refused</a></h3>
+<pre><code>Error: connection refused
+</code></pre>
+<p>Ensure gateway is running:</p>
+<pre><code class="language-bash">docker-compose up -d gateway
+</code></pre>
+<h3 id="unauthorized"><a class="header" href="#unauthorized">Unauthorized</a></h3>
+<pre><code>Error: 401 Unauthorized
+</code></pre>
+<p>Check API key:</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let client = Client::new(
+    "http://localhost:8080",
+    "correct_api_key"  // Not "api_key"
+);
+<span class="boring">}</span></code></pre>
+<h3 id="rate-limited"><a class="header" href="#rate-limited">Rate Limited</a></h3>
+<pre><code>Error: 429 Too Many Requests
+</code></pre>
+<p>Implement exponential backoff:</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let mut backoff = Duration::from_millis(100);
+loop {
+    match client.markets().fetch().await {
+        Ok(m) =&gt; break,
+        Err(ClientError::RateLimited { .. }) =&gt; {
+            sleep(backoff).await;
+            backoff *= 2;
+        }
+        Err(e) =&gt; return Err(e),
+    }
+}
+<span class="boring">}</span></code></pre>
+<h3 id="timeout"><a class="header" href="#timeout">Timeout</a></h3>
+<pre><code>Error: request timed out
+</code></pre>
+<p>Increase timeout:</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let client = ClientBuilder::new()
+    .base_url("http://localhost:8080")
+    .api_key("api_key")
+    .timeout(Duration::from_secs(60))
+    .build()?;
+<span class="boring">}</span></code></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../sdk/index.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                            </a>
+
+                            <a rel="next prefetch" href="../cli/index.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../sdk/index.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                    </a>
+
+                    <a rel="next prefetch" href="../cli/index.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                    </a>
+            </nav>
+
+        </div>
+
+        <template id=fa-eye><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM432 256c0 79.5-64.5 144-144 144s-144-64.5-144-144s64.5-144 144-144s144 64.5 144 144zM288 192c0 35.3-28.7 64-64 64c-11.5 0-22.3-3-31.6-8.4c-.2 2.8-.4 5.5-.4 8.4c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6z"/></svg></span></template>
+        <template id=fa-eye-slash><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c5.2-11.8 8-24.8 8-38.5c0-53-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zm223.1 298L373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5z"/></svg></span></template>
+        <template id=fa-copy><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M502.6 70.63l-61.25-61.25C435.4 3.371 427.2 0 418.7 0H255.1c-35.35 0-64 28.66-64 64l.0195 256C192 355.4 220.7 384 256 384h192c35.2 0 64-28.8 64-64V93.25C512 84.77 508.6 76.63 502.6 70.63zM464 320c0 8.836-7.164 16-16 16H255.1c-8.838 0-16-7.164-16-16L239.1 64.13c0-8.836 7.164-16 16-16h128L384 96c0 17.67 14.33 32 32 32h47.1V320zM272 448c0 8.836-7.164 16-16 16H63.1c-8.838 0-16-7.164-16-16L47.98 192.1c0-8.836 7.164-16 16-16H160V128H63.99c-35.35 0-64 28.65-64 64l.0098 256C.002 483.3 28.66 512 64 512h192c35.2 0 64-28.8 64-64v-32h-47.1L272 448z"/></svg></span></template>
+        <template id=fa-play><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></span></template>
+        <template id=fa-clock-rotate-left><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></span></template>
+
+        <!-- Livereload script (if served using the cli tool) -->
+        <script>
+            const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsAddress = wsProtocol + "//" + location.host + "/" + "__livereload";
+            const socket = new WebSocket(wsAddress);
+            socket.onmessage = function (event) {
+                if (event.data === "reload") {
+                    socket.close();
+                    location.reload();
+                }
+            };
+
+            window.onbeforeunload = function() {
+                socket.close();
+            }
+        </script>
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr-ef4e11c1.min.js"></script>
+        <script src="../mark-09e88c2c.min.js"></script>
+        <script src="../searcher-c2a407aa.js"></script>
+
+        <script src="../clipboard-1626706a.min.js"></script>
+        <script src="../highlight-abc7f01d.js"></script>
+        <script src="../book-a0b12cfe.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>

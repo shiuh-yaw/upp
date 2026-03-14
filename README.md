@@ -97,6 +97,22 @@ The gateway starts on:
 - **gRPC**: `localhost:9091`
 - **Dashboard**: `http://localhost:9090/dashboard`
 
+### Docker
+
+```bash
+# Build and run everything
+docker compose up --build
+
+# With monitoring (Prometheus + Grafana + Jaeger)
+docker compose --profile monitoring up
+
+# With Redis debug UI
+docker compose --profile debug up
+
+# Dev mode with hot reload
+docker compose -f docker-compose.yml -f docker-compose.dev.yml up gateway redis
+```
+
 ### Using the CLI
 
 ```bash
@@ -342,7 +358,7 @@ cargo test -- --nocapture
 cargo test core::backtest
 cargo test middleware::auth
 
-# Current: 243+ tests (100 lib + 100 bin + 43 integration)
+# Current: 265+ tests (100 lib + 100 bin + 43 integration + 22 e2e)
 ```
 
 ## Docker

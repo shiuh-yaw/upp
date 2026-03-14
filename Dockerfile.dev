@@ -1,0 +1,38 @@
+# Development Dockerfile for UPP Gateway with cargo-watch hot reload
+# Use with docker-compose.dev.yml for rapid iteration during development
+
+FROM rust:1.82-slim
+
+WORKDIR /app
+
+# Install development dependencies
+RUN apt-get update && apt-get install -y \
+    pkg-config \
+    libssl-dev \
+    protobuf-compiler \
+    curl \
+    ca-certificates \
+    libssl3 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install cargo-watch for hot reload
+RUN cargo install cargo-watch
+
+# Create non-root user for development
+RUN useradd -m -u 1000 upp && chown -R upp:upp /app
+
+# Set user
+USER upp
+
+# Expose ports
+EXPOSE 8080 50051
+
+# Environment variables
+ENV RUST_LOG=debug
+ENV UPP_LISTEN_ADDR=0.0.0.0:8080
+ENV UPP_GRPC_ADDR=0.0.0.0:50051
+ENV UPP_LOG_LEVEL=debug
+ENV RUST_BACKTRACE=1
+
+# Watch for source changes and rebuild automatically
+CMD ["cargo", "watch", "-x", "run -- serve"]

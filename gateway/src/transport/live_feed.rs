@@ -112,6 +112,7 @@ impl FeedConfig {
 
 /// Normalized incoming message from any provider.
 #[derive(Debug, Clone)]
+#[allow(dead_code)]
 pub struct NormalizedUpdate {
     pub provider_id: String,
     pub market_id: String,     // UPP-format: upp:{provider}:{native_id}
@@ -121,6 +122,7 @@ pub struct NormalizedUpdate {
 }
 
 #[derive(Debug, Clone, PartialEq)]
+#[allow(dead_code)]
 pub enum UpdateType {
     Price,
     OrderBook,

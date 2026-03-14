@@ -734,6 +734,450 @@ fn core_trade_to_pb(t: &core::Trade) -> pb::Trade {
     }
 }
 
+// ─── PortfolioService ────────────────────────────────────────
+
+pub struct UppPortfolioService {
+    pub state: GrpcState,
+}
+
+fn core_position_to_pb(pos: &core::Position) -> pb::Position {
+    pb::Position {
+        market_id: Some(core_market_id_to_pb(&pos.market_id)),
+        outcome_id: pos.outcome_id.clone(),
+        quantity: pos.quantity,
+        average_entry_price: pos.average_entry_price.clone(),
+        current_price: pos.current_price.clone(),
+        cost_basis: pos.cost_basis.clone(),
+        current_value: pos.current_value.clone(),
+        unrealized_pnl: pos.unrealized_pnl.clone(),
+        realized_pnl: pos.realized_pnl.clone(),
+        status: match pos.status {
+            core::PositionStatus::Open => 1,
+            core::PositionStatus::Closed => 2,
+            core::PositionStatus::Settled => 3,
+            core::PositionStatus::Expired => 4,
+        },
+        opened_at: Some(datetime_to_pb(&pos.opened_at)),
+        updated_at: Some(datetime_to_pb(&pos.updated_at)),
+        market_title: pos.market_title.clone(),
+        market_status: match pos.market_status {
+            core::MarketStatus::Open => 1,
+            core::MarketStatus::Closed => 2,
+            core::MarketStatus::Resolved => 3,
+            _ => 0,
+        },
+        provider_metadata: HashMap::new(),
+    }
+}
+
+#[tonic::async_trait]
+impl pb::portfolio_service_server::PortfolioService for UppPortfolioService {
+    async fn list_positions(
+        &self,
+        request: Request<pb::ListPositionsRequest>,
+    ) -> Result<Response<pb::ListPositionsResponse>, Status> {
+        let req = request.into_inner();
+        let provider_ids: Vec<String> = if req.provider.is_empty() {
+            self.state.registry.provider_ids()
+        } else {
+            vec![req.provider]
+        };
+
+        let mut all_positions = Vec::new();
+        for pid in &provider_ids {
+            if let Some(adapter) = self.state.registry.get(pid) {
+                if let Ok(positions) = adapter.get_positions().await {
+                    all_positions.extend(positions.iter().map(core_position_to_pb));
+                }
+            }
+        }
+
+        Ok(Response::new(pb::ListPositionsResponse {
+            positions: all_positions,
+            summary: None,
+            pagination: Some(pb::PaginationResponse {
+                cursor: String::new(),
+                has_more: false,
+                total: -1,
+            }),
+        }))
+    }
+
+    async fn get_position(
+        &self,
+        request: Request<pb::GetPositionRequest>,
+    ) -> Result<Response<pb::Position>, Status> {
+        let req = request.into_inner();
+        let adapter = self.state.registry.get(&req.provider)
+            .ok_or_else(|| Status::not_found("Unknown provider"))?;
+
+        let positions = adapter.get_positions().await
+            .map_err(|e| Status::internal(e.to_string()))?;
+
+        let found = positions.iter().find(|p| {
+            p.market_id.native_id == req.universal_id || p.outcome_id == req.outcome_id
+        });
+
+        match found {
+            Some(pos) => Ok(Response::new(core_position_to_pb(pos))),
+            None => Err(Status::not_found("Position not found")),
+        }
+    }
+
+    async fn get_portfolio_summary(
+        &self,
+        _request: Request<pb::GetPortfolioSummaryRequest>,
+    ) -> Result<Response<pb::PortfolioSummary>, Status> {
+        // Aggregate across all providers
+        let mut total_invested = 0.0f64;
+        let mut total_value = 0.0f64;
+        let mut total_unrealized = 0.0f64;
+        let mut total_realized = 0.0f64;
+        let mut open_count = 0i32;
+
+        for pid in self.state.registry.provider_ids() {
+            if let Some(adapter) = self.state.registry.get(&pid) {
+                if let Ok(positions) = adapter.get_positions().await {
+                    for pos in &positions {
+                        total_invested += pos.cost_basis.parse::<f64>().unwrap_or(0.0);
+                        total_value += pos.current_value.parse::<f64>().unwrap_or(0.0);
+                        total_unrealized += pos.unrealized_pnl.parse::<f64>().unwrap_or(0.0);
+                        total_realized += pos.realized_pnl.parse::<f64>().unwrap_or(0.0);
+                        if matches!(pos.status, core::PositionStatus::Open) {
+                            open_count += 1;
+                        }
+                    }
+                }
+            }
+        }
+
+        Ok(Response::new(pb::PortfolioSummary {
+            total_invested: format!("{:.2}", total_invested),
+            total_current_value: format!("{:.2}", total_value),
+            total_unrealized_pnl: format!("{:.2}", total_unrealized),
+            total_realized_pnl: format!("{:.2}", total_realized),
+            open_position_count: open_count,
+            market_count: open_count, // simplified
+            provider_summaries: Vec::new(),
+        }))
+    }
+
+    async fn list_balances(
+        &self,
+        request: Request<pb::ListBalancesRequest>,
+    ) -> Result<Response<pb::ListBalancesResponse>, Status> {
+        let req = request.into_inner();
+        let provider_ids: Vec<String> = if req.provider.is_empty() {
+            self.state.registry.provider_ids()
+        } else {
+            vec![req.provider]
+        };
+
+        let mut all_balances = Vec::new();
+        let mut total_available = 0.0f64;
+        for pid in &provider_ids {
+            if let Some(adapter) = self.state.registry.get(pid) {
+                if let Ok(balances) = adapter.get_balances().await {
+                    for b in balances {
+                        total_available += b.available.parse::<f64>().unwrap_or(0.0);
+                        all_balances.push(pb::Balance {
+                            provider: b.provider,
+                            instrument_type: b.instrument_type,
+                            available: b.available,
+                            reserved: b.reserved,
+                            total: b.total,
+                            currency: b.currency,
+                            updated_at: None,
+                        });
+                    }
+                }
+            }
+        }
+
+        Ok(Response::new(pb::ListBalancesResponse {
+            balances: all_balances,
+            total_available: format!("{:.2}", total_available),
+        }))
+    }
+
+    async fn get_pn_l_history(
+        &self,
+        _request: Request<pb::GetPnLHistoryRequest>,
+    ) -> Result<Response<pb::GetPnLHistoryResponse>, Status> {
+        // Returns empty history — real implementation would query time-series storage
+        Ok(Response::new(pb::GetPnLHistoryResponse {
+            data_points: Vec::new(),
+        }))
+    }
+}
+
+// ─── ResolutionService ───────────────────────────────────────
+
+pub struct UppResolutionService {
+    pub state: GrpcState,
+}
+
+#[tonic::async_trait]
+impl pb::resolution_service_server::ResolutionService for UppResolutionService {
+    async fn get_resolution(
+        &self,
+        request: Request<pb::GetResolutionRequest>,
+    ) -> Result<Response<pb::Resolution>, Status> {
+        let req = request.into_inner();
+        let (provider_id, native_id) = if !req.universal_id.is_empty() {
+            parse_market_id(&req.universal_id)
+        } else {
+            (req.provider.clone(), req.native_id.clone())
+        };
+
+        // Try to get market to check if it's resolved
+        let adapter = self.state.registry.get(&provider_id)
+            .ok_or_else(|| Status::not_found("Unknown provider"))?;
+
+        match adapter.get_market(&native_id).await {
+            Ok(market) => {
+                let status = match market.lifecycle.status {
+                    core::MarketStatus::Resolved => 3, // Finalized
+                    core::MarketStatus::Disputed => 4, // Disputed
+                    _ => 1, // Pending
+                };
+
+                Ok(Response::new(pb::Resolution {
+                    id: format!("res-{}", native_id),
+                    market_id: Some(core_market_id_to_pb(&market.id)),
+                    resolved_outcome_id: String::new(),
+                    resolved_outcome_label: String::new(),
+                    status,
+                    details: None,
+                    dispute: None,
+                    payout: None,
+                    resolved_at: market.lifecycle.resolved_at.as_ref().map(datetime_to_pb),
+                    finalized_at: None,
+                    provider_metadata: HashMap::new(),
+                }))
+            }
+            Err(e) => Err(Status::not_found(e.to_string())),
+        }
+    }
+
+    async fn list_resolutions(
+        &self,
+        _request: Request<pb::ListResolutionsRequest>,
+    ) -> Result<Response<pb::ListResolutionsResponse>, Status> {
+        // Returns empty — would need to track resolved markets in storage
+        Ok(Response::new(pb::ListResolutionsResponse {
+            resolutions: Vec::new(),
+            pagination: Some(pb::PaginationResponse {
+                cursor: String::new(),
+                has_more: false,
+                total: 0,
+            }),
+        }))
+    }
+
+    async fn claim_payout(
+        &self,
+        request: Request<pb::ClaimPayoutRequest>,
+    ) -> Result<Response<pb::PayoutClaim>, Status> {
+        let req = request.into_inner();
+        // Stub: real implementation would call provider-specific payout API
+        Ok(Response::new(pb::PayoutClaim {
+            id: uuid::Uuid::new_v4().to_string(),
+            market_id: Some(pb::UniversalMarketId {
+                provider: req.provider,
+                native_id: req.universal_id.clone(),
+                full_id: req.universal_id,
+            }),
+            outcome_id: req.outcome_id,
+            contracts: 0,
+            payout_amount: "0.00".to_string(),
+            currency: "USD".to_string(),
+            status: 1, // Pending
+            claimed_at: None,
+            completed_at: None,
+            transaction_id: String::new(),
+        }))
+    }
+
+    async fn file_dispute(
+        &self,
+        request: Request<pb::FileDisputeRequest>,
+    ) -> Result<Response<pb::Dispute>, Status> {
+        let req = request.into_inner();
+        Ok(Response::new(pb::Dispute {
+            id: uuid::Uuid::new_v4().to_string(),
+            filer_id: "anonymous".to_string(),
+            reason: req.reason,
+            evidence_url: req.evidence_url,
+            status: 1, // Filed
+            ruling: String::new(),
+            filed_at: None,
+            resolved_at: None,
+        }))
+    }
+
+    async fn get_resolution_sources(
+        &self,
+        _request: Request<pb::GetResolutionSourcesRequest>,
+    ) -> Result<Response<pb::GetResolutionSourcesResponse>, Status> {
+        Ok(Response::new(pb::GetResolutionSourcesResponse {
+            sources: Vec::new(),
+        }))
+    }
+}
+
+// ─── SettlementService ───────────────────────────────────────
+
+pub struct UppSettlementService {
+    pub state: GrpcState,
+}
+
+#[tonic::async_trait]
+impl pb::settlement_service_server::SettlementService for UppSettlementService {
+    async fn list_funding_instruments(
+        &self,
+        request: Request<pb::ListFundingInstrumentsRequest>,
+    ) -> Result<Response<pb::ListFundingInstrumentsResponse>, Status> {
+        let req = request.into_inner();
+        let provider_ids: Vec<String> = if req.provider.is_empty() {
+            self.state.registry.provider_ids()
+        } else {
+            vec![req.provider]
+        };
+
+        // Generate mock funding instruments per provider
+        let mut instruments = Vec::new();
+        for pid in &provider_ids {
+            if self.state.registry.get(pid).is_some() {
+                let (inst_type, label, currency) = match pid.as_str() {
+                    "kalshi.com" => (1, "USD Balance", "USD"),
+                    "polymarket.com" => (2, "USDC Wallet", "USDC"),
+                    "opinion.trade" => (3, "USDT Wallet", "USDT"),
+                    _ => (0, "Unknown", "USD"),
+                };
+                instruments.push(pb::FundingInstrument {
+                    id: format!("{}-primary", pid),
+                    r#type: inst_type,
+                    label: label.to_string(),
+                    currency: currency.to_string(),
+                    available_balance: "0.00".to_string(),
+                    is_default: true,
+                    min_deposit: "1.00".to_string(),
+                    max_deposit: "100000.00".to_string(),
+                    min_withdrawal: "10.00".to_string(),
+                    max_withdrawal: "100000.00".to_string(),
+                    deposit_processing_time: "instant".to_string(),
+                    withdrawal_processing_time: "1-3 business days".to_string(),
+                    metadata: HashMap::new(),
+                });
+            }
+        }
+
+        Ok(Response::new(pb::ListFundingInstrumentsResponse {
+            instruments,
+        }))
+    }
+
+    async fn list_settlement_handlers(
+        &self,
+        _request: Request<pb::ListSettlementHandlersRequest>,
+    ) -> Result<Response<pb::ListSettlementHandlersResponse>, Status> {
+        let handlers = vec![
+            pb::SettlementHandler {
+                id: "custodial-usd".to_string(),
+                r#type: 1,
+                label: "Custodial USD".to_string(),
+                description: "Direct custodial USD settlement".to_string(),
+                currencies: vec!["USD".to_string()],
+                settlement_time: "instant".to_string(),
+                fee_rate: "0.00".to_string(),
+                jurisdiction: "US".to_string(),
+                regulator: "CFTC".to_string(),
+            },
+            pb::SettlementHandler {
+                id: "polygon-usdc".to_string(),
+                r#type: 2,
+                label: "Polygon USDC".to_string(),
+                description: "On-chain USDC settlement via Polygon".to_string(),
+                currencies: vec!["USDC".to_string()],
+                settlement_time: "~2 minutes".to_string(),
+                fee_rate: "0.001".to_string(),
+                jurisdiction: "global".to_string(),
+                regulator: String::new(),
+            },
+        ];
+
+        Ok(Response::new(pb::ListSettlementHandlersResponse {
+            handlers,
+        }))
+    }
+
+    async fn deposit(
+        &self,
+        request: Request<pb::DepositRequest>,
+    ) -> Result<Response<pb::SettlementTransaction>, Status> {
+        let req = request.into_inner();
+        Ok(Response::new(pb::SettlementTransaction {
+            id: uuid::Uuid::new_v4().to_string(),
+            r#type: 1, // Deposit
+            amount: req.amount,
+            currency: req.currency,
+            instrument_id: req.instrument_id,
+            handler_id: String::new(),
+            status: 1, // Pending
+            tx_hash: String::new(),
+            chain_id: String::new(),
+            initiated_at: None,
+            completed_at: None,
+            failure_reason: String::new(),
+            metadata: HashMap::new(),
+        }))
+    }
+
+    async fn withdraw(
+        &self,
+        request: Request<pb::WithdrawRequest>,
+    ) -> Result<Response<pb::SettlementTransaction>, Status> {
+        let req = request.into_inner();
+        Ok(Response::new(pb::SettlementTransaction {
+            id: uuid::Uuid::new_v4().to_string(),
+            r#type: 2, // Withdrawal
+            amount: req.amount,
+            currency: req.currency,
+            instrument_id: req.instrument_id,
+            handler_id: String::new(),
+            status: 1, // Pending
+            tx_hash: String::new(),
+            chain_id: String::new(),
+            initiated_at: None,
+            completed_at: None,
+            failure_reason: String::new(),
+            metadata: HashMap::new(),
+        }))
+    }
+
+    async fn get_transaction(
+        &self,
+        _request: Request<pb::GetTransactionRequest>,
+    ) -> Result<Response<pb::SettlementTransaction>, Status> {
+        Err(Status::not_found("Transaction not found"))
+    }
+
+    async fn list_transactions(
+        &self,
+        _request: Request<pb::ListTransactionsRequest>,
+    ) -> Result<Response<pb::ListTransactionsResponse>, Status> {
+        Ok(Response::new(pb::ListTransactionsResponse {
+            transactions: Vec::new(),
+            pagination: Some(pb::PaginationResponse {
+                cursor: String::new(),
+                has_more: false,
+                total: 0,
+            }),
+        }))
+    }
+}
+
 // ─── Helpers ─────────────────────────────────────────────────
 
 fn parse_market_id(id: &str) -> (String, String) {
@@ -747,7 +1191,7 @@ fn parse_market_id(id: &str) -> (String, String) {
 
 // ─── Server Startup ──────────────────────────────────────────
 
-/// Start the gRPC server on the given port.
+/// Start the gRPC server on the given port — all 6 UPP services.
 pub async fn start_grpc_server(
     state: GrpcState,
     port: u16,
@@ -757,13 +1201,19 @@ pub async fn start_grpc_server(
     let market_svc = UppMarketService { state: state.clone() };
     let discovery_svc = UppDiscoveryService { state: state.clone() };
     let trading_svc = UppTradingService { state: state.clone() };
+    let portfolio_svc = UppPortfolioService { state: state.clone() };
+    let resolution_svc = UppResolutionService { state: state.clone() };
+    let settlement_svc = UppSettlementService { state: state.clone() };
 
-    info!(address = %addr, "gRPC server listening");
+    info!(address = %addr, "gRPC server listening (6 services)");
 
     tonic::transport::Server::builder()
         .add_service(pb::market_service_server::MarketServiceServer::new(market_svc))
         .add_service(pb::discovery_service_server::DiscoveryServiceServer::new(discovery_svc))
         .add_service(pb::trading_service_server::TradingServiceServer::new(trading_svc))
+        .add_service(pb::portfolio_service_server::PortfolioServiceServer::new(portfolio_svc))
+        .add_service(pb::resolution_service_server::ResolutionServiceServer::new(resolution_svc))
+        .add_service(pb::settlement_service_server::SettlementServiceServer::new(settlement_svc))
         .serve(addr)
         .await?;
 

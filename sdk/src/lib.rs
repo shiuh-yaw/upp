@@ -73,11 +73,13 @@
 pub mod client;
 pub mod error;
 pub mod types;
+pub mod ws;
 
 // Re-export commonly used types and client
 pub use client::{UppClient, UppClientBuilder};
 pub use error::{Result, UppSdkError};
 pub use types::*;
+pub use ws::UppWebSocket;
 
 #[cfg(test)]
 mod tests {

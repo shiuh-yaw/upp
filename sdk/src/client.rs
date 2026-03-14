@@ -1,4 +1,5 @@
-/// HTTP client implementation for the UPP Gateway API
+//! HTTP client implementation for the UPP Gateway API
+
 use crate::error::{Result, UppSdkError};
 use crate::types::*;
 use reqwest::{Client as HttpClient, StatusCode};
@@ -28,10 +29,13 @@ const DEFAULT_BASE_URL: &str = "http://localhost:9090";
 ///     Ok(())
 /// }
 /// ```
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct UppClient {
+    /// Underlying HTTP client
     http_client: HttpClient,
+    /// Base URL for the UPP Gateway API
     base_url: Url,
+    /// Optional API key for authenticated requests
     api_key: Option<String>,
 }
 
@@ -54,9 +58,13 @@ pub struct UppClient {
 ///     Ok(())
 /// }
 /// ```
+#[derive(Debug)]
 pub struct UppClientBuilder {
+    /// Base URL for the UPP Gateway API
     base_url: String,
+    /// Optional API key for authenticated requests
     api_key: Option<String>,
+    /// Request timeout duration
     timeout: Duration,
 }
 
@@ -187,19 +195,19 @@ impl UppClient {
     ) -> Result<MarketsResponse> {
         let mut url = self.build_url("/upp/v1/markets")?;
         if let Some(p) = provider {
-            url.query_pairs_mut().append_pair("provider", p);
+            let _ = url.query_pairs_mut().append_pair("provider", p);
         }
         if let Some(s) = status {
-            url.query_pairs_mut().append_pair("status", s);
+            let _ = url.query_pairs_mut().append_pair("status", s);
         }
         if let Some(c) = category {
-            url.query_pairs_mut().append_pair("category", c);
+            let _ = url.query_pairs_mut().append_pair("category", c);
         }
         if let Some(l) = limit {
-            url.query_pairs_mut().append_pair("limit", &l.to_string());
+            let _ = url.query_pairs_mut().append_pair("limit", &l.to_string());
         }
         if let Some(cur) = cursor {
-            url.query_pairs_mut().append_pair("cursor", cur);
+            let _ = url.query_pairs_mut().append_pair("cursor", cur);
         }
         self.get_url(&url).await
     }
@@ -225,16 +233,16 @@ impl UppClient {
     ) -> Result<SearchResponse> {
         let mut url = self.build_url("/upp/v1/markets/search")?;
         if let Some(query) = q {
-            url.query_pairs_mut().append_pair("q", query);
+            let _ = url.query_pairs_mut().append_pair("q", query);
         }
         if let Some(p) = provider {
-            url.query_pairs_mut().append_pair("provider", p);
+            let _ = url.query_pairs_mut().append_pair("provider", p);
         }
         if let Some(c) = category {
-            url.query_pairs_mut().append_pair("category", c);
+            let _ = url.query_pairs_mut().append_pair("category", c);
         }
         if let Some(l) = limit {
-            url.query_pairs_mut().append_pair("limit", &l.to_string());
+            let _ = url.query_pairs_mut().append_pair("limit", &l.to_string());
         }
         self.get_url(&url).await
     }
@@ -257,7 +265,7 @@ impl UppClient {
     pub async fn arbitrage_history(&self, limit: Option<u32>) -> Result<ArbitrageHistoryResponse> {
         let mut url = self.build_url("/upp/v1/arbitrage/history")?;
         if let Some(l) = limit {
-            url.query_pairs_mut().append_pair("limit", &l.to_string());
+            let _ = url.query_pairs_mut().append_pair("limit", &l.to_string());
         }
         self.get_url(&url).await
     }
@@ -278,19 +286,19 @@ impl UppClient {
     ) -> Result<CandlesResponse> {
         let mut url = self.build_url(&format!("/upp/v1/markets/{}/candles", market_id))?;
         if let Some(o) = outcome_id {
-            url.query_pairs_mut().append_pair("outcome_id", o);
+            let _ = url.query_pairs_mut().append_pair("outcome_id", o);
         }
         if let Some(r) = resolution {
-            url.query_pairs_mut().append_pair("resolution", r);
+            let _ = url.query_pairs_mut().append_pair("resolution", r);
         }
         if let Some(f) = from {
-            url.query_pairs_mut().append_pair("from", f);
+            let _ = url.query_pairs_mut().append_pair("from", f);
         }
         if let Some(t) = to {
-            url.query_pairs_mut().append_pair("to", t);
+            let _ = url.query_pairs_mut().append_pair("to", t);
         }
         if let Some(l) = limit {
-            url.query_pairs_mut().append_pair("limit", &l.to_string());
+            let _ = url.query_pairs_mut().append_pair("limit", &l.to_string());
         }
         self.get_url(&url).await
     }
@@ -304,10 +312,10 @@ impl UppClient {
     ) -> Result<LatestCandleResponse> {
         let mut url = self.build_url(&format!("/upp/v1/markets/{}/candles/latest", market_id))?;
         if let Some(o) = outcome_id {
-            url.query_pairs_mut().append_pair("outcome_id", o);
+            let _ = url.query_pairs_mut().append_pair("outcome_id", o);
         }
         if let Some(r) = resolution {
-            url.query_pairs_mut().append_pair("resolution", r);
+            let _ = url.query_pairs_mut().append_pair("resolution", r);
         }
         self.get_url(&url).await
     }

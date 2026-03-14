@@ -13,10 +13,12 @@ pub fn print_success(msg: &str) {
     println!("{}", msg.green().bold());
 }
 
+#[allow(dead_code)]
 pub fn print_error(msg: &str) {
     eprintln!("{}", msg.red().bold());
 }
 
+#[allow(dead_code)]
 pub fn print_info(msg: &str) {
     println!("{}", msg.cyan());
 }

@@ -3,6 +3,7 @@ mod output;
 
 use anyhow::{anyhow, Result};
 use clap::{Parser, Subcommand};
+use colored::Colorize;
 use config::Config;
 use output::*;
 use reqwest::Client;
@@ -83,9 +84,43 @@ enum Commands {
     #[command(subcommand)]
     Route(RouteCommands),
 
+    /// API key management
+    #[command(subcommand)]
+    Keys(KeyCommands),
+
     /// Configuration management
     #[command(subcommand)]
     Config(ConfigCommands),
+}
+
+#[derive(Subcommand)]
+enum KeyCommands {
+    /// Create a new API key
+    Create {
+        /// Client name
+        name: String,
+
+        /// Tier (free, standard, pro, enterprise)
+        #[arg(long, default_value = "free")]
+        tier: String,
+
+        /// Optional label
+        #[arg(long)]
+        label: Option<String>,
+
+        /// Expiry in days
+        #[arg(long)]
+        expires_in: Option<u32>,
+    },
+
+    /// List all API keys
+    List,
+
+    /// Revoke an API key
+    Revoke {
+        /// Key ID to revoke
+        key_id: String,
+    },
 }
 
 #[derive(Subcommand)]
@@ -388,6 +423,17 @@ async fn main() -> Result<()> {
             RouteCommands::Execute { route_json } => {
                 cmd_route_execute(&config, &route_json, cli.json).await?
             }
+        },
+
+        Commands::Keys(cmd) => match cmd {
+            KeyCommands::Create {
+                name,
+                tier,
+                label,
+                expires_in,
+            } => cmd_keys_create(&config, &name, &tier, label, expires_in, cli.json).await?,
+            KeyCommands::List => cmd_keys_list(&config, cli.json).await?,
+            KeyCommands::Revoke { key_id } => cmd_keys_revoke(&config, &key_id, cli.json).await?,
         },
 
         Commands::Config(cmd) => match cmd {
@@ -1584,6 +1630,171 @@ async fn cmd_route_execute(config: &Config, route_json: &str, json_output: bool)
         ];
 
         print_kv_table(&data);
+    }
+
+    Ok(())
+}
+
+// ─── Key Management ─────────────────────────────────────────
+
+async fn cmd_keys_create(
+    config: &Config,
+    name: &str,
+    tier: &str,
+    label: Option<String>,
+    expires_in: Option<u32>,
+    json_output: bool,
+) -> Result<()> {
+    let client = Client::new();
+    let url = format!("{}/auth/keys", config.gateway_url());
+
+    let mut payload = json!({
+        "client_name": name,
+        "tier": tier,
+    });
+
+    if let Some(label) = label {
+        payload["label"] = json!(label);
+    }
+    if let Some(days) = expires_in {
+        payload["expires_in_days"] = json!(days);
+    }
+
+    let mut req = client.post(&url).json(&payload);
+    if let Some(key) = &config.api_key {
+        req = req.header("X-API-Key", key);
+    }
+
+    let response = req
+        .send()
+        .await
+        .map_err(|e| anyhow!("Failed to create key: {}", e))?;
+
+    if !response.status().is_success() {
+        let status = response.status();
+        let body = response.text().await.unwrap_or_default();
+        return Err(anyhow!("Failed to create key ({}): {}", status, body));
+    }
+
+    let body = response.json::<Value>().await?;
+
+    if json_output {
+        print_json(&body);
+    } else {
+        print_success("API key created");
+        let data = vec![
+            (
+                "Key ID".to_string(),
+                body["key_id"].as_str().unwrap_or("").to_string(),
+            ),
+            (
+                "API Key".to_string(),
+                body["api_key"].as_str().unwrap_or("").to_string(),
+            ),
+            (
+                "Client".to_string(),
+                body["client_name"].as_str().unwrap_or(name).to_string(),
+            ),
+            ("Tier".to_string(), tier.to_string()),
+        ];
+        print_kv_table(&data);
+        println!(
+            "\n{}",
+            "  Save your API key now — it won't be shown again."
+                .yellow()
+                .bold()
+        );
+    }
+
+    Ok(())
+}
+
+async fn cmd_keys_list(config: &Config, json_output: bool) -> Result<()> {
+    let client = Client::new();
+    let url = format!("{}/auth/keys", config.gateway_url());
+
+    let mut req = client.get(&url);
+    if let Some(key) = &config.api_key {
+        req = req.header("X-API-Key", key);
+    }
+
+    let response = req
+        .send()
+        .await
+        .map_err(|e| anyhow!("Failed to list keys: {}", e))?;
+
+    if !response.status().is_success() {
+        return Err(anyhow!("Failed to list keys: {}", response.status()));
+    }
+
+    let body = response.json::<Value>().await?;
+
+    if json_output {
+        print_json(&body);
+    } else {
+        print_header("API Keys");
+        let keys = body["keys"].as_array();
+        if let Some(keys) = keys {
+            if keys.is_empty() {
+                println!("  No API keys found.");
+            } else {
+                for key in keys {
+                    let data = vec![
+                        (
+                            "Key ID".to_string(),
+                            key["key_id"].as_str().unwrap_or("").to_string(),
+                        ),
+                        (
+                            "Client".to_string(),
+                            key["client_name"].as_str().unwrap_or("").to_string(),
+                        ),
+                        (
+                            "Tier".to_string(),
+                            key["tier"].as_str().unwrap_or("free").to_string(),
+                        ),
+                        (
+                            "Label".to_string(),
+                            key["label"].as_str().unwrap_or("-").to_string(),
+                        ),
+                        (
+                            "Created".to_string(),
+                            key["created_at"].as_str().unwrap_or("").to_string(),
+                        ),
+                    ];
+                    print_kv_table(&data);
+                    println!();
+                }
+            }
+        }
+    }
+
+    Ok(())
+}
+
+async fn cmd_keys_revoke(config: &Config, key_id: &str, json_output: bool) -> Result<()> {
+    let client = Client::new();
+    let url = format!("{}/auth/keys/revoke", config.gateway_url());
+
+    let mut req = client.post(&url).json(&json!({ "key_id": key_id }));
+    if let Some(key) = &config.api_key {
+        req = req.header("X-API-Key", key);
+    }
+
+    let response = req
+        .send()
+        .await
+        .map_err(|e| anyhow!("Failed to revoke key: {}", e))?;
+
+    if !response.status().is_success() {
+        return Err(anyhow!("Failed to revoke key: {}", response.status()));
+    }
+
+    let body = response.json::<Value>().await?;
+
+    if json_output {
+        print_json(&body);
+    } else {
+        print_success(&format!("API key {} revoked", key_id));
     }
 
     Ok(())

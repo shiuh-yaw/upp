@@ -1,0 +1,40 @@
+# UPP Gateway — Staging Environment Configuration
+# Production-like settings with moderate limits and real provider URLs
+
+environment = "staging"
+log_format = "json"                 # JSON structured logs
+
+# Moderate rate limits for staging
+rate_limit_light_burst = 500
+rate_limit_light_rps = 500.0
+
+rate_limit_standard_burst = 100
+rate_limit_standard_rps = 50.0
+
+rate_limit_heavy_burst = 40
+rate_limit_heavy_rps = 10.0
+
+rate_limit_ws_burst = 25
+rate_limit_ws_rps = 5.0
+
+# Authentication optional (can be toggled via env var or manually)
+auth_required = false
+
+# Restricted CORS for staging (update with actual staging domain)
+cors_origins = [
+    "https://staging.example.com",
+    "https://app-staging.example.com",
+]
+
+# Standard connection limits
+max_connections = 5000
+
+# Graceful shutdown timeout
+graceful_shutdown_timeout_secs = 30
+
+# Optimized cache TTLs for staging
+market_cache_ttl_seconds = 300      # 5 minutes
+orderbook_cache_ttl_ms = 500        # 500ms
+
+# Redis for state sharing in staging (if available)
+# redis_url = "redis://staging-redis:6379"

@@ -13,6 +13,8 @@ use dashmap::DashMap;
 use std::collections::HashMap;
 use std::sync::Arc;
 use std::time::{Duration, Instant};
+use tracing::{debug, warn};
+
 
 // ─── Rate Limit Tiers ───────────────────────────────────────
 
@@ -36,6 +38,19 @@ pub struct RateLimitTierConfig {
     pub max_burst: u32,
     /// Sustained requests per second.
     pub requests_per_second: f64,
+}
+
+/// Result of a rate limit check.
+#[derive(Debug, Clone)]
+pub struct RateLimitResult {
+    /// Whether the request is allowed.
+    pub allowed: bool,
+    /// Remaining tokens after this request.
+    pub remaining: u32,
+    /// Total limit for this tier.
+    pub limit: u32,
+    /// Seconds to wait before next request is allowed (0 if allowed).
+    pub retry_after: f64,
 }
 
 // ─── Token Bucket ───────────────────────────────────────────
@@ -103,6 +118,10 @@ pub struct RateLimitConfig {
     pub cleanup_interval_secs: u64,
     /// Time after which an idle bucket is removed (seconds).
     pub bucket_expiry_secs: u64,
+    /// Optional Redis URL for distributed rate limiting.
+    pub redis_url: Option<String>,
+    /// Use sliding window limiter instead of token bucket.
+    pub use_sliding_window: bool,
 }
 
 impl Default for RateLimitConfig {
@@ -140,6 +159,88 @@ impl Default for RateLimitConfig {
             tiers,
             cleanup_interval_secs: 60,
             bucket_expiry_secs: 300,
+            redis_url: None,
+            use_sliding_window: false,
+        }
+    }
+}
+
+// ─── Redis Rate Limiter ─────────────────────────────────────
+
+/// Redis-backed rate limiter using INCR + EXPIRE for sliding window.
+#[derive(Clone)]
+pub struct RedisRateLimiter {
+    client: Arc<Option<redis::Client>>,
+    window_secs: usize,
+}
+
+impl RedisRateLimiter {
+    /// Create a new Redis-backed rate limiter.
+    /// Returns None if Redis connection fails.
+    pub fn new(redis_url: &str, window_secs: usize) -> Option<Self> {
+        match redis::Client::open(redis_url) {
+            Ok(client) => {
+                // Test the connection
+                match client.get_connection() {
+                    Ok(_) => {
+                        debug!("Redis rate limiter connected to {}", redis_url);
+                        Some(Self {
+                            client: Arc::new(Some(client)),
+                            window_secs,
+                        })
+                    }
+                    Err(e) => {
+                        warn!("Failed to connect to Redis: {}", e);
+                        None
+                    }
+                }
+            }
+            Err(e) => {
+                warn!("Failed to create Redis client: {}", e);
+                None
+            }
+        }
+    }
+
+    /// Check if a request is allowed using sliding window (INCR + EXPIRE).
+    /// Returns (allowed: bool, current_count: u32, limit: u32, retry_after: f64)
+    pub fn check(&self, key: &str, limit: u32) -> (bool, u32, u32, f64) {
+        if let Some(ref client) = *self.client {
+            if let Ok(mut conn) = client.get_connection() {
+                use redis::Commands;
+
+                // Use a key with timestamp-based window
+                let now = std::time::SystemTime::now()
+                    .duration_since(std::time::UNIX_EPOCH)
+                    .unwrap_or_default()
+                    .as_secs();
+                let window_key = format!("ratelimit:{}:{}", key, now / self.window_secs as u64);
+
+                // INCR the counter
+                let current: u32 = match conn.incr(&window_key, 1) {
+                    Ok(count) => count,
+                    Err(e) => {
+                        warn!("Redis INCR failed: {}", e);
+                        return (false, 0, limit, 0.0);
+                    }
+                };
+
+                // Set expiration on first increment
+                if current == 1 {
+                    let _: bool = conn.expire(&window_key, self.window_secs as i64).unwrap_or(false);
+                }
+
+                let allowed = current <= limit;
+                let _remaining = if allowed { limit - current } else { 0 };
+
+                (allowed, current, limit, if allowed { 0.0 } else { self.window_secs as f64 })
+            } else {
+                // Connection error, fall back to denied (safe default)
+                (false, 0, limit, 0.0)
+            }
+        } else {
+            // No Redis client
+            (false, 0, limit, 0.0)
         }
     }
 }
@@ -147,10 +248,15 @@ impl Default for RateLimitConfig {
 // ─── Shared State ───────────────────────────────────────────
 
 /// Shared rate limit state accessible from handlers or middleware.
+/// Supports both in-memory and Redis-backed limiting.
 #[derive(Clone)]
 pub struct RateLimitState {
     buckets: Arc<DashMap<String, TokenBucket>>,
     config: RateLimitConfig,
+    /// Per-client tier overrides (for Enterprise clients).
+    client_tier_overrides: Arc<DashMap<String, f64>>,
+    /// Optional Redis-backed limiter (fallback to in-memory if None).
+    redis_limiter: Arc<Option<RedisRateLimiter>>,
 }
 
 impl RateLimitState {
@@ -158,12 +264,37 @@ impl RateLimitState {
         Self {
             buckets: Arc::new(DashMap::new()),
             config,
+            client_tier_overrides: Arc::new(DashMap::new()),
+            redis_limiter: Arc::new(None),
         }
     }
 
+    /// Create a new rate limit state with Redis backing.
+    pub fn new_with_redis(config: RateLimitConfig, redis_url: &str) -> Self {
+        let redis_limiter = RedisRateLimiter::new(redis_url, 60);
+        Self {
+            buckets: Arc::new(DashMap::new()),
+            config,
+            client_tier_overrides: Arc::new(DashMap::new()),
+            redis_limiter: Arc::new(redis_limiter),
+        }
+    }
+
+    /// Set a rate limit multiplier override for a specific client.
+    /// This is used to give Enterprise clients higher limits (e.g., 10x).
+    pub fn set_client_override(&self, client_key: &str, multiplier: f64) {
+        self.client_tier_overrides.insert(client_key.to_string(), multiplier);
+    }
+
+    /// Remove a rate limit override for a client.
+    pub fn remove_client_override(&self, client_key: &str) {
+        self.client_tier_overrides.remove(client_key);
+    }
+
     /// Check if a request from the given key and tier is allowed.
-    /// Returns (allowed, remaining, limit, retry_after_secs).
-    pub fn check(&self, key: &str, tier: RateLimitTier) -> (bool, u32, u32, f64) {
+    /// Returns RateLimitResult with detailed information.
+    /// Tries Redis first if available, falls back to in-memory token bucket.
+    pub fn check(&self, key: &str, tier: RateLimitTier) -> RateLimitResult {
         // Create a composite bucket key: "client_key:tier"
         let tier_name = match tier {
             RateLimitTier::Light => "light",
@@ -174,7 +305,7 @@ impl RateLimitState {
         let bucket_key = format!("{}:{}", key, tier_name);
 
         // Get tier config
-        let tier_config = self.config.tiers.get(&tier).cloned().unwrap_or_else(|| {
+        let mut tier_config = self.config.tiers.get(&tier).cloned().unwrap_or_else(|| {
             // Fallback to standard if tier not configured
             RateLimitTierConfig {
                 max_burst: 50,
@@ -182,6 +313,28 @@ impl RateLimitState {
             }
         });
 
+        // Apply client-specific override if present
+        if let Some(override_entry) = self.client_tier_overrides.get(key) {
+            let multiplier = *override_entry;
+            tier_config.max_burst = (tier_config.max_burst as f64 * multiplier).ceil() as u32;
+            tier_config.requests_per_second *= multiplier;
+        }
+
+        // Try Redis if available
+        if let Some(ref redis_limiter) = *self.redis_limiter {
+            let (_allowed, _current, _limit, _retry) = redis_limiter.check(&bucket_key, tier_config.max_burst);
+            // Note: Redis sliding window is simpler; we use max_burst as the limit
+            // For production, you might want more sophisticated logic
+            debug!("Redis rate limit check: key={}, allowed={}", bucket_key, _allowed);
+            return RateLimitResult {
+                allowed: _allowed,
+                remaining: if _allowed { tier_config.max_burst - _current } else { 0 },
+                limit: tier_config.max_burst,
+                retry_after: _retry,
+            };
+        }
+
+        // Fall back to in-memory token bucket
         let mut bucket = self.buckets
             .entry(bucket_key)
             .or_insert_with(|| TokenBucket::new(
@@ -192,7 +345,19 @@ impl RateLimitState {
         let allowed = bucket.try_consume();
         let remaining = bucket.remaining();
         let retry_after = bucket.retry_after();
-        (allowed, remaining, tier_config.max_burst, retry_after)
+
+        RateLimitResult {
+            allowed,
+            remaining,
+            limit: tier_config.max_burst,
+            retry_after,
+        }
+    }
+
+    /// Check rate limit using old tuple return format for backward compatibility.
+    pub fn check_legacy(&self, key: &str, tier: RateLimitTier) -> (bool, u32, u32, f64) {
+        let result = self.check(key, tier);
+        (result.allowed, result.remaining, result.limit, result.retry_after)
     }
 
     /// Start a background task that periodically removes idle buckets.
@@ -226,8 +391,9 @@ impl RateLimitState {
 
 /// Extract a rate-limit key from request headers.
 /// Priority: X-API-Key > Authorization Bearer > X-Forwarded-For > fallback
+/// Returns the full key (e.g., "apikey:...", "bearer:...", "ip:...").
 pub fn extract_client_key(headers: &axum::http::HeaderMap) -> String {
-    // Check for API key header
+    // Check for API key header (preferred)
     if let Some(key) = headers.get("X-API-Key").and_then(|v| v.to_str().ok()) {
         return format!("apikey:{}", key);
     }
@@ -247,8 +413,46 @@ pub fn extract_client_key(headers: &axum::http::HeaderMap) -> String {
         }
     }
 
+    // Fallback to X-Real-IP
+    if let Some(real_ip) = headers.get("X-Real-IP").and_then(|v| v.to_str().ok()) {
+        return format!("ip:{}", real_ip);
+    }
+
     // Fallback
     "ip:unknown".to_string()
+}
+
+/// Extract API key from headers (if present).
+pub fn extract_api_key(headers: &axum::http::HeaderMap) -> Option<String> {
+    headers.get("X-API-Key")
+        .and_then(|v| v.to_str().ok())
+        .map(|s| s.to_string())
+}
+
+/// Extract Bearer token from headers (if present).
+pub fn extract_bearer_token(headers: &axum::http::HeaderMap) -> Option<String> {
+    headers.get(axum::http::header::AUTHORIZATION)
+        .and_then(|v| v.to_str().ok())
+        .and_then(|auth| auth.strip_prefix("Bearer "))
+        .map(|s| s.to_string())
+}
+
+/// Extract client IP from headers.
+/// Priority: X-Forwarded-For > X-Real-IP
+pub fn extract_client_ip(headers: &axum::http::HeaderMap) -> Option<String> {
+    // Check X-Forwarded-For (first IP in chain)
+    if let Some(xff) = headers.get("X-Forwarded-For").and_then(|v| v.to_str().ok()) {
+        if let Some(first_ip) = xff.split(',').next() {
+            return Some(first_ip.trim().to_string());
+        }
+    }
+
+    // Fallback to X-Real-IP
+    if let Some(real_ip) = headers.get("X-Real-IP").and_then(|v| v.to_str().ok()) {
+        return Some(real_ip.to_string());
+    }
+
+    None
 }
 
 /// Classify a request path into a rate limit tier.
@@ -342,16 +546,16 @@ mod tests {
 
         // Light tier should allow 200 bursts
         for _ in 0..200 {
-            let (allowed, _, _, _) = state.check("test-client", RateLimitTier::Light);
-            assert!(allowed);
+            let result = state.check("test-client", RateLimitTier::Light);
+            assert!(result.allowed);
         }
         // 201st should be denied
-        let (allowed, _, _, _) = state.check("test-client", RateLimitTier::Light);
-        assert!(!allowed);
+        let result = state.check("test-client", RateLimitTier::Light);
+        assert!(!result.allowed);
 
         // Same client can still use Standard tier (separate bucket)
-        let (allowed, _, _, _) = state.check("test-client", RateLimitTier::Standard);
-        assert!(allowed);
+        let result = state.check("test-client", RateLimitTier::Standard);
+        assert!(result.allowed);
     }
 
     #[test]
@@ -361,12 +565,12 @@ mod tests {
 
         // Heavy tier allows only 20 bursts
         for _ in 0..20 {
-            let (allowed, _, _, _) = state.check("heavy-client", RateLimitTier::Heavy);
-            assert!(allowed);
+            let result = state.check("heavy-client", RateLimitTier::Heavy);
+            assert!(result.allowed);
         }
-        let (allowed, _, limit, _) = state.check("heavy-client", RateLimitTier::Heavy);
-        assert!(!allowed);
-        assert_eq!(limit, 20);
+        let result = state.check("heavy-client", RateLimitTier::Heavy);
+        assert!(!result.allowed);
+        assert_eq!(result.limit, 20);
     }
 
     #[test]
@@ -378,12 +582,12 @@ mod tests {
         for _ in 0..20 {
             state.check("client-a", RateLimitTier::Heavy);
         }
-        let (allowed, _, _, _) = state.check("client-a", RateLimitTier::Heavy);
-        assert!(!allowed);
+        let result = state.check("client-a", RateLimitTier::Heavy);
+        assert!(!result.allowed);
 
         // Client B should still be allowed
-        let (allowed, _, _, _) = state.check("client-b", RateLimitTier::Heavy);
-        assert!(allowed);
+        let result = state.check("client-b", RateLimitTier::Heavy);
+        assert!(result.allowed);
     }
 
     #[test]
@@ -404,10 +608,10 @@ mod tests {
         let config = RateLimitConfig::default();
         let state = RateLimitState::new(config);
 
-        let (allowed, remaining, limit, retry_after) = state.check("hdr-client", RateLimitTier::Standard);
-        assert!(allowed);
-        assert_eq!(limit, 50);
-        assert_eq!(remaining, 49);
-        assert_eq!(retry_after, 0.0);
+        let result = state.check("hdr-client", RateLimitTier::Standard);
+        assert!(result.allowed);
+        assert_eq!(result.limit, 50);
+        assert_eq!(result.remaining, 49);
+        assert_eq!(result.retry_after, 0.0);
     }
 }

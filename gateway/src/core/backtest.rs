@@ -483,6 +483,7 @@ impl Strategy for ThresholdBandStrategy {
 
 /// Arbitrage Replay — given two market candle series, buy the cheaper
 /// and sell the more expensive when the spread exceeds a threshold.
+#[allow(dead_code)]
 pub struct ArbitrageReplayStrategy {
     /// Second market's candles (the "comparison" market).
     comparison_candles: Vec<Candle>,
@@ -492,6 +493,7 @@ pub struct ArbitrageReplayStrategy {
 }
 
 impl ArbitrageReplayStrategy {
+    #[allow(dead_code)]
     pub fn new(comparison_candles: Vec<Candle>, spread_threshold: f64, position_size: i64) -> Self {
         Self { comparison_candles, spread_threshold, position_size, in_position: false }
     }

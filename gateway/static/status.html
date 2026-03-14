@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>UPP Gateway — Provider Status</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f1117; color: #e1e4e8; padding: 24px; }
+    h1 { font-size: 1.5rem; margin-bottom: 8px; color: #58a6ff; }
+    .subtitle { color: #8b949e; margin-bottom: 24px; font-size: 0.9rem; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; margin-bottom: 24px; }
+    .card { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 16px; }
+    .card h2 { font-size: 1rem; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+    .dot.green { background: #3fb950; }
+    .dot.red { background: #f85149; }
+    .dot.yellow { background: #d29922; }
+    .metric { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #21262d; font-size: 0.85rem; }
+    .metric:last-child { border-bottom: none; }
+    .metric .label { color: #8b949e; }
+    .metric .value { font-weight: 600; font-variant-numeric: tabular-nums; }
+    .section-title { font-size: 1.1rem; color: #c9d1d9; margin: 24px 0 12px; border-bottom: 1px solid #30363d; padding-bottom: 8px; }
+    .cb-closed { color: #3fb950; }
+    .cb-open { color: #f85149; }
+    .cb-halfopen { color: #d29922; }
+    #refresh { color: #8b949e; font-size: 0.8rem; text-align: right; margin-bottom: 8px; }
+  </style>
+</head>
+<body>
+  <h1>UPP Gateway — Provider Status</h1>
+  <p class="subtitle">Real-time health, circuit breaker state, and latency for all registered providers.</p>
+  <div id="refresh">Refreshing every 5s...</div>
+  <div id="content">Loading...</div>
+
+  <script>
+    async function refresh() {
+      try {
+        const res = await fetch('/upp/v1/status');
+        const data = await res.json();
+        render(data);
+      } catch (e) {
+        document.getElementById('content').innerHTML = '<p style="color:#f85149">Failed to fetch status: ' + e.message + '</p>';
+      }
+    }
+
+    function render(data) {
+      let html = '';
+
+      // Provider cards
+      html += '<div class="grid">';
+      for (const p of data.providers) {
+        const dotClass = p.healthy ? 'green' : 'red';
+        const cbState = p.circuit_breaker.state.toLowerCase();
+        const cbClass = cbState === 'closed' ? 'cb-closed' : cbState === 'open' ? 'cb-open' : 'cb-halfopen';
+        html += `<div class="card">
+          <h2><span class="dot ${dotClass}"></span>${p.provider_id}</h2>
+          <div class="metric"><span class="label">Status</span><span class="value">${p.healthy ? 'Healthy' : 'Unhealthy'}</span></div>
+          <div class="metric"><span class="label">Latency</span><span class="value">${p.latency_ms.toFixed(1)} ms</span></div>
+          <div class="metric"><span class="label">Circuit Breaker</span><span class="value ${cbClass}">${p.circuit_breaker.state}</span></div>
+          <div class="metric"><span class="label">Consecutive Failures</span><span class="value">${p.circuit_breaker.consecutive_failures}</span></div>
+        </div>`;
+      }
+      html += '</div>';
+
+      // Global metrics
+      html += '<div class="section-title">Gateway Metrics</div>';
+      html += '<div class="grid">';
+      html += `<div class="card">
+        <h2>Requests</h2>
+        <div class="metric"><span class="label">Total</span><span class="value">${data.metrics.requests_total.toLocaleString()}</span></div>
+        <div class="metric"><span class="label">Successful</span><span class="value">${data.metrics.requests_ok.toLocaleString()}</span></div>
+        <div class="metric"><span class="label">Errors</span><span class="value">${data.metrics.requests_error.toLocaleString()}</span></div>
+        <div class="metric"><span class="label">Rate Limited</span><span class="value">${data.metrics.requests_rate_limited.toLocaleString()}</span></div>
+        <div class="metric"><span class="label">WebSocket Connections</span><span class="value">${data.metrics.ws_connections_active}</span></div>
+      </div>`;
+      html += `<div class="card">
+        <h2>Live Feeds</h2>
+        <div class="metric"><span class="label">Messages Total</span><span class="value">${data.live_feeds.messages_total.toLocaleString()}</span></div>
+        <div class="metric"><span class="label">Reconnects</span><span class="value">${data.live_feeds.reconnects_total}</span></div>
+        <div class="metric"><span class="label">Providers</span><span class="value">${data.live_feeds.providers_registered}</span></div>
+      </div>`;
+      html += `<div class="card">
+        <h2>Arbitrage Scanner</h2>
+        <div class="metric"><span class="label">Active Opportunities</span><span class="value">${data.arbitrage.active_opportunities}</span></div>
+        <div class="metric"><span class="label">Total Scans</span><span class="value">${data.arbitrage.total_scans.toLocaleString()}</span></div>
+        <div class="metric"><span class="label">Total Detected</span><span class="value">${data.arbitrage.total_detected.toLocaleString()}</span></div>
+      </div>`;
+      html += '</div>';
+
+      document.getElementById('content').innerHTML = html;
+      document.getElementById('refresh').textContent = 'Last updated: ' + new Date().toLocaleTimeString() + ' (refreshing every 5s)';
+    }
+
+    refresh();
+    setInterval(refresh, 5000);
+  </script>
+</body>
+</html>

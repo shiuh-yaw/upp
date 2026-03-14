@@ -5,6 +5,7 @@
 keys/
 
 # Rust
+target/
 gateway/target/
 
 # Node

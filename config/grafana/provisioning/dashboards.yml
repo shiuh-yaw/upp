@@ -1,0 +1,15 @@
+# Grafana dashboards auto-provisioning configuration
+# Dashboards are auto-imported on container startup
+
+apiVersion: 1
+
+providers:
+  - name: 'UPP Dashboards'
+    orgId: 1
+    folder: 'UPP'
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 30
+    allowUiUpdates: true
+    options:
+      path: /var/lib/grafana/dashboards

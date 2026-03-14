@@ -1,0 +1,2526 @@
+openapi: 3.1.0
+
+info:
+  title: UPP Gateway API
+  version: 0.1.0
+  description: |
+    Universal Prediction Protocol Gateway API provides unified access to prediction markets across multiple providers via a single API.
+
+    ## Authentication
+
+    The API uses two authentication methods:
+    - **ApiKeyAuth**: X-API-Key header for API key-based authentication
+    - **BearerAuth**: Bearer token in Authorization header for JWT-based authentication
+
+    Protected endpoints require authentication. Public endpoints are rate-limited but do not require credentials.
+
+    ## Rate Limiting
+
+    All endpoints are rate-limited. Rate limit information is returned in response headers:
+    - `X-RateLimit-Limit`: Maximum requests per minute
+    - `X-RateLimit-Remaining`: Remaining requests in current window
+    - `Retry-After`: Seconds to wait before retrying (on 429 responses)
+
+  contact:
+    name: UPP Team
+    url: https://github.com/upp-labs
+    email: support@upp.dev
+  license:
+    name: Apache-2.0
+    url: https://opensource.org/licenses/Apache-2.0
+
+servers:
+  - url: http://localhost:8080
+    description: Local development server
+  - url: http://gateway:8080
+    description: Docker containerized gateway
+  - url: https://api.upp.dev
+    description: Production server
+
+tags:
+  - name: Health
+    description: Service health and readiness checks
+  - name: Markets
+    description: Market data and discovery
+  - name: Orderbook
+    description: Order book data and management
+  - name: Arbitrage
+    description: Arbitrage opportunity detection and analytics
+  - name: Candles
+    description: Candlestick data and price history
+  - name: Price Index
+    description: Price index statistics and aggregates
+  - name: Discovery
+    description: Market provider discovery and negotiation
+  - name: Resolution
+    description: Market resolution and settlement
+  - name: Settlement
+    description: Settlement instrument management
+  - name: Backtest
+    description: Strategy backtesting and comparison
+  - name: Feeds
+    description: Live data feed status and management
+  - name: Orders
+    description: Order management and execution (Protected)
+  - name: Trades
+    description: Trade history and execution details (Protected)
+  - name: Portfolio
+    description: Portfolio management and analytics (Protected)
+  - name: Smart Routing
+    description: Smart order routing and execution (Protected)
+  - name: Auth Management
+    description: API key management (Protected)
+  - name: MCP
+    description: Model Context Protocol integration
+  - name: Ingestion
+    description: Historical data ingestion
+  - name: WebSocket
+    description: WebSocket streaming connections
+  - name: Dashboard
+    description: Dashboard and UI
+
+paths:
+  # ============================================================================
+  # HEALTH & STATUS
+  # ============================================================================
+  /health:
+    get:
+      operationId: getHealth
+      summary: Health check
+      description: Returns 200 if the service is running and healthy
+      tags: [Health]
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+        '500':
+          description: Service is unhealthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /ready:
+    get:
+      operationId: getReady
+      summary: Readiness check
+      description: Returns 200 if the service is ready to handle requests
+      tags: [Health]
+      responses:
+        '200':
+          description: Service is ready
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadyResponse'
+        '503':
+          description: Service is not ready
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /metrics:
+    get:
+      operationId: getMetrics
+      summary: Prometheus metrics
+      description: Returns metrics in Prometheus format
+      tags: [Health]
+      responses:
+        '200':
+          description: Metrics in Prometheus text format
+          content:
+            text/plain:
+              schema:
+                type: string
+
+  # ============================================================================
+  # DISCOVERY
+  # ============================================================================
+  /.well-known/upp:
+    get:
+      operationId: getWellKnown
+      summary: UPP well-known configuration
+      description: Returns well-known configuration for UPP discovery
+      tags: [Discovery]
+      responses:
+        '200':
+          description: Well-known configuration
+          content:
+            application/json:
+              schema:
+                type: object
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /upp/v1/discovery/manifest/{provider}:
+    get:
+      operationId: getDiscoveryManifest
+      summary: Get provider manifest
+      description: Get the manifest for a specific prediction market provider
+      tags: [Discovery]
+      parameters:
+        - name: provider
+          in: path
+          required: true
+          description: Provider name (e.g., 'kalshi.com', 'polymarket.com')
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Provider manifest
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Invalid provider name
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Provider not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /upp/v1/discovery/providers:
+    get:
+      operationId: listDiscoveryProviders
+      summary: List available providers
+      description: List all connected prediction market providers
+      tags: [Discovery]
+      responses:
+        '200':
+          description: List of providers
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  providers:
+                    type: array
+                    items:
+                      type: string
+
+  /upp/v1/discovery/negotiate:
+    post:
+      operationId: discoverNegotiate
+      summary: Provider negotiation
+      description: Negotiate connection parameters with a provider
+      tags: [Discovery]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                provider:
+                  type: string
+                  description: Provider name
+                parameters:
+                  type: object
+                  description: Negotiation parameters
+      responses:
+        '200':
+          description: Negotiation successful
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Invalid negotiation parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /upp/v1/discovery/health/{provider}:
+    get:
+      operationId: getDiscoveryHealthForProvider
+      summary: Provider health check
+      description: Check the health of a specific provider connection
+      tags: [Discovery]
+      parameters:
+        - name: provider
+          in: path
+          required: true
+          description: Provider name
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Provider is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  provider:
+                    type: string
+                  status:
+                    type: string
+        '503':
+          description: Provider is unhealthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /upp/v1/discovery/health:
+    get:
+      operationId: getDiscoveryHealthAll
+      summary: All providers health check
+      description: Check health of all connected providers
+      tags: [Discovery]
+      responses:
+        '200':
+          description: Health status of all providers
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  providers:
+                    type: array
+                    items:
+                      type: object
+
+  # ============================================================================
+  # MARKETS
+  # ============================================================================
+  /upp/v1/markets:
+    get:
+      operationId: listMarkets
+      summary: List markets
+      description: List all available prediction markets
+      tags: [Markets]
+      parameters:
+        - name: provider
+          in: query
+          description: Filter by provider name
+          schema:
+            type: string
+        - name: status
+          in: query
+          description: Filter by market status (open, closed, etc.)
+          schema:
+            type: string
+        - name: category
+          in: query
+          description: Filter by market category
+          schema:
+            type: string
+        - name: limit
+          in: query
+          description: Maximum number of results (default 50)
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 1000
+        - name: cursor
+          in: query
+          description: Pagination cursor
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of markets
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MarketsResponse'
+        '400':
+          description: Invalid parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: Rate limited
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /upp/v1/markets/search:
+    get:
+      operationId: searchMarkets
+      summary: Search markets
+      description: Search for markets by title or description
+      tags: [Markets]
+      parameters:
+        - name: q
+          in: query
+          required: false
+          description: Search query
+          schema:
+            type: string
+        - name: provider
+          in: query
+          description: Filter by provider
+          schema:
+            type: string
+        - name: category
+          in: query
+          description: Filter by category
+          schema:
+            type: string
+        - name: limit
+          in: query
+          description: Maximum number of results
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 1000
+      responses:
+        '200':
+          description: Search results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchResponse'
+        '400':
+          description: Invalid search parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /upp/v1/markets/{marketId}:
+    get:
+      operationId: getMarket
+      summary: Get market details
+      description: Get detailed information about a specific market
+      tags: [Markets]
+      parameters:
+        - name: marketId
+          in: path
+          required: true
+          description: Market identifier
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Market details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MarketResponse'
+        '404':
+          description: Market not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /upp/v1/markets/{marketId}/orderbook:
+    get:
+      operationId: getOrderbook
+      summary: Get market orderbook
+      description: Get the current orderbook for a market
+      tags: [Orderbook]
+      parameters:
+        - name: marketId
+          in: path
+          required: true
+          description: Market identifier
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Market orderbook
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderbookResponse'
+        '404':
+          description: Market not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /upp/v1/markets/{marketId}/orderbook/merged:
+    get:
+      operationId: getMergedOrderbook
+      summary: Get merged orderbook
+      description: Get merged orderbook across all providers for a market
+      tags: [Orderbook]
+      parameters:
+        - name: marketId
+          in: path
+          required: true
+          description: Market identifier
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Merged orderbook
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderbookResponse'
+        '404':
+          description: Market not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /upp/v1/markets/categories:
+    get:
+      operationId: listCategories
+      summary: List market categories
+      description: List all available market categories
+      tags: [Markets]
+      responses:
+        '200':
+          description: List of categories
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  categories:
+                    type: array
+                    items:
+                      type: string
+
+  # ============================================================================
+  # ARBITRAGE
+  # ============================================================================
+  /upp/v1/arbitrage:
+    get:
+      operationId: listArbitrageOpportunities
+      summary: List arbitrage opportunities
+      description: Get list of current arbitrage opportunities across markets and providers
+      tags: [Arbitrage]
+      parameters:
+        - name: min_profit
+          in: query
+          description: Filter opportunities by minimum profit percentage
+          schema:
+            type: number
+            format: float
+      responses:
+        '200':
+          description: Arbitrage opportunities
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArbitrageListResponse'
+        '429':
+          description: Rate limited
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /upp/v1/arbitrage/summary:
+    get:
+      operationId: getArbitrageSummary
+      summary: Arbitrage summary
+      description: Get summary of arbitrage opportunities and recent activity
+      tags: [Arbitrage]
+      responses:
+        '200':
+          description: Arbitrage summary
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArbitrageSummaryResponse'
+
+  /upp/v1/arbitrage/history:
+    get:
+      operationId: getArbitrageHistory
+      summary: Arbitrage history
+      description: Get historical arbitrage trades and opportunities
+      tags: [Arbitrage]
+      parameters:
+        - name: limit
+          in: query
+          description: Maximum number of historical entries
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 1000
+      responses:
+        '200':
+          description: Arbitrage history
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArbitrageHistoryResponse'
+
+  # ============================================================================
+  # PRICE HISTORY & CANDLES
+  # ============================================================================
+  /upp/v1/markets/{marketId}/candles:
+    get:
+      operationId: getCandles
+      summary: Get candlestick data
+      description: Get OHLCV candlestick data for a market outcome
+      tags: [Candles]
+      parameters:
+        - name: marketId
+          in: path
+          required: true
+          description: Market identifier
+          schema:
+            type: string
+        - name: outcome_id
+          in: query
+          description: Outcome identifier (if not specified, returns all outcomes)
+          schema:
+            type: string
+        - name: resolution
+          in: query
+          description: Candle resolution (1m, 5m, 15m, 1h, 4h, 1d)
+          schema:
+            type: string
+            enum: [1m, 5m, 15m, 1h, 4h, 1d]
+        - name: from
+          in: query
+          description: Start timestamp (ISO 8601)
+          schema:
+            type: string
+            format: date-time
+        - name: to
+          in: query
+          description: End timestamp (ISO 8601)
+          schema:
+            type: string
+            format: date-time
+        - name: limit
+          in: query
+          description: Maximum number of candles
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 5000
+      responses:
+        '200':
+          description: Candlestick data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CandlesResponse'
+        '400':
+          description: Invalid parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Market not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /upp/v1/markets/{marketId}/candles/latest:
+    get:
+      operationId: getLatestCandle
+      summary: Get latest candle
+      description: Get the latest candlestick for a market outcome
+      tags: [Candles]
+      parameters:
+        - name: marketId
+          in: path
+          required: true
+          description: Market identifier
+          schema:
+            type: string
+        - name: outcome_id
+          in: query
+          description: Outcome identifier
+          schema:
+            type: string
+        - name: resolution
+          in: query
+          description: Candle resolution
+          schema:
+            type: string
+            enum: [1m, 5m, 15m, 1h, 4h, 1d]
+      responses:
+        '200':
+          description: Latest candle
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LatestCandleResponse'
+        '404':
+          description: Market not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /upp/v1/price-index/stats:
+    get:
+      operationId: getPriceIndexStats
+      summary: Get price index statistics
+      description: Get aggregated price index statistics across all markets
+      tags: [Price Index]
+      parameters:
+        - name: index_id
+          in: query
+          description: Specific index identifier
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Price index statistics
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PriceIndexStatsResponse'
+
+  # ============================================================================
+  # RESOLUTION & SETTLEMENT
+  # ============================================================================
+  /upp/v1/resolutions/{marketId}:
+    get:
+      operationId: getResolution
+      summary: Get market resolution
+      description: Get resolution data for a specific market
+      tags: [Resolution]
+      parameters:
+        - name: marketId
+          in: path
+          required: true
+          description: Market identifier
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Resolution data
+          content:
+            application/json:
+              schema:
+                type: object
+        '404':
+          description: Market not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /upp/v1/resolutions:
+    get:
+      operationId: listResolutions
+      summary: List resolutions
+      description: List all available resolutions
+      tags: [Resolution]
+      parameters:
+        - name: status
+          in: query
+          description: Filter by resolution status
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of resolutions
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resolutions:
+                    type: array
+                    items:
+                      type: object
+
+  /upp/v1/settlement/instruments:
+    get:
+      operationId: listSettlementInstruments
+      summary: List settlement instruments
+      description: List all settlement instruments available
+      tags: [Settlement]
+      responses:
+        '200':
+          description: Settlement instruments
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  instruments:
+                    type: array
+                    items:
+                      type: object
+
+  /upp/v1/settlement/handlers:
+    get:
+      operationId: listSettlementHandlers
+      summary: List settlement handlers
+      description: List all settlement handlers configured
+      tags: [Settlement]
+      responses:
+        '200':
+          description: Settlement handlers
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  handlers:
+                    type: array
+                    items:
+                      type: object
+
+  # ============================================================================
+  # BACKTEST
+  # ============================================================================
+  /upp/v1/backtest/strategies:
+    get:
+      operationId: listBacktestStrategies
+      summary: List available strategies
+      description: List all available backtesting strategies
+      tags: [Backtest]
+      responses:
+        '200':
+          description: Available strategies
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StrategiesResponse'
+
+  /upp/v1/backtest/run:
+    post:
+      operationId: runBacktest
+      summary: Run backtest
+      description: Execute a backtest of a strategy against historical market data
+      tags: [Backtest]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RunBacktestRequest'
+      responses:
+        '200':
+          description: Backtest completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BacktestResponse'
+        '400':
+          description: Invalid backtest parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /upp/v1/backtest/compare:
+    post:
+      operationId: compareStrategies
+      summary: Compare strategies
+      description: Compare multiple strategies against the same market
+      tags: [Backtest]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompareStrategiesRequest'
+      responses:
+        '200':
+          description: Comparison completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompareStrategiesResponse'
+        '400':
+          description: Invalid comparison parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # ============================================================================
+  # FEEDS
+  # ============================================================================
+  /upp/v1/feeds/status:
+    get:
+      operationId: getFeedStatus
+      summary: Get feed status
+      description: Get the current status of all configured data feeds
+      tags: [Feeds]
+      responses:
+        '200':
+          description: Feed status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FeedStatusResponse'
+
+  /upp/v1/feeds/stats:
+    get:
+      operationId: getFeedStats
+      summary: Get feed statistics
+      description: Get aggregated statistics for all feeds
+      tags: [Feeds]
+      responses:
+        '200':
+          description: Feed statistics
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FeedStatsResponse'
+
+  /upp/v1/feeds/subscribe:
+    post:
+      operationId: subscribeFeed
+      summary: Subscribe to feeds
+      description: Subscribe to live feed updates (WebSocket recommended)
+      tags: [Feeds]
+      security:
+        - ApiKeyAuth: []
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FeedSubscriptionRequest'
+      responses:
+        '200':
+          description: Subscription created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FeedSubscriptionResponse'
+        '400':
+          description: Invalid subscription parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # ============================================================================
+  # INGESTION
+  # ============================================================================
+  /upp/v1/ingestion/stats:
+    get:
+      operationId: getIngestionStats
+      summary: Get ingestion statistics
+      description: Get statistics about historical data ingestion
+      tags: [Ingestion]
+      responses:
+        '200':
+          description: Ingestion statistics
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total_ingested:
+                    type: integer
+                  last_ingestion:
+                    type: string
+                    format: date-time
+
+  /upp/v1/ingestion/ingest:
+    post:
+      operationId: ingestMarket
+      summary: Ingest market data
+      description: Ingest historical data for a specific market
+      tags: [Ingestion]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                market_id:
+                  type: string
+                from:
+                  type: string
+                  format: date-time
+                to:
+                  type: string
+                  format: date-time
+      responses:
+        '200':
+          description: Ingestion started
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  task_id:
+                    type: string
+
+  /upp/v1/ingestion/ingest-recent:
+    post:
+      operationId: ingestRecent
+      summary: Ingest recent data
+      description: Ingest recent historical data for all markets
+      tags: [Ingestion]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                hours:
+                  type: integer
+                  description: Number of hours of recent data to ingest
+      responses:
+        '200':
+          description: Ingestion started
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  task_id:
+                    type: string
+
+  # ============================================================================
+  # MCP (MODEL CONTEXT PROTOCOL)
+  # ============================================================================
+  /upp/v1/mcp/tools:
+    get:
+      operationId: listMcpTools
+      summary: List MCP tools
+      description: List all available Model Context Protocol tools
+      tags: [MCP]
+      responses:
+        '200':
+          description: Available MCP tools
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  tools:
+                    type: array
+                    items:
+                      type: object
+
+  /upp/v1/mcp/execute:
+    post:
+      operationId: executeMcpTool
+      summary: Execute MCP tool
+      description: Execute a Model Context Protocol tool
+      tags: [MCP]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                tool_name:
+                  type: string
+                arguments:
+                  type: object
+      responses:
+        '200':
+          description: Tool executed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Invalid tool or arguments
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /upp/v1/mcp/schema:
+    get:
+      operationId: getMcpSchema
+      summary: Get MCP schema
+      description: Get the schema for MCP integration
+      tags: [MCP]
+      responses:
+        '200':
+          description: MCP schema
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /.well-known/agent.json:
+    get:
+      operationId: getAgentCard
+      summary: Get agent card
+      description: Get the agent card for MCP compatibility
+      tags: [MCP]
+      responses:
+        '200':
+          description: Agent card
+          content:
+            application/json:
+              schema:
+                type: object
+
+  # ============================================================================
+  # ORDERS (PROTECTED)
+  # ============================================================================
+  /upp/v1/orders:
+    get:
+      operationId: listOrders
+      summary: List orders
+      description: Get list of all orders for the authenticated user
+      tags: [Orders]
+      security:
+        - ApiKeyAuth: []
+        - BearerAuth: []
+      parameters:
+        - name: status
+          in: query
+          description: Filter by order status
+          schema:
+            type: string
+        - name: limit
+          in: query
+          description: Maximum number of results
+          schema:
+            type: integer
+        - name: cursor
+          in: query
+          description: Pagination cursor
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Orders list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrdersResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    post:
+      operationId: createOrder
+      summary: Create order
+      description: Create a new order to buy or sell a market outcome
+      tags: [Orders]
+      security:
+        - ApiKeyAuth: []
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateOrderRequest'
+      responses:
+        '200':
+          description: Order created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderResponse'
+        '400':
+          description: Invalid order parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /upp/v1/orders/{orderId}:
+    get:
+      operationId: getOrder
+      summary: Get order details
+      description: Get detailed information about a specific order
+      tags: [Orders]
+      security:
+        - ApiKeyAuth: []
+        - BearerAuth: []
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          description: Order identifier
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Order details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Order not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      operationId: cancelOrder
+      summary: Cancel order
+      description: Cancel an open order
+      tags: [Orders]
+      security:
+        - ApiKeyAuth: []
+        - BearerAuth: []
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          description: Order identifier
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Order cancelled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Order not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /upp/v1/orders/cancel-all:
+    post:
+      operationId: cancelAllOrders
+      summary: Cancel all orders
+      description: Cancel all open orders for the authenticated user
+      tags: [Orders]
+      security:
+        - ApiKeyAuth: []
+        - BearerAuth: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Orders cancelled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrdersResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /upp/v1/orders/estimate:
+    post:
+      operationId: estimateOrder
+      summary: Estimate order
+      description: Get estimated execution price and fees for an order without executing it
+      tags: [Orders]
+      security:
+        - ApiKeyAuth: []
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EstimateOrderRequest'
+      responses:
+        '200':
+          description: Order estimation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EstimateOrderResponse'
+        '400':
+          description: Invalid estimation parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # ============================================================================
+  # TRADES (PROTECTED)
+  # ============================================================================
+  /upp/v1/trades:
+    get:
+      operationId: listTrades
+      summary: List trades
+      description: Get list of all trades for the authenticated user
+      tags: [Trades]
+      security:
+        - ApiKeyAuth: []
+        - BearerAuth: []
+      parameters:
+        - name: market_id
+          in: query
+          description: Filter by market
+          schema:
+            type: string
+        - name: limit
+          in: query
+          description: Maximum number of results
+          schema:
+            type: integer
+        - name: cursor
+          in: query
+          description: Pagination cursor
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Trades list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TradesResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # ============================================================================
+  # PORTFOLIO (PROTECTED)
+  # ============================================================================
+  /upp/v1/portfolio/positions:
+    get:
+      operationId: listPositions
+      summary: List positions
+      description: Get all open positions in the portfolio
+      tags: [Portfolio]
+      security:
+        - ApiKeyAuth: []
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Portfolio positions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PositionsResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /upp/v1/portfolio/summary:
+    get:
+      operationId: getPortfolioSummary
+      summary: Get portfolio summary
+      description: Get aggregated portfolio statistics and balances
+      tags: [Portfolio]
+      security:
+        - ApiKeyAuth: []
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Portfolio summary
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PortfolioSummaryResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /upp/v1/portfolio/balances:
+    get:
+      operationId: listBalances
+      summary: List balances
+      description: Get asset balances in the portfolio
+      tags: [Portfolio]
+      security:
+        - ApiKeyAuth: []
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Asset balances
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BalancesResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /upp/v1/portfolio/analytics:
+    get:
+      operationId: getPortfolioAnalytics
+      summary: Get portfolio analytics
+      description: Get detailed analytics and performance metrics for the portfolio
+      tags: [Portfolio]
+      security:
+        - ApiKeyAuth: []
+        - BearerAuth: []
+      parameters:
+        - name: period
+          in: query
+          description: Analysis period (1d, 7d, 30d, 90d, 1y, all)
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Portfolio analytics
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnalyticsResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # ============================================================================
+  # SMART ROUTING (PROTECTED)
+  # ============================================================================
+  /upp/v1/orders/route:
+    post:
+      operationId: computeRoute
+      summary: Compute order route
+      description: Compute an optimal order route across multiple exchanges
+      tags: [Smart Routing]
+      security:
+        - ApiKeyAuth: []
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ComputeRouteRequest'
+      responses:
+        '200':
+          description: Route computed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComputeRouteResponse'
+        '400':
+          description: Invalid route parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /upp/v1/orders/route/execute:
+    post:
+      operationId: executeRoute
+      summary: Execute route
+      description: Execute a computed order route across exchanges
+      tags: [Smart Routing]
+      security:
+        - ApiKeyAuth: []
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExecuteRouteRequest'
+      responses:
+        '200':
+          description: Route executed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExecuteRouteResponse'
+        '400':
+          description: Invalid route ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /upp/v1/orders/route/stats:
+    get:
+      operationId: getRouteStats
+      summary: Get routing statistics
+      description: Get statistics about route computation and execution
+      tags: [Smart Routing]
+      security:
+        - ApiKeyAuth: []
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Route statistics
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RouteStatsResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # ============================================================================
+  # AUTH MANAGEMENT (PROTECTED)
+  # ============================================================================
+  /upp/v1/auth/keys:
+    get:
+      operationId: listApiKeys
+      summary: List API keys
+      description: List all API keys for the authenticated user
+      tags: [Auth Management]
+      security:
+        - ApiKeyAuth: []
+        - BearerAuth: []
+      responses:
+        '200':
+          description: API keys
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  keys:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        name:
+                          type: string
+                        prefix:
+                          type: string
+                        created_at:
+                          type: string
+                          format: date-time
+                        last_used:
+                          type: string
+                          format: date-time
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    post:
+      operationId: createApiKey
+      summary: Create API key
+      description: Create a new API key for authentication
+      tags: [Auth Management]
+      security:
+        - ApiKeyAuth: []
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: Human-readable name for the key
+      responses:
+        '200':
+          description: API key created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  key:
+                    type: string
+                  name:
+                    type: string
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /upp/v1/auth/keys/revoke:
+    post:
+      operationId: revokeApiKey
+      summary: Revoke API key
+      description: Revoke an API key
+      tags: [Auth Management]
+      security:
+        - ApiKeyAuth: []
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                key_id:
+                  type: string
+      responses:
+        '200':
+          description: API key revoked
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # ============================================================================
+  # WEBSOCKET & DASHBOARD
+  # ============================================================================
+  /upp/v1/ws:
+    get:
+      operationId: websocketUpgrade
+      summary: WebSocket upgrade
+      description: Upgrade to WebSocket connection for real-time data streaming
+      tags: [WebSocket]
+      security:
+        - ApiKeyAuth: []
+        - BearerAuth: []
+      responses:
+        '101':
+          description: WebSocket connection established
+        '400':
+          description: Invalid WebSocket upgrade request
+        '401':
+          description: Unauthorized
+
+  /dashboard:
+    get:
+      operationId: getDashboard
+      summary: Get dashboard
+      description: Serve the dashboard UI
+      tags: [Dashboard]
+      responses:
+        '200':
+          description: Dashboard HTML
+          content:
+            text/html:
+              schema:
+                type: string
+
+components:
+  schemas:
+    # Status & Health
+    HealthResponse:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+          description: Service health status
+          example: healthy
+
+    ReadyResponse:
+      type: object
+      required: [ready]
+      properties:
+        ready:
+          type: boolean
+          description: Whether the gateway is ready to serve requests
+
+    MetricsResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          description: Prometheus metrics
+
+    # Markets
+    Market:
+      type: object
+      required: [id, title, provider, status, outcomes]
+      properties:
+        id:
+          type: string
+          description: Unique market identifier
+          example: kalshi.com:BTC-2026-Q1
+        title:
+          type: string
+          description: Human-readable market title
+        description:
+          type: string
+          nullable: true
+          description: Detailed market description
+        provider:
+          type: string
+          description: Provider that hosts this market
+        status:
+          type: string
+          description: Current market status
+          enum: [open, closed, expired, disputed]
+        category:
+          type: string
+          nullable: true
+          description: Market category
+        outcomes:
+          type: array
+          items:
+            $ref: '#/components/schemas/MarketOutcome'
+        volume:
+          type: number
+          format: double
+          nullable: true
+          description: Total trading volume
+        volume_24h:
+          type: number
+          format: double
+          nullable: true
+          description: Trading volume in last 24 hours
+        created_at:
+          type: string
+          nullable: true
+          format: date-time
+        closes_at:
+          type: string
+          nullable: true
+          format: date-time
+
+    MarketOutcome:
+      type: object
+      required: [id, title]
+      properties:
+        id:
+          type: string
+          description: Unique outcome identifier
+        title:
+          type: string
+          description: Human-readable outcome title
+        price:
+          type: number
+          format: double
+          nullable: true
+          description: Current price
+
+    Pagination:
+      type: object
+      required: [limit]
+      properties:
+        limit:
+          type: integer
+          description: Maximum results per page
+        cursor:
+          type: string
+          nullable: true
+          description: Pagination cursor for next page
+
+    MarketsResponse:
+      type: object
+      required: [markets]
+      properties:
+        markets:
+          type: array
+          items:
+            $ref: '#/components/schemas/Market'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+          nullable: true
+
+    MarketResponse:
+      type: object
+      required: [market]
+      properties:
+        market:
+          $ref: '#/components/schemas/Market'
+
+    SearchResponse:
+      type: object
+      required: [results, total]
+      properties:
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Market'
+        total:
+          type: integer
+          description: Total number of matches
+
+    # Orderbook
+    OrderbookLevel:
+      type: object
+      required: [price, size]
+      properties:
+        price:
+          type: number
+          format: double
+        size:
+          type: number
+          format: double
+        count:
+          type: integer
+          nullable: true
+
+    OrderbookResponse:
+      type: object
+      required: [market_id, bids, asks, timestamp]
+      properties:
+        market_id:
+          type: string
+        bids:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderbookLevel'
+        asks:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderbookLevel'
+        timestamp:
+          type: string
+          format: date-time
+
+    # Arbitrage
+    ArbitrageOpportunity:
+      type: object
+      required: [id, market_id, exchange_a, exchange_b, profit_percentage, profit_amount, volume_available]
+      properties:
+        id:
+          type: string
+        market_id:
+          type: string
+        exchange_a:
+          type: string
+        exchange_b:
+          type: string
+        profit_percentage:
+          type: number
+          format: double
+        profit_amount:
+          type: number
+          format: double
+        volume_available:
+          type: number
+          format: double
+
+    ArbitrageListResponse:
+      type: object
+      required: [opportunities]
+      properties:
+        opportunities:
+          type: array
+          items:
+            $ref: '#/components/schemas/ArbitrageOpportunity'
+
+    ArbitrageSummaryResponse:
+      type: object
+      required: [total_opportunities, total_profit_24h]
+      properties:
+        total_opportunities:
+          type: integer
+        total_profit_24h:
+          type: number
+          format: double
+        best_opportunity:
+          $ref: '#/components/schemas/ArbitrageOpportunity'
+          nullable: true
+
+    ArbitrageHistoryEntry:
+      type: object
+      required: [id, market_id, profit, timestamp]
+      properties:
+        id:
+          type: string
+        market_id:
+          type: string
+        profit:
+          type: number
+          format: double
+        timestamp:
+          type: string
+          format: date-time
+
+    ArbitrageHistoryResponse:
+      type: object
+      required: [entries]
+      properties:
+        entries:
+          type: array
+          items:
+            $ref: '#/components/schemas/ArbitrageHistoryEntry'
+
+    # Candles
+    Candle:
+      type: object
+      required: [timestamp, open, high, low, close, volume]
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+        open:
+          type: number
+          format: double
+        high:
+          type: number
+          format: double
+        low:
+          type: number
+          format: double
+        close:
+          type: number
+          format: double
+        volume:
+          type: number
+          format: double
+
+    CandlesResponse:
+      type: object
+      required: [market_id, outcome_id, resolution, candles]
+      properties:
+        market_id:
+          type: string
+        outcome_id:
+          type: string
+        resolution:
+          type: string
+        candles:
+          type: array
+          items:
+            $ref: '#/components/schemas/Candle'
+
+    LatestCandleResponse:
+      type: object
+      required: [market_id, outcome_id, resolution, candle]
+      properties:
+        market_id:
+          type: string
+        outcome_id:
+          type: string
+        resolution:
+          type: string
+        candle:
+          $ref: '#/components/schemas/Candle'
+
+    # Price Index
+    PriceIndexStatsResponse:
+      type: object
+      required: [index_id, price, change_24h, change_percent_24h, high_24h, low_24h, volume_24h]
+      properties:
+        index_id:
+          type: string
+        price:
+          type: number
+          format: double
+        change_24h:
+          type: number
+          format: double
+        change_percent_24h:
+          type: number
+          format: double
+        high_24h:
+          type: number
+          format: double
+        low_24h:
+          type: number
+          format: double
+        volume_24h:
+          type: number
+          format: double
+
+    # Backtest
+    Strategy:
+      type: object
+      required: [id, name]
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        parameters:
+          type: object
+          nullable: true
+
+    StrategiesResponse:
+      type: object
+      required: [strategies]
+      properties:
+        strategies:
+          type: array
+          items:
+            $ref: '#/components/schemas/Strategy'
+
+    RunBacktestRequest:
+      type: object
+      required: [strategy, market_id, outcome_id, resolution, initial_capital, fee_rate, slippage_rate]
+      properties:
+        strategy:
+          type: string
+        market_id:
+          type: string
+        outcome_id:
+          type: string
+        resolution:
+          type: string
+        params:
+          type: object
+          nullable: true
+        initial_capital:
+          type: number
+          format: double
+        fee_rate:
+          type: number
+          format: double
+        slippage_rate:
+          type: number
+          format: double
+        max_position:
+          type: number
+          format: double
+          nullable: true
+
+    BacktestResponse:
+      type: object
+      required: [strategy_id, market_id, total_return, sharpe_ratio, max_drawdown, win_rate, trades, pnl]
+      properties:
+        strategy_id:
+          type: string
+        market_id:
+          type: string
+        total_return:
+          type: number
+          format: double
+        sharpe_ratio:
+          type: number
+          format: double
+        max_drawdown:
+          type: number
+          format: double
+        win_rate:
+          type: number
+          format: double
+        trades:
+          type: integer
+        pnl:
+          type: number
+          format: double
+
+    CompareStrategiesRequest:
+      type: object
+      required: [market_id, outcome_id, resolution, strategies]
+      properties:
+        market_id:
+          type: string
+        outcome_id:
+          type: string
+        resolution:
+          type: string
+        strategies:
+          type: array
+          items:
+            type: string
+
+    CompareStrategiesResponse:
+      type: object
+      required: [results]
+      properties:
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/BacktestResponse'
+
+    # Feeds
+    FeedInfo:
+      type: object
+      required: [id, name, status]
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        status:
+          type: string
+          enum: [connected, disconnected, error]
+        latency_ms:
+          type: number
+          format: double
+          nullable: true
+        last_update:
+          type: string
+          format: date-time
+          nullable: true
+
+    FeedStatusResponse:
+      type: object
+      required: [feeds]
+      properties:
+        feeds:
+          type: array
+          items:
+            $ref: '#/components/schemas/FeedInfo'
+
+    FeedStatsResponse:
+      type: object
+      required: [total_feeds, active_feeds, total_messages, uptime_percent]
+      properties:
+        total_feeds:
+          type: integer
+        active_feeds:
+          type: integer
+        total_messages:
+          type: integer
+          format: int64
+        uptime_percent:
+          type: number
+          format: double
+
+    FeedSubscriptionRequest:
+      type: object
+      required: [feed_ids]
+      properties:
+        feed_ids:
+          type: array
+          items:
+            type: string
+        market_ids:
+          type: array
+          nullable: true
+          items:
+            type: string
+
+    FeedSubscriptionResponse:
+      type: object
+      required: [subscription_id, feeds, status]
+      properties:
+        subscription_id:
+          type: string
+        feeds:
+          type: array
+          items:
+            type: string
+        status:
+          type: string
+
+    # Orders
+    OrderSide:
+      type: string
+      enum: [BUY, SELL]
+
+    OrderType:
+      type: string
+      enum: [LIMIT, MARKET]
+
+    Order:
+      type: object
+      required: [id, market_id, outcome_id, side, quantity, filled, price, order_type, status, created_at, updated_at]
+      properties:
+        id:
+          type: string
+        market_id:
+          type: string
+        outcome_id:
+          type: string
+        side:
+          $ref: '#/components/schemas/OrderSide'
+        quantity:
+          type: number
+          format: double
+        filled:
+          type: number
+          format: double
+        price:
+          type: number
+          format: double
+        order_type:
+          $ref: '#/components/schemas/OrderType'
+        status:
+          type: string
+          enum: [open, partially_filled, filled, cancelled, rejected]
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    OrderResponse:
+      type: object
+      required: [order]
+      properties:
+        order:
+          $ref: '#/components/schemas/Order'
+
+    OrdersResponse:
+      type: object
+      required: [orders]
+      properties:
+        orders:
+          type: array
+          items:
+            $ref: '#/components/schemas/Order'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+          nullable: true
+
+    CreateOrderRequest:
+      type: object
+      required: [market_id, outcome_id, side, quantity, price, order_type]
+      properties:
+        market_id:
+          type: string
+        outcome_id:
+          type: string
+        side:
+          $ref: '#/components/schemas/OrderSide'
+        quantity:
+          type: number
+          format: double
+        price:
+          type: number
+          format: double
+        order_type:
+          $ref: '#/components/schemas/OrderType'
+
+    EstimateOrderRequest:
+      type: object
+      required: [market_id, outcome_id, side, quantity]
+      properties:
+        market_id:
+          type: string
+        outcome_id:
+          type: string
+        side:
+          $ref: '#/components/schemas/OrderSide'
+        quantity:
+          type: number
+          format: double
+
+    EstimateOrderResponse:
+      type: object
+      required: [estimated_price, estimated_total, fee, slippage]
+      properties:
+        estimated_price:
+          type: number
+          format: double
+        estimated_total:
+          type: number
+          format: double
+        fee:
+          type: number
+          format: double
+        slippage:
+          type: number
+          format: double
+
+    # Trades
+    Trade:
+      type: object
+      required: [id, order_id, market_id, outcome_id, side, quantity, price, fee, timestamp]
+      properties:
+        id:
+          type: string
+        order_id:
+          type: string
+        market_id:
+          type: string
+        outcome_id:
+          type: string
+        side:
+          $ref: '#/components/schemas/OrderSide'
+        quantity:
+          type: number
+          format: double
+        price:
+          type: number
+          format: double
+        fee:
+          type: number
+          format: double
+        timestamp:
+          type: string
+          format: date-time
+
+    TradesResponse:
+      type: object
+      required: [trades]
+      properties:
+        trades:
+          type: array
+          items:
+            $ref: '#/components/schemas/Trade'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+          nullable: true
+
+    # Portfolio
+    Position:
+      type: object
+      required: [market_id, outcome_id, quantity, average_entry_price, current_price, unrealized_pnl]
+      properties:
+        market_id:
+          type: string
+        outcome_id:
+          type: string
+        quantity:
+          type: number
+          format: double
+        average_entry_price:
+          type: number
+          format: double
+        current_price:
+          type: number
+          format: double
+        unrealized_pnl:
+          type: number
+          format: double
+
+    PositionsResponse:
+      type: object
+      required: [positions]
+      properties:
+        positions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Position'
+
+    PortfolioSummaryResponse:
+      type: object
+      required: [total_balance, available_balance, total_positions_value, total_unrealized_pnl, total_realized_pnl]
+      properties:
+        total_balance:
+          type: number
+          format: double
+        available_balance:
+          type: number
+          format: double
+        total_positions_value:
+          type: number
+          format: double
+        total_unrealized_pnl:
+          type: number
+          format: double
+        total_realized_pnl:
+          type: number
+          format: double
+
+    Balance:
+      type: object
+      required: [asset, amount, available, locked]
+      properties:
+        asset:
+          type: string
+        amount:
+          type: number
+          format: double
+        available:
+          type: number
+          format: double
+        locked:
+          type: number
+          format: double
+
+    BalancesResponse:
+      type: object
+      required: [balances]
+      properties:
+        balances:
+          type: array
+          items:
+            $ref: '#/components/schemas/Balance'
+
+    AnalyticsResponse:
+      type: object
+      required: [total_return, daily_return, sharpe_ratio, max_drawdown, win_rate]
+      properties:
+        total_return:
+          type: number
+          format: double
+        daily_return:
+          type: number
+          format: double
+        sharpe_ratio:
+          type: number
+          format: double
+        max_drawdown:
+          type: number
+          format: double
+        win_rate:
+          type: number
+          format: double
+
+    # Smart Routing
+    RouteStep:
+      type: object
+      required: [exchange, price, quantity]
+      properties:
+        exchange:
+          type: string
+        price:
+          type: number
+          format: double
+        quantity:
+          type: number
+          format: double
+
+    ComputeRouteRequest:
+      type: object
+      required: [market_id, outcome_id, side, quantity]
+      properties:
+        market_id:
+          type: string
+        outcome_id:
+          type: string
+        side:
+          $ref: '#/components/schemas/OrderSide'
+        quantity:
+          type: number
+          format: double
+
+    ComputeRouteResponse:
+      type: object
+      required: [route_id, steps, total_price, total_fees, estimated_slippage]
+      properties:
+        route_id:
+          type: string
+        steps:
+          type: array
+          items:
+            $ref: '#/components/schemas/RouteStep'
+        total_price:
+          type: number
+          format: double
+        total_fees:
+          type: number
+          format: double
+        estimated_slippage:
+          type: number
+          format: double
+
+    ExecuteRouteRequest:
+      type: object
+      required: [route_id]
+      properties:
+        route_id:
+          type: string
+
+    ExecuteRouteResponse:
+      type: object
+      required: [execution_id, route_id, status, orders_created]
+      properties:
+        execution_id:
+          type: string
+        route_id:
+          type: string
+        status:
+          type: string
+        orders_created:
+          type: integer
+
+    RouteStatsResponse:
+      type: object
+      required: [total_routes, successful_executions, failed_executions, avg_execution_time_ms]
+      properties:
+        total_routes:
+          type: integer
+        successful_executions:
+          type: integer
+        failed_executions:
+          type: integer
+        avg_execution_time_ms:
+          type: number
+          format: double
+
+    # Common
+    ErrorResponse:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string
+        code:
+          type: string
+          nullable: true
+        details:
+          type: object
+          nullable: true
+
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: API Key authentication using X-API-Key header
+
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Bearer token authentication using JWT

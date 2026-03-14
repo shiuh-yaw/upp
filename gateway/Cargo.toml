@@ -53,6 +53,9 @@ thiserror = "2"
 # ── Crypto (for auth) ──
 ring = "0.17"
 jsonwebtoken = "9"
+sha2 = "0.10"
+hmac = "0.12"
+base64 = "0.22"
 
 # ── Utilities ──
 uuid = { version = "1", features = ["v4", "serde"] }
@@ -65,9 +68,8 @@ async-trait = "0.1"
 tokio-test = "0.4"
 wiremock = "0.6"
 criterion = { version = "0.5", features = ["async_tokio"] }
+upp-sdk = { path = "../sdk" }
 
-[profile.release]
-lto = true
-codegen-units = 1
-strip = true
-opt-level = 3
+[[bench]]
+name = "gateway_bench"
+harness = false
