@@ -13,15 +13,28 @@ use crate::core::storage::{StoredOrder, StoredTrade, OrderFilter as StorageOrder
 
 /// Convert a provider Order into a StoredOrder for persistence.
 fn order_to_stored(order: &Order, provider: &str) -> StoredOrder {
+    let side = match order.side {
+        Side::Buy => "buy".to_string(),
+        Side::Sell => "sell".to_string(),
+    };
+    let status = match order.status {
+        OrderStatus::Pending => "pending".to_string(),
+        OrderStatus::Open => "open".to_string(),
+        OrderStatus::PartiallyFilled => "partially_filled".to_string(),
+        OrderStatus::Filled => "filled".to_string(),
+        OrderStatus::Cancelled => "cancelled".to_string(),
+        OrderStatus::Rejected => "rejected".to_string(),
+        OrderStatus::Expired => "expired".to_string(),
+    };
     StoredOrder {
         order_id: order.id.clone(),
         provider: provider.to_string(),
         market_id: order.market_id.to_full_id(),
         outcome_id: order.outcome_id.clone(),
-        side: format!("{:?}", order.side).to_lowercase(),
+        side,
         price: order.price.clone().unwrap_or_default(),
         quantity: order.quantity,
-        status: format!("{:?}", order.status).to_lowercase(),
+        status,
         created_at: order.created_at.to_rfc3339(),
         updated_at: order.updated_at.to_rfc3339(),
         provider_order_id: Some(order.provider_order_id.clone()),
@@ -30,12 +43,16 @@ fn order_to_stored(order: &Order, provider: &str) -> StoredOrder {
 
 /// Convert a provider Trade into a StoredTrade for persistence.
 fn trade_to_stored(trade: &Trade, provider: &str) -> StoredTrade {
+    let side = match trade.side {
+        Side::Buy => "buy".to_string(),
+        Side::Sell => "sell".to_string(),
+    };
     StoredTrade {
         trade_id: trade.id.clone(),
         order_id: trade.order_id.clone(),
         provider: provider.to_string(),
         market_id: trade.market_id.to_full_id(),
-        side: format!("{:?}", trade.side).to_lowercase(),
+        side,
         price: trade.price.clone(),
         quantity: trade.quantity,
         fee: trade.fees.total_fee.clone(),

@@ -10,6 +10,66 @@ pub mod middleware;
 pub mod transport;
 mod gen;
 
+use axum::extract::ws::{WebSocket, WebSocketUpgrade};
+use futures::stream::StreamExt;
+use futures::SinkExt;
+
+/// WebSocket handler for the test server that echoes messages and handles UPP subscribe protocol.
+async fn handle_ws(ws: WebSocketUpgrade) -> impl axum::response::IntoResponse {
+    ws.on_upgrade(handle_socket)
+}
+
+/// Handle individual WebSocket connection.
+async fn handle_socket(socket: WebSocket) {
+    let (mut sender, mut receiver) = socket.split();
+
+    // Spawn a background task to handle incoming messages
+    tokio::spawn(async move {
+        while let Some(Ok(msg)) = receiver.next().await {
+            match msg {
+                axum::extract::ws::Message::Text(text) => {
+                    // Try to parse as JSON-RPC subscribe request
+                    if let Ok(json) = serde_json::from_str::<serde_json::Value>(&text) {
+                        // Check if it's a subscribe request
+                        if let Some(method) = json.get("method").and_then(|m| m.as_str()) {
+                            if method == "subscribe" {
+                                // Send subscription confirmation
+                                let response = serde_json::json!({
+                                    "jsonrpc": "2.0",
+                                    "result": "subscribed"
+                                });
+                                let _ = sender.send(axum::extract::ws::Message::Text(response.to_string())).await;
+
+                                // Send mock price update
+                                let price_update = serde_json::json!({
+                                    "channel": "prices",
+                                    "data": {
+                                        "market_id": "test-market",
+                                        "yes_price": 0.65,
+                                        "no_price": 0.35
+                                    }
+                                });
+                                let _ = sender.send(axum::extract::ws::Message::Text(price_update.to_string())).await;
+                                continue;
+                            }
+                        }
+                    }
+
+                    // Echo back with wrapper
+                    let echo_response = serde_json::json!({
+                        "echo": text
+                    });
+                    let _ = sender.send(axum::extract::ws::Message::Text(echo_response.to_string())).await;
+                }
+                axum::extract::ws::Message::Close(_) => {
+                    break;
+                }
+                _ => {}
+            }
+        }
+    });
+}
+
 /// Test harness for spinning up a live server — available in integration tests.
 pub mod test_harness {
     use std::net::SocketAddr;
@@ -28,6 +88,7 @@ pub mod test_harness {
     /// the SDK client ↔ live HTTP round-trip.
     pub async fn start_test_server() -> TestServer {
         use axum::{routing::get, Router};
+        use super::handle_ws;
 
         // Bind to port 0 for OS-assigned port
         let listener = tokio::net::TcpListener::bind("127.0.0.1:0")
@@ -37,6 +98,7 @@ pub mod test_harness {
         let base_url = format!("http://127.0.0.1:{}", addr.port());
 
         let app = Router::new()
+            .route("/ws", get(handle_ws))
             .route("/health", get(|| async {
                 axum::Json(serde_json::json!({"status": "healthy"}))
             }))
@@ -184,6 +246,13 @@ pub mod test_harness {
                     "total_messages": 0,
                     "uptime_percent": 0.0
                 }))
+            }))
+            .route("/docs/openapi.json", get(|| async {
+                let spec = include_str!("../static/openapi.json");
+                (
+                    [(axum::http::header::CONTENT_TYPE, "application/json")],
+                    spec,
+                )
             }));
 
         // Spawn server in background

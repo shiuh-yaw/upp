@@ -460,7 +460,7 @@ impl LiveFeedManager {
                         // Send subscription messages for auto-subscribe markets
                         let sub_msg = manager.build_subscribe_message(&config).await;
                         if let Some(msg) = sub_msg {
-                            if let Err(e) = write.send(Message::Text(msg.into())).await {
+                            if let Err(e) = write.send(Message::Text(msg)).await {
                                 warn!(provider = %config.provider_id, error = %e, "Failed to send subscribe");
                             } else {
                                 manager.set_state(&config.provider_id, ConnectionState::Subscribed).await;
@@ -507,7 +507,7 @@ impl LiveFeedManager {
                                     }
                                 }
                                 _ = heartbeat.tick() => {
-                                    if let Err(e) = write.send(Message::Ping(vec![].into())).await {
+                                    if let Err(e) = write.send(Message::Ping(vec![])).await {
                                         warn!(provider = %config.provider_id, error = %e, "Heartbeat ping failed");
                                         break;
                                     }

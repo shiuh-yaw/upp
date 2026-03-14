@@ -242,17 +242,9 @@ impl Default for WsConfig {
 }
 
 /// Builder for constructing a UppWebSocket with custom configuration
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct UppWebSocketBuilder {
     config: WsConfig,
-}
-
-impl Default for UppWebSocketBuilder {
-    fn default() -> Self {
-        Self {
-            config: WsConfig::default(),
-        }
-    }
 }
 
 impl UppWebSocketBuilder {

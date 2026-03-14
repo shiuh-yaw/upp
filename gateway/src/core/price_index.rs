@@ -158,18 +158,17 @@ impl CandleSeries {
     }
 
     fn query(&self, from: Option<i64>, to: Option<i64>, limit: usize) -> Vec<Candle> {
-        self.candles.iter()
+        let mut result: Vec<_> = self.candles.iter()
             .filter(|c| {
-                from.map_or(true, |f| c.timestamp >= f)
-                    && to.map_or(true, |t| c.timestamp <= t)
+                from.is_none_or(|f| c.timestamp >= f)
+                    && to.is_none_or(|t| c.timestamp <= t)
             })
             .rev()
             .take(limit)
             .cloned()
-            .collect::<Vec<_>>()
-            .into_iter()
-            .rev()
-            .collect()
+            .collect();
+        result.reverse();
+        result
     }
 
     fn latest(&self) -> Option<&Candle> {
@@ -184,6 +183,12 @@ pub struct PriceIndex {
     series: DashMap<SeriesKey, CandleSeries>,
     ticks_ingested: AtomicU64,
     markets_tracked: DashMap<String, ()>,
+}
+
+impl Default for PriceIndex {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl PriceIndex {

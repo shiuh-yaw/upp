@@ -38,7 +38,7 @@ pub async fn negotiate(
         Ok(manifest) => Json(serde_json::json!({
             "active_capabilities": manifest.capabilities,
             "selected_transport": "rest",
-            "selected_auth": manifest.authentication.first().unwrap_or(&"none".to_string()),
+            "selected_auth": manifest.authentication.first().map(|s| s.as_str()).unwrap_or("none"),
         })).into_response(),
         Err(e) => not_found(&e.to_string()).into_response(),
     }

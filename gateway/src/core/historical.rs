@@ -193,7 +193,7 @@ impl MockPriceGenerator {
             let ask = (price + spread / 2.0).min(1.0);
 
             ticks.push(HistoricalTick::with_spreads(t, price, volume, bid, ask));
-            t = t + Duration::seconds(tick_interval_seconds);
+            t += Duration::seconds(tick_interval_seconds);
         }
 
         ticks

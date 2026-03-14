@@ -734,7 +734,7 @@ impl UppProvider for OpinionAdapter {
         // Opinion prices are already in 0-1 range
         let p: f64 = raw_price.parse()
             .context("Invalid Opinion price")?;
-        if p < 0.0 || p > 1.0 {
+        if !(0.0..=1.0).contains(&p) {
             anyhow::bail!("Opinion price {} out of [0,1] range", p);
         }
         Ok(format!("{:.4}", p))

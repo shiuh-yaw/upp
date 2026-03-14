@@ -476,7 +476,7 @@ impl UppClient {
     fn build_url(&self, path: &str) -> Result<Url> {
         self.base_url
             .join(path)
-            .map_err(|e| UppSdkError::InvalidUrl(e))
+            .map_err(UppSdkError::InvalidUrl)
     }
 
     async fn get<T: DeserializeOwned>(&self, path: &str) -> Result<T> {

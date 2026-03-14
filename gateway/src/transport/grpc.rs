@@ -166,7 +166,7 @@ impl pb::market_service_server::MarketService for UppMarketService {
             market_type: None,
             sort_by: None,
             pagination: core::PaginationRequest {
-                limit: if req.pagination.as_ref().map_or(true, |p| p.limit == 0) {
+                limit: if req.pagination.as_ref().is_none_or(|p| p.limit == 0) {
                     Some(20)
                 } else {
                     Some(req.pagination.as_ref().unwrap().limit)
@@ -261,9 +261,8 @@ impl pb::market_service_server::MarketService for UppMarketService {
         let mut results = Vec::new();
         for pid in self.state.registry.provider_ids() {
             if let Some(adapter) = self.state.registry.get(&pid) {
-                match adapter.search_markets(&req.query, filter.clone()).await {
-                    Ok(page) => results.extend(page.markets.iter().map(core_market_to_pb)),
-                    Err(_) => {}
+                if let Ok(page) = adapter.search_markets(&req.query, filter.clone()).await {
+                    results.extend(page.markets.iter().map(core_market_to_pb));
                 }
             }
         }
@@ -367,7 +366,7 @@ impl pb::discovery_service_server::DiscoveryService for UppDiscoveryService {
                             })
                         },
                     }),
-                    capabilities: manifest.capabilities.into_iter().map(|c| capability_to_pb(c)).collect(),
+                    capabilities: manifest.capabilities.into_iter().map(capability_to_pb).collect(),
                     transport: None,
                     authentication: None,
                     rate_limits: None,
@@ -397,7 +396,7 @@ impl pb::discovery_service_server::DiscoveryService for UppDiscoveryService {
                     logo_url: String::new(),
                     regulatory: None,
                 }),
-                capabilities: m.capabilities.into_iter().map(|c| capability_to_pb(c)).collect(),
+                capabilities: m.capabilities.into_iter().map(capability_to_pb).collect(),
                 transport: None,
                 authentication: None,
                 rate_limits: None,
@@ -418,7 +417,7 @@ impl pb::discovery_service_server::DiscoveryService for UppDiscoveryService {
         match self.state.registry.get_manifest(&req.provider).await {
             Ok(manifest) => {
                 Ok(Response::new(pb::NegotiationResult {
-                    active_capabilities: manifest.capabilities.into_iter().map(|c| capability_to_pb(c)).collect(),
+                    active_capabilities: manifest.capabilities.into_iter().map(capability_to_pb).collect(),
                     active_extensions: Vec::new(),
                     selected_transport: "rest".to_string(),
                     selected_auth: 0,

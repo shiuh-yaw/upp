@@ -334,8 +334,7 @@ async fn execute_search_markets(
         .get("limit")
         .and_then(|v| v.as_i64())
         .unwrap_or(10)
-        .max(1)
-        .min(100) as i32;
+        .clamp(1, 100) as i32;
 
     let filter = MarketFilter {
         pagination: crate::core::types::PaginationRequest {
@@ -378,8 +377,7 @@ async fn execute_list_markets(
         .get("limit")
         .and_then(|v| v.as_i64())
         .unwrap_or(20)
-        .max(1)
-        .min(100) as i32;
+        .clamp(1, 100) as i32;
     let cursor = params.get("cursor").and_then(|v| v.as_str());
 
     let filter = MarketFilter {
@@ -483,8 +481,7 @@ async fn execute_get_orderbook(
         .get("depth")
         .and_then(|v| v.as_i64())
         .unwrap_or(5)
-        .max(1)
-        .min(50) as i32;
+        .clamp(1, 50) as i32;
 
     let uid = UniversalMarketId::parse(market_id).ok_or_else(|| {
         McpError::new(

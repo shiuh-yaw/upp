@@ -410,6 +410,12 @@ pub struct ApiKeySummary {
     pub expires_at: Option<String>,
 }
 
+impl Default for ApiKeyManager {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ApiKeyManager {
     pub fn new() -> Self {
         Self {
@@ -517,6 +523,103 @@ impl ApiKeyManager {
     /// Get active key count.
     pub fn active_count(&self) -> usize {
         self.keys.iter().filter(|e| e.value().active).count()
+    }
+
+    /// Rotate an API key — creates new key, marks old key to expire in 24 hours (grace period).
+    /// Returns (new_key_response, old_key_prefix) if successful, or None if old key not found.
+    pub fn rotate_key(
+        &self,
+        old_key_prefix: &str,
+        req: CreateApiKeyRequest,
+    ) -> Option<(CreateApiKeyResponse, String)> {
+        // Find and validate the old key
+        let mut old_key_hash = None;
+        for entry in self.keys.iter() {
+            if entry.value().key_prefix == old_key_prefix {
+                old_key_hash = Some(entry.key().clone());
+                break;
+            }
+        }
+
+        let old_key_hash = old_key_hash?;
+
+        // Get the old key record for client info
+        let old_record = self.keys.get(&old_key_hash)?.clone();
+
+        // Create new key with the same client info (but allow overriding tier/providers/label)
+        let client_id = old_record.client.client_id.clone();
+        let key_secret = uuid::Uuid::new_v4().to_string().replace('-', "");
+        let full_key = format!("upp_k_{}", key_secret);
+        let key_prefix = format!("upp_k_{}...", &key_secret[..8]);
+
+        let now = chrono::Utc::now();
+        let created_at = now.to_rfc3339();
+        #[allow(deprecated)]
+        let new_expires_at = req.expires_in_days.map(|days| {
+            (now + chrono::Duration::days(days as i64)).to_rfc3339()
+        });
+
+        let new_record = ApiKeyRecord {
+            key_prefix: key_prefix.clone(),
+            key_hash: full_key.clone(),
+            client: ClientInfo {
+                client_id: client_id.clone(),
+                name: req.client_name,
+                tier: req.tier.unwrap_or(old_record.client.tier),
+                providers: req.providers.unwrap_or(old_record.client.providers.clone()),
+            },
+            created_at: created_at.clone(),
+            expires_at: new_expires_at.clone(),
+            active: true,
+            label: req.label,
+        };
+
+        // Insert new key
+        self.keys.insert(full_key.clone(), new_record);
+
+        // Set old key to expire in 24 hours (grace period)
+        if let Some(mut old_entry) = self.keys.get_mut(&old_key_hash) {
+            #[allow(deprecated)]
+            let grace_period_expiry =
+                (now + chrono::Duration::days(1)).to_rfc3339();
+            old_entry.expires_at = Some(grace_period_expiry);
+        }
+
+        let response = CreateApiKeyResponse {
+            key: full_key,
+            key_prefix,
+            client_id,
+            created_at,
+            expires_at: new_expires_at,
+        };
+
+        Some((response, old_key_prefix.to_string()))
+    }
+
+    /// Remove all expired keys and return count removed.
+    pub fn cleanup_expired(&self) -> usize {
+        let now = chrono::Utc::now();
+        let mut removed_count = 0;
+
+        let mut to_remove = Vec::new();
+
+        for entry in self.keys.iter() {
+            if let Some(ref exp) = entry.value().expires_at {
+                if let Ok(exp_time) = chrono::DateTime::parse_from_rfc3339(exp) {
+                    let exp_utc = exp_time.with_timezone(&chrono::Utc);
+                    if now > exp_utc {
+                        to_remove.push(entry.key().clone());
+                    }
+                }
+            }
+        }
+
+        for key in to_remove {
+            self.keys.remove(&key);
+            removed_count += 1;
+        }
+
+        removed_count
     }
 }
 
@@ -692,5 +795,156 @@ mod tests {
         };
         assert!(state.can_access_provider(&client_limited, "kalshi"));
         assert!(!state.can_access_provider(&client_limited, "polymarket"));
+    }
+
+    #[test]
+    fn test_api_key_rotation() {
+        let mgr = ApiKeyManager::new();
+
+        // Create initial key
+        let resp1 = mgr.create_key(CreateApiKeyRequest {
+            client_name: "Rotation Test".to_string(),
+            tier: Some(ClientTier::Pro),
+            providers: Some(vec!["kalshi".to_string(), "polymarket".to_string()]),
+            label: Some("original-key".to_string()),
+            expires_in_days: None,
+        });
+
+        let old_prefix = resp1.key_prefix.clone();
+        let old_key = resp1.key.clone();
+
+        // Verify old key works
+        assert!(mgr.authenticate_key(&old_key).is_some());
+        assert_eq!(mgr.count(), 1);
+
+        // Rotate the key
+        let rotate_result = mgr.rotate_key(
+            &old_prefix,
+            CreateApiKeyRequest {
+                client_name: "Rotation Test".to_string(),
+                tier: Some(ClientTier::Enterprise),
+                providers: Some(vec!["opinion".to_string()]),
+                label: Some("rotated-key".to_string()),
+                expires_in_days: Some(90),
+            },
+        );
+
+        assert!(rotate_result.is_some());
+        let (new_resp, returned_old_prefix) = rotate_result.unwrap();
+        assert_eq!(returned_old_prefix, old_prefix);
+        assert_ne!(new_resp.key, old_key);
+
+        // Verify new key works and has updated properties
+        let client = mgr.authenticate_key(&new_resp.key).expect("New key should work");
+        assert_eq!(client.tier, ClientTier::Enterprise);
+        assert_eq!(client.providers, vec!["opinion".to_string()]);
+
+        // Verify we have both keys (2 total)
+        assert_eq!(mgr.count(), 2);
+
+        // Old key should still work (during grace period)
+        assert!(mgr.authenticate_key(&old_key).is_some());
+    }
+
+    #[test]
+    fn test_api_key_rotation_grace_period() {
+        // Grace period uses 24-hour expiry; not time-dependent in this test
+
+        let mgr = ApiKeyManager::new();
+
+        // Create initial key
+        let resp1 = mgr.create_key(CreateApiKeyRequest {
+            client_name: "Grace Period Test".to_string(),
+            tier: Some(ClientTier::Standard),
+            providers: None,
+            label: None,
+            expires_in_days: None,
+        });
+
+        let old_key = resp1.key.clone();
+        let old_prefix = resp1.key_prefix.clone();
+
+        // Rotate the key (24-hour grace period)
+        let rotate_result = mgr.rotate_key(
+            &old_prefix,
+            CreateApiKeyRequest {
+                client_name: "Grace Period Test".to_string(),
+                tier: None,
+                providers: None,
+                label: None,
+                expires_in_days: Some(30),
+            },
+        );
+
+        assert!(rotate_result.is_some());
+        let (new_resp, _) = rotate_result.unwrap();
+
+        // Old key should still authenticate (grace period)
+        assert!(mgr.authenticate_key(&old_key).is_some());
+
+        // New key should authenticate
+        assert!(mgr.authenticate_key(&new_resp.key).is_some());
+
+        // Both keys should exist
+        assert_eq!(mgr.count(), 2);
+    }
+
+    #[test]
+    fn test_cleanup_expired() {
+        let mgr = ApiKeyManager::new();
+
+        // Create a key that expires immediately (in the past)
+        let resp1 = mgr.create_key(CreateApiKeyRequest {
+            client_name: "Expiring Key".to_string(),
+            tier: Some(ClientTier::Free),
+            providers: None,
+            label: None,
+            expires_in_days: Some(0), // Expires now
+        });
+
+        // Create a key that expires in the future
+        let resp2 = mgr.create_key(CreateApiKeyRequest {
+            client_name: "Active Key".to_string(),
+            tier: Some(ClientTier::Standard),
+            providers: None,
+            label: None,
+            expires_in_days: Some(30),
+        });
+
+        assert_eq!(mgr.count(), 2);
+
+        // Wait a moment to ensure the expires_in_days=0 key is in the past
+        std::thread::sleep(std::time::Duration::from_millis(100));
+
+        // Cleanup expired keys
+        let removed = mgr.cleanup_expired();
+
+        // Should have removed at least 1 key (the one with 0 expiry)
+        assert_eq!(removed, 1);
+        assert_eq!(mgr.count(), 1);
+
+        // The remaining key should be the non-expiring one
+        assert!(mgr.authenticate_key(&resp2.key).is_some());
+        assert!(mgr.authenticate_key(&resp1.key).is_none());
+    }
+
+    #[test]
+    fn test_rotate_key_not_found() {
+        let mgr = ApiKeyManager::new();
+
+        // Try to rotate a key that doesn't exist
+        let result = mgr.rotate_key(
+            "upp_k_nonexistent...",
+            CreateApiKeyRequest {
+                client_name: "Test".to_string(),
+                tier: None,
+                providers: None,
+                label: None,
+                expires_in_days: None,
+            },
+        );
+
+        assert!(result.is_none());
+        assert_eq!(mgr.count(), 0);
     }
 }

@@ -149,7 +149,7 @@ impl PrometheusMetrics {
         let key = format!("{}_{}", method, path);
         self.request_duration_samples
             .entry(key)
-            .or_insert_with(Vec::new)
+            .or_default()
             .push(duration_ms);
     }
 

@@ -305,7 +305,7 @@ impl RateLimitState {
         let bucket_key = format!("{}:{}", key, tier_name);
 
         // Get tier config
-        let mut tier_config = self.config.tiers.get(&tier).cloned().unwrap_or_else(|| {
+        let mut tier_config = self.config.tiers.get(&tier).cloned().unwrap_or({
             // Fallback to standard if tier not configured
             RateLimitTierConfig {
                 max_burst: 50,

@@ -46,6 +46,7 @@ pub async fn compute_route(
 
     match state.smart_router.compute_route(
         &state.registry,
+        &state.circuit_breakers,
         &body.market_native_id,
         &body.outcome_id,
         side,
@@ -89,6 +90,7 @@ pub async fn execute_route(
 
     let plan = match state.smart_router.compute_route(
         &state.registry,
+        &state.circuit_breakers,
         &body.market_native_id,
         &body.outcome_id,
         side,
@@ -102,6 +104,7 @@ pub async fn execute_route(
 
     let results = state.smart_router.execute_plan(
         &state.registry,
+        &state.circuit_breakers,
         &plan,
         side,
         order_type,
